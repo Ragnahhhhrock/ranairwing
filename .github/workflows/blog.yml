@@ -1,0 +1,52 @@
+name: Blog
+
+# Publishes scheduled posts (every 30 minutes) and drafts a post for each new "feat:" commit.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  push:
+    branches: [main]
+    paths: ["content/**", "tools/blog/**", "index.html"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: blog
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'  || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install markdown pyyaml pillow playwright
+
+      - name: Draft a post for a new feature commit
+        if: github.event_name == 'push'
+        run: |
+          if OUT=$(python3 tools/blog/feature_post.py --from-head); then
+            echo "$OUT"
+            export THREE_JS="$RUNNER_TEMP/three.min.js"
+            python3 tools/blog/shoot.py "$(echo "$OUT" | sed -n 's/.* and shot //p')"
+          else
+            echo "no feature post needed"
+          fi
+
+      - name: Build the blog
+        run: python3 tools/blog/build.py
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "nothing to publish"; exit 0; fi
+          git commit -m "blog: publish posts and rebuild"
+          git pull --rebase origin main
+          git push origin HEAD:main
