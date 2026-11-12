@@ -1,0 +1,930 @@
+[
+ {
+  "slug": "welcome-to-ran-air-wing",
+  "date": "2026-11-13T09:12:00+08:00",
+  "title": "Welcome to RAN Air Wing",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "phase-1-a-carrier-at-sea",
+  "date": "2026-11-14T06:28:00+08:00",
+  "title": "Phase 1: a carrier at sea, in your browser",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "hmas-melbourne-by-the-numbers",
+  "date": "2026-11-15T20:24:00+08:00",
+  "title": "HMAS Melbourne by the numbers",
+  "categories": [
+   "ship-history",
+   "carrier-ops"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "quick-start-launch-and-land",
+  "date": "2026-11-16T08:23:00+08:00",
+  "title": "Quick start: launch and land in five minutes",
+  "categories": [
+   "how-to-fly"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "how-reference-photos-shaped-the-model",
+  "date": "2026-11-17T12:22:00+08:00",
+  "title": "How reference photos shaped the model",
+  "categories": [
+   "dev-diary",
+   "ship-history"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "wind-over-deck",
+  "date": "2026-11-18T17:02:00+08:00",
+  "title": "Wind over deck: why the ship turns into the wind",
+  "categories": [
+   "carrier-ops",
+   "how-to-fly"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "phase-2-a-flyable-skyhawk",
+  "date": "2026-11-19T06:19:00+08:00",
+  "title": "Phase 2: a flyable A-4G Skyhawk",
+  "categories": [
+   "dev-diary",
+   "aircraft"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "keyboard-controls",
+  "date": "2026-11-20T13:58:00+08:00",
+  "title": "Keyboard controls cheat sheet",
+  "categories": [
+   "how-to-fly"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "a-4g-livery-and-markings",
+  "date": "2026-11-21T07:17:00+08:00",
+  "title": "The A-4G in the sim: livery and markings",
+  "categories": [
+   "aircraft",
+   "air-wing"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "what-the-model-gets-wrong",
+  "date": "2026-11-22T14:57:00+08:00",
+  "title": "What the model still gets wrong",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "seven-cameras",
+  "date": "2026-11-23T07:47:00+08:00",
+  "title": "Seven cameras and when to use each",
+  "categories": [
+   "how-to-fly",
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "the-angled-deck",
+  "date": "2026-11-24T16:24:00+08:00",
+  "title": "The angled deck, as drawn in the sim",
+  "categories": [
+   "carrier-ops"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "catapult-launch-step-by-step",
+  "date": "2026-11-25T11:22:00+08:00",
+  "title": "Catapult launch, step by step",
+  "categories": [
+   "how-to-fly",
+   "carrier-ops"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "deck-sounds",
+  "date": "2026-11-26T06:41:00+08:00",
+  "title": "Making the deck sound right",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "the-ball",
+  "date": "2026-11-27T11:16:00+08:00",
+  "title": "The ball: how the landing aid works in the sim",
+  "categories": [
+   "carrier-ops",
+   "how-to-fly"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "approach-and-trap-step-by-step",
+  "date": "2026-11-28T14:41:00+08:00",
+  "title": "Approach and arrested landing, step by step",
+  "categories": [
+   "how-to-fly",
+   "carrier-ops"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "wires-bolters-and-the-hook",
+  "date": "2026-11-29T06:24:00+08:00",
+  "title": "Arrestor wires, bolters and the hook",
+  "categories": [
+   "carrier-ops"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "testing-a-flight-sim-without-a-pilot",
+  "date": "2026-11-30T17:18:00+08:00",
+  "title": "Testing a flight sim without a pilot",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "landing-in-rough-seas",
+  "date": "2026-12-01T18:51:00+08:00",
+  "title": "Landing in rough seas: sea state and ship motion",
+  "categories": [
+   "how-to-fly",
+   "carrier-ops"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "the-guided-tutorial",
+  "date": "2026-12-02T14:46:00+08:00",
+  "title": "The guided tutorial",
+  "categories": [
+   "dev-diary",
+   "how-to-fly"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "why-1977-to-1982",
+  "date": "2026-12-03T18:07:00+08:00",
+  "title": "Why the sim is set in 1977-1982",
+  "categories": [
+   "dev-diary",
+   "ship-history"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "the-catapult-on-the-port-bow",
+  "date": "2026-12-04T13:34:00+08:00",
+  "title": "The catapult on the port bow",
+  "categories": [
+   "carrier-ops"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "flying-at-dawn-noon-and-dusk",
+  "date": "2026-12-05T10:37:00+08:00",
+  "title": "Dawn, noon and dusk: the time-of-day slider",
+  "categories": [
+   "how-to-fly",
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "reading-the-hud",
+  "date": "2026-12-06T06:58:00+08:00",
+  "title": "Reading the HUD",
+  "categories": [
+   "how-to-fly"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "beyond-the-skyhawk-the-air-wing",
+  "date": "2026-12-07T14:29:00+08:00",
+  "title": "Beyond the Skyhawk: the rest of the air wing",
+  "categories": [
+   "air-wing",
+   "aircraft"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "roadmap-eras-and-aircraft",
+  "date": "2026-12-08T20:37:00+08:00",
+  "title": "Roadmap: eras, aircraft and what comes next",
+  "categories": [
+   "dev-diary",
+   "air-wing"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "ten-mistakes-new-pilots-make",
+  "date": "2026-12-09T12:53:00+08:00",
+  "title": "Ten mistakes new pilots make",
+  "categories": [
+   "how-to-fly"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "crashes-and-ejecting",
+  "date": "2026-12-10T10:59:00+08:00",
+  "title": "Crashes, ejecting and the counters",
+  "categories": [
+   "how-to-fly",
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "flight-deck-layout",
+  "date": "2026-12-11T08:27:00+08:00",
+  "title": "Flight deck layout in the sim",
+  "categories": [
+   "carrier-ops",
+   "ship-history"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "how-we-write-and-correct",
+  "date": "2026-12-12T19:53:00+08:00",
+  "title": "How we write: sources and corrections",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "the-stats-panel",
+  "date": "2026-12-13T08:59:00+08:00",
+  "title": "Traps, losses and the stats panel",
+  "categories": [
+   "how-to-fly",
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "behind-the-blog",
+  "date": "2026-12-14T20:49:00+08:00",
+  "title": "Behind the blog: how posts are scheduled",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "ready",
+  "angle": ""
+ },
+ {
+  "slug": "from-hms-majestic-to-hmas-melbourne",
+  "date": "2026-12-15T07:23:00+08:00",
+  "title": "From HMS Majestic to HMAS Melbourne",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Origins as a Majestic-class carrier and the sale to Australia. Verify: laying down, launch, sale and name dates; builder."
+ },
+ {
+  "slug": "the-long-fit-out",
+  "date": "2026-12-16T14:23:00+08:00",
+  "title": "The long fit-out",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Completion work and design changes before Melbourne entered service. Verify: angled deck, steam catapult and mirror landing aid fits, completion dates."
+ },
+ {
+  "slug": "commissioning-and-the-voyage-to-australia",
+  "date": "2026-12-17T18:59:00+08:00",
+  "title": "Commissioning and the voyage to Australia",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Commissioning date, first air group, arrival in Sydney. Verify all dates and the route."
+ },
+ {
+  "slug": "fleet-air-arm-before-melbourne",
+  "date": "2026-12-18T10:46:00+08:00",
+  "title": "The Fleet Air Arm before Melbourne",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "RAN aviation from 1947: earlier carrier, aircraft, first squadrons."
+ },
+ {
+  "slug": "sea-fury",
+  "date": "2026-12-19T12:54:00+08:00",
+  "title": "Hawker Sea Fury in RAN service",
+  "categories": [
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Type profile and squadrons. Verify service dates, numbers, Korean War service."
+ },
+ {
+  "slug": "sea-venom",
+  "date": "2026-12-20T11:31:00+08:00",
+  "title": "de Havilland Sea Venom in RAN service",
+  "categories": [
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Type profile, role, squadron, service dates."
+ },
+ {
+  "slug": "fairey-gannet",
+  "date": "2026-12-21T15:07:00+08:00",
+  "title": "Fairey Gannet in RAN service",
+  "categories": [
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Type profile, ASW role, squadron, service dates."
+ },
+ {
+  "slug": "805-squadron",
+  "date": "2026-12-22T07:01:00+08:00",
+  "title": "805 Squadron",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Squadron history and aircraft types over time."
+ },
+ {
+  "slug": "how-the-angled-deck-was-invented",
+  "date": "2026-12-23T17:27:00+08:00",
+  "title": "How the angled deck was invented",
+  "categories": [
+   "carrier-ops"
+  ],
+  "kind": "brief",
+  "angle": "Origin, inventor, first trials, why it changed carrier design. Verify dates and people."
+ },
+ {
+  "slug": "steam-catapults",
+  "date": "2026-12-24T18:44:00+08:00",
+  "title": "Steam catapults explained",
+  "categories": [
+   "carrier-ops"
+  ],
+  "kind": "brief",
+  "angle": "How they work, origin, why Melbourne carried one. Verify."
+ },
+ {
+  "slug": "the-mirror-landing-aid",
+  "date": "2026-12-25T13:17:00+08:00",
+  "title": "The mirror landing aid and its inventor",
+  "categories": [
+   "carrier-ops"
+  ],
+  "kind": "brief",
+  "angle": "History and operation of the mirror sight. Verify."
+ },
+ {
+  "slug": "life-aboard-melbourne",
+  "date": "2026-12-26T07:51:00+08:00",
+  "title": "Life aboard Melbourne",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Crew numbers, messes, routine. Needs oral-history or official sources."
+ },
+ {
+  "slug": "flight-deck-crew-and-jersey-colours",
+  "date": "2026-12-27T11:03:00+08:00",
+  "title": "Flight deck crew and jersey colours",
+  "categories": [
+   "carrier-ops",
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Roles and colours as used in RAN practice. Verify RAN conventions."
+ },
+ {
+  "slug": "the-landing-signal-officer",
+  "date": "2026-12-28T20:27:00+08:00",
+  "title": "The Landing Signal Officer",
+  "categories": [
+   "air-wing",
+   "carrier-ops"
+  ],
+  "kind": "brief",
+  "angle": "Role of the LSO on Melbourne. Verify RAN practice."
+ },
+ {
+  "slug": "far-east-deployments",
+  "date": "2026-12-29T10:51:00+08:00",
+  "title": "Far East and SEATO deployments",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Deployments and exercises in the 1950s-60s. Verify."
+ },
+ {
+  "slug": "wessex-and-the-anti-submarine-role",
+  "date": "2026-12-30T06:37:00+08:00",
+  "title": "Wessex and the anti-submarine role",
+  "categories": [
+   "air-wing",
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Helicopter ASW on Melbourne. Verify squadron and dates."
+ },
+ {
+  "slug": "the-1964-collision-with-voyager",
+  "date": "2026-12-31T18:49:00+08:00",
+  "title": "The 1964 collision with HMAS Voyager",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Handle with care. Verify date, losses, inquiries, memorials from official sources."
+ },
+ {
+  "slug": "the-1969-collision-with-frank-e-evans",
+  "date": "2027-01-01T08:51:00+08:00",
+  "title": "The 1969 collision with USS Frank E. Evans",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Handle with care. Verify date, losses, inquiry from official sources."
+ },
+ {
+  "slug": "why-the-ran-bought-the-skyhawk",
+  "date": "2027-01-02T17:41:00+08:00",
+  "title": "Why the RAN bought the Skyhawk",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Procurement decision, numbers ordered, delivery. Verify."
+ },
+ {
+  "slug": "a-4g-skyhawk-in-ran-service",
+  "date": "2027-01-03T20:38:00+08:00",
+  "title": "A-4G Skyhawk in RAN service",
+  "categories": [
+   "aircraft",
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Type history, variants, side numbers, service dates."
+ },
+ {
+  "slug": "ta-4g-trainers",
+  "date": "2027-01-04T08:18:00+08:00",
+  "title": "The TA-4G trainers",
+  "categories": [
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Two-seat Skyhawks. Verify numbers and role."
+ },
+ {
+  "slug": "s-2-tracker-in-ran-service",
+  "date": "2027-01-05T09:53:00+08:00",
+  "title": "S-2 Tracker in RAN service",
+  "categories": [
+   "aircraft",
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Type profile and squadron. Verify."
+ },
+ {
+  "slug": "troop-transport-voyages",
+  "date": "2027-01-06T17:44:00+08:00",
+  "title": "Troop transport voyages to Vietnam",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Melbourne's role in the Vietnam era. Verify exactly which voyages."
+ },
+ {
+  "slug": "the-1967-69-refit",
+  "date": "2027-01-07T10:17:00+08:00",
+  "title": "The 1967-69 refit",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "What changed to carry Skyhawks and Trackers. Verify dates and work done."
+ },
+ {
+  "slug": "skyhawk-design-lineage",
+  "date": "2027-01-08T13:19:00+08:00",
+  "title": "Where the Skyhawk came from",
+  "categories": [
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Design origin of the A-4 line. Verify."
+ },
+ {
+  "slug": "progress-report-1",
+  "date": "2027-01-09T11:43:00+08:00",
+  "title": "Progress report: December",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "brief",
+  "angle": "Write from the repo commit log and analytics at the time."
+ },
+ {
+  "slug": "816-squadron",
+  "date": "2027-01-10T16:04:00+08:00",
+  "title": "816 Squadron and the Trackers",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Verify squadron numbers and types."
+ },
+ {
+  "slug": "724-squadron-and-training-at-nowra",
+  "date": "2027-01-11T19:03:00+08:00",
+  "title": "724 Squadron and training at Nowra",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Pilot training pipeline. Verify."
+ },
+ {
+  "slug": "hmas-albatross-nowra",
+  "date": "2027-01-12T07:43:00+08:00",
+  "title": "HMAS Albatross, Nowra",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Home of the Fleet Air Arm. Verify."
+ },
+ {
+  "slug": "sea-king",
+  "date": "2027-01-13T15:03:00+08:00",
+  "title": "Westland Sea King in RAN service",
+  "categories": [
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Type profile. Verify squadron and dates."
+ },
+ {
+  "slug": "sea-king-squadrons",
+  "date": "2027-01-14T20:14:00+08:00",
+  "title": "The Sea King squadrons",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Verify squadron numbers and roles."
+ },
+ {
+  "slug": "cyclone-tracy-1974",
+  "date": "2027-01-15T10:24:00+08:00",
+  "title": "Cyclone Tracy and the Darwin relief, 1974",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Melbourne's part in the relief. Verify."
+ },
+ {
+  "slug": "night-flying",
+  "date": "2027-01-16T18:19:00+08:00",
+  "title": "Night flying from a carrier",
+  "categories": [
+   "carrier-ops"
+  ],
+  "kind": "brief",
+  "angle": "Procedures and risks, general plus RAN-specific sources."
+ },
+ {
+  "slug": "planeguard-helicopter",
+  "date": "2027-01-17T16:42:00+08:00",
+  "title": "The planeguard helicopter",
+  "categories": [
+   "carrier-ops",
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Role and practice."
+ },
+ {
+  "slug": "keeping-a-carrier-supplied",
+  "date": "2027-01-18T18:42:00+08:00",
+  "title": "Keeping a carrier supplied",
+  "categories": [
+   "carrier-ops",
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Stores, fuel, replenishment at sea."
+ },
+ {
+  "slug": "rimpac-and-us-navy-exercises",
+  "date": "2027-01-19T07:14:00+08:00",
+  "title": "RIMPAC and exercises with the US Navy",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Late-1970s exercises. Verify participation and dates."
+ },
+ {
+  "slug": "the-air-wing-1977-1982",
+  "date": "2027-01-20T19:58:00+08:00",
+  "title": "The air wing in the sim's era, 1977-1982",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Which squadrons and aircraft embarked in those years. Verify."
+ },
+ {
+  "slug": "era-select-design",
+  "date": "2027-01-21T08:31:00+08:00",
+  "title": "Designing an era selector",
+  "categories": [
+   "dev-diary",
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Design note for playing different periods. Write when scoped."
+ },
+ {
+  "slug": "the-late-1970s-refit",
+  "date": "2027-01-22T20:39:00+08:00",
+  "title": "The late-1970s refit",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Verify existence, dates and scope before writing."
+ },
+ {
+  "slug": "pilot-training-pipeline",
+  "date": "2027-01-23T18:14:00+08:00",
+  "title": "How a Skyhawk pilot was trained",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Verify."
+ },
+ {
+  "slug": "the-namesake",
+  "date": "2027-01-24T16:37:00+08:00",
+  "title": "Named for a city: earlier ships and the Melbourne name",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Verify."
+ },
+ {
+  "slug": "wessex-profile",
+  "date": "2027-01-25T15:32:00+08:00",
+  "title": "Westland Wessex profile",
+  "categories": [
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Verify."
+ },
+ {
+  "slug": "progress-report-2",
+  "date": "2027-01-26T17:11:00+08:00",
+  "title": "Progress report: January",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "brief",
+  "angle": "Write from the repo and analytics at the time."
+ },
+ {
+  "slug": "australia-and-the-invincible-offer",
+  "date": "2027-01-27T20:31:00+08:00",
+  "title": "Australia and the offer of HMS Invincible",
+  "categories": [
+   "air-wing",
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Why Australia did not replace Melbourne. Verify dates and decisions."
+ },
+ {
+  "slug": "the-final-years-1981-82",
+  "date": "2027-01-28T06:17:00+08:00",
+  "title": "The final years, 1981-82",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Verify last deployments and flying."
+ },
+ {
+  "slug": "decommissioning-june-1982",
+  "date": "2027-01-29T19:13:00+08:00",
+  "title": "Decommissioning, June 1982",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Ceremony and date. Verify."
+ },
+ {
+  "slug": "end-of-fixed-wing-flying",
+  "date": "2027-01-30T09:07:00+08:00",
+  "title": "The end of RAN fixed-wing flying",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Verify last flights and dates."
+ },
+ {
+  "slug": "sale-to-china-and-the-last-voyage",
+  "date": "2027-01-31T13:07:00+08:00",
+  "title": "Sale to China and the last voyage",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Verify sale, tow, fate."
+ },
+ {
+  "slug": "skyhawks-after-the-ran",
+  "date": "2027-02-01T16:34:00+08:00",
+  "title": "Where the Skyhawks went",
+  "categories": [
+   "air-wing",
+   "aircraft"
+  ],
+  "kind": "brief",
+  "angle": "Verify sale of the A-4Gs and later careers."
+ },
+ {
+  "slug": "fleet-air-arm-museum-nowra",
+  "date": "2027-02-02T08:28:00+08:00",
+  "title": "Where to see the history: the Fleet Air Arm Museum",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Verify what is displayed now."
+ },
+ {
+  "slug": "remembering-the-crews",
+  "date": "2027-02-03T19:02:00+08:00",
+  "title": "Remembering the crews",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Memorials and associations. Verify."
+ },
+ {
+  "slug": "weather-and-flying-operations",
+  "date": "2027-02-04T15:12:00+08:00",
+  "title": "Weather and flying operations",
+  "categories": [
+   "carrier-ops"
+  ],
+  "kind": "brief",
+  "angle": "General explainer tied to the sim's sea states."
+ },
+ {
+  "slug": "how-the-flight-model-works",
+  "date": "2027-02-05T09:38:00+08:00",
+  "title": "How the flight model works",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "brief",
+  "angle": "Write from the code (airStep): lift, drag, stick-commanded angle of attack."
+ },
+ {
+  "slug": "advanced-approach-tips",
+  "date": "2027-02-06T14:27:00+08:00",
+  "title": "Advanced approach tips",
+  "categories": [
+   "how-to-fly"
+  ],
+  "kind": "brief",
+  "angle": "Write from play-testing."
+ },
+ {
+  "slug": "progress-report-3",
+  "date": "2027-02-07T11:28:00+08:00",
+  "title": "Progress report: February",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "brief",
+  "angle": "Write from the repo and analytics at the time."
+ },
+ {
+  "slug": "voices-from-the-deck",
+  "date": "2027-02-08T07:04:00+08:00",
+  "title": "Voices from the deck",
+  "categories": [
+   "air-wing"
+  ],
+  "kind": "brief",
+  "angle": "Link to published oral histories only; no quotes beyond fair length."
+ },
+ {
+  "slug": "the-escorts",
+  "date": "2027-02-09T17:08:00+08:00",
+  "title": "The escorts: ships that sailed with Melbourne",
+  "categories": [
+   "ship-history"
+  ],
+  "kind": "brief",
+  "angle": "Verify ships and eras."
+ },
+ {
+  "slug": "ninety-days-and-whats-next",
+  "date": "2027-02-10T15:28:00+08:00",
+  "title": "Ninety days of posts, and what comes next",
+  "categories": [
+   "dev-diary"
+  ],
+  "kind": "brief",
+  "angle": "Wrap-up with analytics."
+ }
+]

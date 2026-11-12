@@ -1,0 +1,8 @@
+[
+ {"slug":"ship-history","name":"Ship history","description":"HMAS Melbourne (R21) from build to disposal: voyages, refits, events and the people aboard."},
+ {"slug":"air-wing","name":"Air wing","description":"The Fleet Air Arm squadrons and aircraft that flew from Melbourne, era by era."},
+ {"slug":"aircraft","name":"Aircraft","description":"Profiles of the aircraft in the sim and the ones planned."},
+ {"slug":"carrier-ops","name":"Carrier operations","description":"How catapults, angled decks, landing aids and arrestor wires work, and how the sim models them."},
+ {"slug":"dev-diary","name":"Dev diary","description":"What was built, how, and what is still approximate."},
+ {"slug":"how-to-fly","name":"How to fly","description":"Guides and tips for launching, landing and staying alive in the sim."}
+]

@@ -1,0 +1,320 @@
+{
+ "s01-welcome": {
+  "cam": "orbit",
+  "hour": 16,
+  "sea": 3,
+  "speed": 20,
+  "advance": 3
+ },
+ "s02-phase1": {
+  "cam": "orbit",
+  "hour": 10,
+  "sea": 5,
+  "speed": 22,
+  "view": {
+   "az": -0.9,
+   "el": 0.12,
+   "dist": 300
+  },
+  "advance": 6
+ },
+ "s03-numbers": {
+  "cam": "orbit",
+  "hour": 12,
+  "sea": 1,
+  "speed": 16,
+  "view": {
+   "az": -1.57,
+   "el": 0.05,
+   "dist": 330
+  },
+  "advance": 3,
+  "hideHint": true
+ },
+ "s04-quickstart": {
+  "cam": "chase",
+  "start": "cat",
+  "hour": 14,
+  "sea": 2,
+  "speed": 22,
+  "advance": 2
+ },
+ "s05-references": {
+  "cam": "island",
+  "hour": 13,
+  "sea": 2,
+  "speed": 18,
+  "advance": 2
+ },
+ "s06-wod": {
+  "cam": "orbit",
+  "hour": 11,
+  "sea": 4,
+  "speed": 24,
+  "view": {
+   "az": -0.3,
+   "el": 0.15,
+   "dist": 220
+  },
+  "advance": 4
+ },
+ "s07-skyhawk": {
+  "cam": "chase",
+  "start": "cat",
+  "ac": {
+   "thr": 1,
+   "rpm": 1
+  },
+  "hour": 15.5,
+  "sea": 3,
+  "speed": 22,
+  "advance": 3
+ },
+ "s08-controls": {
+  "cam": "cockpit",
+  "start": "cat",
+  "ac": {
+   "thr": 0.6,
+   "rpm": 0.6
+  },
+  "hour": 15,
+  "sea": 3,
+  "speed": 22,
+  "advance": 2
+ },
+ "s09-livery": {
+  "cam": "chase",
+  "start": "cat",
+  "hour": 10.5,
+  "sea": 1,
+  "speed": 10,
+  "advance": 2
+ },
+ "s10-approx": {
+  "cam": "orbit",
+  "hour": 12,
+  "sea": 2,
+  "speed": 16,
+  "view": {
+   "az": -0.4,
+   "el": 0.75,
+   "dist": 210
+  },
+  "advance": 3
+ },
+ "s11-cameras": {
+  "cam": "flyby",
+  "hour": 16,
+  "sea": 3,
+  "speed": 22,
+  "advance": 8
+ },
+ "s12-angled": {
+  "cam": "orbit",
+  "hour": 12,
+  "sea": 1,
+  "speed": 14,
+  "view": {
+   "az": -0.2,
+   "el": 1.1,
+   "dist": 170
+  },
+  "advance": 3,
+  "hideHint": true
+ },
+ "s13-cat": {
+  "cam": "chase",
+  "start": "cat",
+  "ac": {
+   "thr": 1,
+   "rpm": 1
+  },
+  "keys": [
+   " "
+  ],
+  "hour": 9,
+  "sea": 3,
+  "speed": 24,
+  "advance": 1.4
+ },
+ "s14-sound": {
+  "cam": "deck",
+  "hour": 7,
+  "sea": 2,
+  "speed": 18,
+  "advance": 3
+ },
+ "s15-ball": {
+  "cam": "cockpit",
+  "start": "approach",
+  "hour": 15.5,
+  "sea": 3,
+  "speed": 22,
+  "advance": 24
+ },
+ "s16-trap": {
+  "cam": "chase",
+  "start": "approach",
+  "hour": 16.5,
+  "sea": 3,
+  "speed": 22,
+  "advance": 28
+ },
+ "s17-wires": {
+  "cam": "island",
+  "start": "approach",
+  "hour": 14,
+  "sea": 2,
+  "speed": 22,
+  "advance": 30
+ },
+ "s18-testing": {
+  "cam": "chase",
+  "start": "approach",
+  "hour": 17.25,
+  "sea": 3,
+  "speed": 22,
+  "advance": 18
+ },
+ "s19-rough": {
+  "cam": "orbit",
+  "hour": 9.5,
+  "sea": 6,
+  "speed": 24,
+  "view": {
+   "az": -2.4,
+   "el": 0.06,
+   "dist": 150
+  },
+  "advance": 14
+ },
+ "s20-tutorial": {
+  "cam": "chase",
+  "lesson": 0,
+  "hour": 15.5,
+  "sea": 3,
+  "speed": 22,
+  "advance": 2
+ },
+ "s21-1977": {
+  "cam": "orbit",
+  "hour": 16.75,
+  "sea": 2,
+  "speed": 18,
+  "view": {
+   "az": -2.0,
+   "el": 0.1,
+   "dist": 260
+  },
+  "advance": 3
+ },
+ "s22-catapult": {
+  "cam": "deck",
+  "hour": 12,
+  "sea": 2,
+  "speed": 22,
+  "advance": 3
+ },
+ "s23-time": {
+  "cam": "orbit",
+  "hour": 5.75,
+  "sea": 2,
+  "speed": 18,
+  "view": {
+   "az": -1.0,
+   "el": 0.12,
+   "dist": 300
+  },
+  "advance": 3
+ },
+ "s24-hud": {
+  "cam": "cockpit",
+  "start": "approach",
+  "hour": 13,
+  "sea": 3,
+  "speed": 22,
+  "advance": 14
+ },
+ "s25-roadmap": {
+  "cam": "flyby",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "advance": 14
+ },
+ "s26-eras": {
+  "cam": "orbit",
+  "hour": 8,
+  "sea": 3,
+  "speed": 20,
+  "view": {
+   "az": 2.2,
+   "el": 0.18,
+   "dist": 280
+  },
+  "advance": 4
+ },
+ "s27-mistakes": {
+  "cam": "chase",
+  "start": "approach",
+  "hour": 12,
+  "sea": 5,
+  "speed": 24,
+  "advance": 26
+ },
+ "s28-eject": {
+  "cam": "orbit",
+  "hour": 16.5,
+  "sea": 4,
+  "speed": 20,
+  "view": {
+   "az": -2.7,
+   "el": 0.15,
+   "dist": 320
+  },
+  "advance": 3
+ },
+ "s29-layout": {
+  "cam": "island",
+  "hour": 10,
+  "sea": 1,
+  "speed": 14,
+  "advance": 3
+ },
+ "s30-sourcing": {
+  "cam": "orbit",
+  "hour": 17.0,
+  "sea": 2,
+  "speed": 16,
+  "view": {
+   "az": -0.7,
+   "el": 0.1,
+   "dist": 330
+  },
+  "advance": 3
+ },
+ "s31-stats": {
+  "cam": "cockpit",
+  "start": "cat",
+  "ac": {
+   "thr": 0.5,
+   "rpm": 0.5
+  },
+  "hour": 16.5,
+  "sea": 3,
+  "speed": 22,
+  "advance": 2
+ },
+ "s32-behind": {
+  "cam": "orbit",
+  "hour": 15,
+  "sea": 4,
+  "speed": 20,
+  "view": {
+   "az": 0.4,
+   "el": 0.2,
+   "dist": 400
+  },
+  "advance": 5
+ }
+}

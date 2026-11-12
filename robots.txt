@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://ranairwing.com/sitemap.xml
