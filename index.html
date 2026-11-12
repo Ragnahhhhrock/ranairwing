@@ -61,7 +61,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><h1>HMAS MELBOURNE &middot; R21</h1><p>Phase 2 &middot; flyable A-4G Skyhawk &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee</a></p></div>
+<div id="title" class="panel"><h1>HMAS MELBOURNE &middot; R21</h1><p>Phase 2 &middot; flyable A-4G Skyhawk &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="hint">drag to look &middot; scroll to zoom &middot; keys 1&ndash;5 for cameras</div>
 <div id="read" class="panel">
@@ -1357,7 +1357,7 @@ ac.gear=true;ac.flap=0;ac.hook=ac.brake=false;animateParts(0,true);
 for(const [x,z,psi] of [[8.2,-62,.62],[8.2,-74,.62],[8.2,-86,.62]]){              // spare Skyhawks parked forward of the island
   for(const m of parts.crew)m.visible=false;const p=plane.clone(true);for(const m of parts.crew)m.visible=true;p.rotation.order='YXZ';p.position.set(x,DECK_Y+AC.gearH,z);p.rotation.set(AC.sit,psi,0);ship.add(p);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
-document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':'malgordon',link_url:a.href})));
+document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
 window.__sim={state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
   advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);stepAircraft(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
 requestAnimationFrame(frame);
