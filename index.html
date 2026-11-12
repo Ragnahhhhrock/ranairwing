@@ -1428,7 +1428,7 @@ function setCam(name){
   if(FLY[name])ac.snap=true;
   $('hint').textContent=FLY[name]?
     'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nR  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
-    'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nU tutorial \u00b7 R fly from the catapult \u00b7 T fly an approach';
+    'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nU tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach';
 }
 const tmp=new THREE.Vector3(),tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 function updateCamera(dt){
