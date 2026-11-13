@@ -1026,13 +1026,31 @@ let crewRig=null;                                  // the pilot sitting in the A
   const mTop=M(0xc2c7ca,{roughness:.55}),mWht=M(0xf0f0ea,{roughness:.5}),mGlass=M(0x14202b,{roughness:.15,metalness:.4}),
     mBlk=M(0x101113),mMetal=M(0x8a8f93,{metalness:.5,roughness:.5});
   const lathe=(pts,m)=>{const g=new THREE.LatheGeometry(pts.map(([r,z])=>new THREE.Vector2(r,z)),18);g.rotateX(Math.PI/2);return g;};
-  // fuselage: grey over white
-  const fg=lathe([[0.02,-6.1],[0.2,-5.7],[0.42,-4.9],[0.6,-3.9],[0.74,-2.6],[0.78,-1],[0.78,1.4],[0.7,3.2],[0.55,4.8],[0.44,5.9],[0.36,6.0]]);
-  fg.scale(1,1.12,1);
-  const fp=fg.attributes.position,fc=new Float32Array(fp.count*3);
-  for(let i=0;i<fp.count;i++){const top=fp.getY(i)>-.12;fc[i*3]=top?.76:.94;fc[i*3+1]=top?.78:.94;fc[i*3+2]=top?.79:.92;}
-  fg.setAttribute('color',new THREE.BufferAttribute(fc,3));fg.computeVertexNormals();
-  add(new THREE.Mesh(fg,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.05,side:THREE.DoubleSide})),0,0,0,plane);
+  // fuselage: radius stations -> monotone cubic in z, superellipse sections (rounder at nose and tail, fuller shoulders amidships), grey over white
+  const FST=[[-6.1,.02],[-6.0,.11],[-5.7,.22],[-4.9,.42],[-3.9,.6],[-2.6,.74],[-1,.78],[1.4,.78],[3.2,.7],[4.8,.55],[5.9,.44],[6.0,.36]];
+  const fusR=(()=>{const n=FST.length,h=[],d=[],m=[];
+    for(let i=0;i<n-1;i++){h[i]=FST[i+1][0]-FST[i][0];d[i]=(FST[i+1][1]-FST[i][1])/h[i];}
+    m[0]=d[0];m[n-1]=d[n-2];
+    for(let i=1;i<n-1;i++){if(d[i-1]*d[i]<=0)m[i]=0;else{const w1=2*h[i]+h[i-1],w2=h[i]+2*h[i-1];m[i]=(w1+w2)/(w1/d[i-1]+w2/d[i]);}}
+    return z=>{if(z<=FST[0][0])return FST[0][1];if(z>=FST[n-1][0])return FST[n-1][1];
+      let i=0;while(z>FST[i+1][0])i++;
+      const t=(z-FST[i][0])/h[i],t2=t*t,t3=t2*t;
+      return (2*t3-3*t2+1)*FST[i][1]+(t3-2*t2+t)*h[i]*m[i]+(-2*t3+3*t2)*FST[i+1][1]+(t3-t2)*h[i]*m[i+1];};})();
+  const cl01=v=>Math.min(1,Math.max(0,v));
+  const fusN=z=>2.05+.55*cl01((z+5)/2.2)*cl01((6-z)/2.5);                         // section squareness (2 = ellipse)
+  const fusX=(z,y)=>{const r=fusR(z),n=fusN(z);return r*Math.pow(Math.max(0,1-Math.pow(Math.min(1,Math.abs(y)/(1.12*r)),n)),1/n);};   // half-width at height y
+  const sp=(c,n)=>Math.sign(c)*Math.pow(Math.abs(c),2/n);
+  const sm5=t=>{t=cl01(t);return t*t*t*(t*(t*6-15)+10);};                          // smootherstep: zero slope at both ends
+  const loftRings=(zs,ring,colour)=>{                                             // ring(z,angle) -> [x,y]; stitches rings into one smooth skin
+    const NZ=zs.length,NR=36,pos=[],col=[],idx=[];
+    zs.forEach(z=>{for(let j=0;j<NR;j++){const [x,y]=ring(z,j/NR*Math.PI*2),c=colour(y);pos.push(x,y,z);col.push(c[0],c[1],c[2]);}});
+    for(let i=0;i<NZ-1;i++)for(let j=0;j<NR;j++){const a=i*NR+j,b=i*NR+(j+1)%NR,c=a+NR,d=b+NR;idx.push(a,b,c,b,d,c);}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();return g;};
+  const mSkin=new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.05,side:THREE.DoubleSide});
+  const GREY=[.76,.78,.79],WHITE=[.94,.94,.92];
+  add(new THREE.Mesh(loftRings(Array.from({length:81},(_,i)=>-6.1+12.1*i/80),
+    (z,a)=>{const r=fusR(z),n=fusN(z);return [r*sp(Math.cos(a),n),1.12*r*sp(Math.sin(a),n)];},y=>y>-.12?GREY:WHITE),mSkin),0,0,0,plane);
   const can=add(new THREE.Mesh(new THREE.SphereGeometry(1,16,12),new THREE.MeshStandardMaterial({color:0x7fa6bd,roughness:.1,metalness:.3,transparent:true,opacity:.42,depthWrite:false})),0,.78,-2.75,plane);
   can.scale.set(.42,.6,1.3);can.castShadow=false;
   parts.canopy=can;
@@ -1040,12 +1058,13 @@ let crewRig=null;                                  // the pilot sitting in the A
   buildSeat(crewG,false);crewRig=buildPilot(crewG);setPose(crewRig,POSES.seat);
   parts.crew=[crewG];parts.crewRig=crewRig;parts.ejectAt=[0,.45,-2.62];
   const glare=box(.34,.03,1.5,0,.585,-4.3,mBlk,plane);glare.rotation.x=-.15;        // anti-glare panel
-  box(.5,.32,4.6,0,.82,.2,mTop,plane);                                             // spine
+  (function(){ // avionics hump: rises behind the canopy and fades back into the top of the fuselage
+    const bump=z=>sm5((z+1.9)/1.0)*(1-sm5((z-.4)/2.3));
+    add(new THREE.Mesh(loftRings(Array.from({length:41},(_,i)=>-1.9+4.6*i/40),(z,a)=>{
+      const b=bump(z),k=Math.pow(b,.6),ry=.2*k,cy=1.12*fusR(z)+.16*b-ry;return [.27*k*sp(Math.cos(a),2.4),cy+ry*sp(Math.sin(a),2.4)];},()=>GREY),mSkin),0,0,0,plane);
+  })();
   (function(){ // engine intakes: oval lip that grows out of the fuselage side and fades back into the skin (no hard edges)
-    const prof=[[-2.6,.74],[-1,.78],[1.4,.78]],Y0=.3,Z0=-2.26,Z1=-.3,NS=16,NR=28;
-    const hull=z=>{let r=prof[prof.length-1][1];for(let i=0;i<prof.length-1;i++){const[a,ra]=prof[i],[b,rb]=prof[i+1];if(z<=b){r=ra+(rb-ra)*Math.max(0,(z-a)/(b-a));break;}}
-      return Math.sqrt(Math.max(.01,r*r-(Y0/1.12)*(Y0/1.12)));};                      // fuselage half-width at intake height
-    const sm=t=>{t=Math.min(1,Math.max(0,t));return t*t*t*(t*(t*6-15)+10);};          // smootherstep: zero slope at both ends
+    const Y0=.3,Z0=-2.26,Z1=-.3,NS=16,NR=28,hull=z=>fusX(z,Y0),sm=sm5;                // hull = fuselage half-width at intake height
     for(const s of [1,-1]){
       const pos=[],idx=[];
       for(let i=0;i<NS;i++){
@@ -1060,13 +1079,22 @@ let crewRig=null;                                  // the pilot sitting in the A
     }
   })();
   const ex=cyl(.34,.34,.08,0,0,6.02,mBlk,14,plane);ex.rotation.x=Math.PI/2;
-  const flat=(pts,d,m,y)=>{const g=new THREE.ExtrudeGeometry(planShape(pts),{depth:d,bevelEnabled:false});g.rotateX(-Math.PI/2);return add(new THREE.Mesh(g,m),0,y,0,plane);};
-  flat([[0,-1.9],[4.19,1.6],[4.19,2.7],[0,2.5],[-4.19,2.7],[-4.19,1.6]],.14,mTop,-.52);   // delta wing
-  flat([[0,-1.85],[4.15,1.62],[4.15,2.68],[0,2.48],[-4.15,2.68],[-4.15,1.62]],.03,mWht,-.55); // white underside
-  flat([[0,3.7],[1.7,5.3],[1.7,5.85],[0,5.7],[-1.7,5.85],[-1.7,5.3]],.08,mTop,1.05);       // tailplane
+  const airfoil=x=>(.2969*Math.sqrt(x)-.126*x-.3516*x*x+.2843*x*x*x-.1036*x*x*x*x)/.0998;   // NACA 00xx thickness shape, 1.0 at max thickness
+  const loft=st=>{ // st: stations across the span {x,zle,zte,y,t}; rounded leading edge, tapering thickness, grey top / white underside, closed tips
+    const NC=14,RL=2*NC,pos=[],col=[],idx=[];
+    st.forEach(q=>{for(let i=0;i<RL;i++){const k=i<=NC?i:2*NC-i,up=i<=NC,x=(1-Math.cos(Math.PI*k/NC))/2,h=q.t/2*airfoil(x)*(up?1:-1),c=up?GREY:WHITE;
+      pos.push(q.x,q.y+h,q.zle+(q.zte-q.zle)*x);col.push(c[0],c[1],c[2]);}});
+    for(let s=0;s<st.length-1;s++)for(let i=0;i<RL;i++){const a=s*RL+i,b=s*RL+(i+1)%RL,c=a+RL,d=b+RL;idx.push(a,b,c,b,d,c);}
+    for(const s of [0,st.length-1]){const q=st[s],o=pos.length/3;pos.push(q.x,q.y,(q.zle+q.zte)/2);col.push(GREY[0],GREY[1],GREY[2]);   // tip caps
+      for(let i=0;i<RL;i++)idx.push(o,s*RL+i,s*RL+(i+1)%RL);}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
+    return add(new THREE.Mesh(g,mSkin),0,0,0,plane);};
+  loft([{x:-4.19,zle:1.6,zte:2.7,y:-.45,t:.08},{x:0,zle:-1.9,zte:2.5,y:-.45,t:.26},{x:4.19,zle:1.6,zte:2.7,y:-.45,t:.08}]);   // delta wing
+  loft([{x:-1.7,zle:5.3,zte:5.85,y:1.09,t:.05},{x:0,zle:3.7,zte:5.7,y:1.09,t:.14},{x:1.7,zle:5.3,zte:5.85,y:1.09,t:.05}]);       // tailplane
   (function(){ // fin
     const s=new THREE.Shape();[[2.7,.6],[5.0,3.35],[5.9,3.35],[6.0,.6]].forEach(([z,y],i)=>i?s.lineTo(z,y):s.moveTo(z,y));s.closePath();
-    const g=new THREE.ExtrudeGeometry(s,{depth:.12,bevelEnabled:false});g.translate(0,0,-.06);g.rotateY(-Math.PI/2);
+    const g=new THREE.ExtrudeGeometry(s,{depth:.06,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:3});g.translate(0,0,-.03);g.rotateY(-Math.PI/2);
     add(new THREE.Mesh(g,mTop),0,0,0,plane);
     const cv=document.createElement('canvas');cv.width=64;cv.height=160;const c=cv.getContext('2d');   // checkerboard rudder
     for(let r=0;r<10;r++)for(let q=0;q<4;q++){c.fillStyle=(r+q)%2?'#b3261e':'#f2f0ea';c.fillRect(q*16,r*16,16,16);}
@@ -1080,7 +1108,7 @@ let crewRig=null;                                  // the pilot sitting in the A
     c.fillStyle='#b3261e';c.beginPath();c.ellipse(32,33,11,7,-.3,0,7);c.fill();
     const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
     const m=new THREE.MeshStandardMaterial({map:tx,transparent:true,alphaTest:.5,roughness:.6,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
-    for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(1,1),m);d.rotation.x=-Math.PI/2;d.position.set(sd*2.7,-.375,1.75);plane.add(d);}
+    for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(1,1),m);d.rotation.x=-Math.PI/2;d.position.set(sd*2.7,-.392,1.75);plane.add(d);}
   })();
   strut(.55,-.1,-3.2,.62,-.05,-6.7,.05,mMetal,plane);                              // refuelling probe
   for(const s of [1,-1]){                                                          // drop tanks
@@ -1107,7 +1135,7 @@ let crewRig=null;                                  // the pilot sitting in the A
       const d=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);d.rotation.y=sd*(Math.PI/2+tilt);d.position.set(sd*x,y,z);plane.add(d);}
   })();
   for(const sd of [1,-1]){                                                          // split flaps under the inboard wing
-    const f=new THREE.Group();f.position.set(sd*1.75,-.56,1.95);plane.add(f);box(1.9,.03,.75,0,0,.375,mWht,f);parts.flaps.push(f);
+    const f=new THREE.Group();f.position.set(sd*1.75,-.5,1.95);plane.add(f);box(1.9,.03,.75,0,0,.375,mWht,f);parts.flaps.push(f);
     const b=new THREE.Group();b.position.set(sd*.7,-.05,3.3);plane.add(b);          // fuselage speedbrakes
     box(.04,.55,1.05,0,0,.525,mTop,b);const red=box(.02,.5,1,-sd*.03,0,.525,M(0xa3322a),b);parts.brakes.push({g:b,sd,red});
   }
