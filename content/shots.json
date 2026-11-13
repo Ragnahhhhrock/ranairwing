@@ -380,5 +380,12 @@
    "x"
   ],
   "advance": 4
+ },
+ "s35-menu-off": {
+  "cam": "orbit",
+  "hour": 15,
+  "sea": 3,
+  "speed": 20,
+  "uiOff": true
  }
 }

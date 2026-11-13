@@ -41,7 +41,7 @@ gtag('config','G-H0ZE9XML6B');
   input[type=range]{width:100%;accent-color:#e8c547;margin:0}
   #hint{position:fixed;top:14px;right:14px;color:rgba(240,245,248,.9);text-shadow:0 1px 3px rgba(0,0,0,.8);font-size:11px;text-align:right;pointer-events:none}
   #err{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;text-align:center}
-  @media (max-width:640px){#hint{display:none}#ctl{width:auto;left:12px;bottom:12px}#read{bottom:auto;top:64px}}
+  @media (max-width:640px){#hint{display:none}#ctl{width:auto;left:12px;bottom:12px}#read{bottom:auto;top:178px}#title{max-width:calc(100vw - 92px);box-sizing:border-box}}
   #hud{position:fixed;inset:0;pointer-events:none}
   #fly{display:flex;gap:4px;margin-bottom:10px}
   #fly button{flex:1 1 0;padding:5px 2px}
@@ -56,6 +56,11 @@ gtag('config','G-H0ZE9XML6B');
   kbd{font:inherit;font-weight:600;color:#10202c;background:#e8c547;border-radius:3px;padding:1px 6px}
   #bTut{width:100%;margin-bottom:4px;border-color:#e8c547;color:#e8c547}
   #bSnd{width:100%;margin-bottom:4px}
+  #bMenu{position:fixed;top:12px;right:12px;z-index:5;flex:none;min-width:40px;min-height:40px;padding:6px 10px;
+    background:rgba(8,18,28,.62);border-color:rgba(200,220,235,.18);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  #bMenu.on{background:#e8c547;color:#10202c;border-color:#e8c547}
+  #hint{top:60px}
+  body.ui-off .panel,body.ui-off #hint{display:none!important}
 </style>
 </head>
 <body>
@@ -94,6 +99,7 @@ gtag('config','G-H0ZE9XML6B');
   <label>Ship speed<input id="sSpd" type="range" min="0" max="24" step="1" value="20"><output id="oSpd"></output></label>
   <label>Time<input id="sTime" type="range" min="5.5" max="18.5" step="0.25" value="15.5"><output id="oTime"></output></label>
 </div>
+<button id="bMenu" type="button" aria-label="Show or hide menu and readouts (P)" aria-pressed="false">&#9776; Menu</button>
 <div id="err">This sim needs WebGL, which isn't available in this browser.</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -1789,7 +1795,7 @@ function setCam(name){
   if(name==='chase')resetChase();
   $('hint').textContent=FLY[name]?
     'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nchase cam: drag orbit \u00b7 shift/right-drag pan \u00b7 scroll zoom \u00b7 double-click reset\nN  switch aircraft (Skyhawk / Tracker)     R  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
-    'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nU tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach\nO orbit the escorts';
+    'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nP menu on/off \u00b7 U tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach\nO orbit the escorts';
 }
 const tmp=new THREE.Vector3(),tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 function updateCamera(dt){
@@ -1871,6 +1877,17 @@ window.addEventListener('keydown',e=>{
 });
 window.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
 window.addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
+/* menu overlay on/off: hides every panel and the key hints so the view is clear (button or P) */
+function setUi(off,src){
+  document.body.classList.toggle('ui-off',off);
+  const b=$('bMenu');b.classList.toggle('on',off);b.setAttribute('aria-pressed',off?'true':'false');
+  b.innerHTML=off?'&#9776; Show':'&#9776; Hide';
+  try{localStorage.setItem('ranUiOff',off?'1':'0');}catch(e){}
+  if(src)track('menu_toggle',{hidden:off,source:src});
+}
+$('bMenu').addEventListener('click',e=>{setUi(!document.body.classList.contains('ui-off'),'button');e.currentTarget.blur();});
+window.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='p'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.repeat)setUi(!document.body.classList.contains('ui-off'),'key');});
+{let off=false;try{off=localStorage.getItem('ranUiOff')==='1';}catch(e){}setUi(off,null);}
 $('bSnd').addEventListener('click',e=>{setMuted(!muted);e.target.blur();});
 window.addEventListener('pointerdown',initAudio);window.addEventListener('keydown',initAudio);
 $('bTut').addEventListener('click',e=>{startLesson(0);e.target.blur();});

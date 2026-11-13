@@ -32,6 +32,7 @@ SETUP = """(r) => {
   for (const k of (r.keys || [])) S.pressKey(k);
   if (r.advance) S.advance(r.advance);
   if (r.hideHint) $('hint').style.visibility = 'hidden';
+  if (r.uiOff) $('bMenu').click();
   if (r.hidePanels) document.querySelectorAll('.panel').forEach(p => p.style.display = 'none');
 }"""
 
