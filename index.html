@@ -61,7 +61,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><h1>HMAS MELBOURNE &middot; R21</h1><p>Phase 2 &middot; flyable A-4G Skyhawk &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more menu"><a href="about.html">About</a> &middot; <a href="blog/">Blog</a></p><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee</a></p></div>
+<div id="title" class="panel"><h1>HMAS MELBOURNE &middot; R21</h1><p>Phase 2 &middot; flyable A-4G Skyhawk &middot; task group &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more menu"><a href="about.html">About</a> &middot; <a href="blog/">Blog</a></p><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="hint">drag to look &middot; scroll to zoom &middot; keys 1&ndash;5 for cameras</div>
 <div id="read" class="panel">
@@ -202,7 +202,7 @@ function oceanGeometry(n,R){
 }
 const oceanU=Object.assign({
   uCenter:{value:new THREE.Vector2()},uWave:{value:uWave},uWave2:{value:uWave2},
-  uShip:{value:new THREE.Vector2()},uSpd:{value:1},uChop:{value:.5},uCaps:{value:0},uH:{value:1}
+  uShip:{value:new THREE.Vector2()},uEsc:{value:[new THREE.Vector4(0,9e5,1,1),new THREE.Vector4(0,9e5,1,1),new THREE.Vector4(0,9e5,1,1)]},uSpd:{value:1},uChop:{value:.5},uCaps:{value:0},uH:{value:1}
 },skyUniforms);
 const ocean=new THREE.Mesh(oceanGeometry(448,16000),new THREE.ShaderMaterial({
   uniforms:oceanU,fog:false,
@@ -225,7 +225,7 @@ const ocean=new THREE.Mesh(oceanGeometry(448,16000),new THREE.ShaderMaterial({
   }`,
   fragmentShader:GLSL_COMMON+`
   uniform vec4 uWave[6];uniform vec2 uWave2[6];
-  uniform vec2 uShip;uniform float uSpd,uChop,uCaps,uH;
+  uniform vec2 uShip;uniform vec4 uEsc[3];uniform float uSpd,uChop,uCaps,uH;
   varying vec3 vPos;
   void main(){
     vec2 P=vPos.xz;
@@ -263,6 +263,16 @@ const ocean=new THREE.Mesh(oceanGeometry(448,16000),new THREE.ShaderMaterial({
     float kel=smoothstep(2.5+0.05*b,0.0,arm)*step(0.0,b)*exp(-b/170.0)*smoothstep(0.35,0.6,fn+0.25*exp(-b/90.0));
     float side=smoothstep(19.0,12.0,lat)*smoothstep(-108.0,-90.0,along)*smoothstep(125.0,95.0,along);
     float foam=clamp((turb*1.1+kel*0.7+side*0.75)*uSpd*(0.25+1.5*fn),0.0,1.0);
+    for(int i=0;i<3;i++){ // escort wakes
+      vec4 e=uEsc[i];vec2 r=P-e.xy;float al=r.y,la=abs(r.x),hl=e.z,hb=e.w;
+      float a2=al-hl*0.85,w2=hb*1.2+0.04*max(a2,0.0);
+      float t2=smoothstep(w2,w2*0.25,la)*smoothstep(-hl*0.4,4.0,a2)*exp(-max(a2,0.0)/420.0);
+      float b2=al+hl,arm2=abs(la-(hb*0.4+0.34*max(b2,0.0)));
+      float k2=smoothstep(1.8+0.045*b2,0.0,arm2)*step(0.0,b2)*exp(-b2/120.0)*smoothstep(0.35,0.6,fn+0.25*exp(-b2/70.0));
+      float s2=smoothstep(hb+5.0,hb,la)*smoothstep(-hl-4.0,-hl*0.75,al)*smoothstep(hl*1.15,hl*0.8,al);
+      turb=max(turb,t2);
+      foam=max(foam,clamp((t2*1.1+k2*0.7+s2*0.6)*uSpd*(0.25+1.5*fn),0.0,1.0));
+    }
     float caps=smoothstep(0.62,0.9,h/(uH+0.01)*0.45+fbm(P*0.11)*0.75)*uCaps;
     foam=max(foam,caps*df*2.0);
     vec3 lightC=(uHorizon*0.65+uSunColor*0.3+vec3(0.12))*(0.3+0.7*uDay);
@@ -731,6 +741,153 @@ const life=(function(){
   return {update,lifts,liftDown,get towZ(){return towZ;},get towX(){return towX;},guard:guard.g};
 })();
 
+/* ---------- task group escorts (as sailed with Melbourne in 1980) ---------- */
+const escorts=[];
+const _eL=new THREE.Vector3();
+function escortHull(L,B,T,deck,parent){ // lofted hull, bow at -Z; deck(t) is deck height at fraction t from bow
+  const NS=48,pos=[],col=[],idx=[],RED=[.36,.10,.08],BLK=[.05,.05,.055],GRY=[.498,.533,.557],DCK=[.40,.42,.44];
+  const rings=[];
+  for(let i=0;i<=NS;i++){
+    const t=i/NS,H=deck(t);
+    const f=t<.4?Math.pow(Math.sin(t/.4*Math.PI/2),.85):t>.82?1-.22*Math.pow((t-.82)/.18,2):1;
+    const bw=Math.max(B/2*f,.04),bt=Math.max(B/2*(t<.25?Math.pow(Math.sin(t/.25*Math.PI/2),.6):f),.25,bw);
+    const dr=T*(t<.05?.5+.5*t/.05:t>.9?1-.55*(t-.9)/.1:1);
+    const prof=[[0,-dr,RED],[.55*bw,-dr*.96,RED],[.92*bw,-dr*.6,RED],[bw,-dr*.25,RED],[bw,-.25,RED],[bw,-.25,BLK],[bw,.6,BLK],
+      [bw,.6,GRY],[bw+(bt-bw)*.5,H*.6,GRY],[bt,H,GRY],[bt,H,DCK]];
+    const ring=[];
+    for(const s of [1,-1]){const r=[];
+      for(const [x,y,c] of prof){let z=(t-.5)*L;if(t<.1)z+=Math.pow(1-t/.1,2)*(H-y)/(H+T)*L*.045;
+        r.push(pos.length/3);pos.push(s*x,y,z);col.push(c[0],c[1],c[2]);}
+      ring.push(r);}
+    rings.push(ring);
+  }
+  for(let i=0;i<NS;i++){
+    for(let s=0;s<2;s++){const A=rings[i][s],Bq=rings[i+1][s];
+      for(let j=0;j<A.length-2;j++)idx.push(A[j],Bq[j],A[j+1],A[j+1],Bq[j],Bq[j+1]);}
+    const n=rings[i][0].length-1;idx.push(rings[i][0][n],rings[i][1][n],rings[i+1][0][n],rings[i+1][0][n],rings[i][1][n],rings[i+1][1][n]);
+  }
+  const S=rings[NS][0],Pt=rings[NS][1];
+  for(let j=0;j<S.length-2;j++)idx.push(S[j],Pt[j],S[j+1],S[j+1],Pt[j],Pt[j+1]);
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+  g.setIndex(idx);g.computeVertexNormals();
+  return add(new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.8,metalness:.05,side:THREE.DoubleSide})),0,0,0,parent);
+}
+function pennant(txt,parent,x,y,z,h){ // white hull number with a dark shadow, both sides of the bow
+  const cv=document.createElement('canvas');cv.width=128*txt.length;cv.height=160;const c=cv.getContext('2d');
+  c.font='bold 140px Arial,Helvetica,sans-serif';c.textAlign='center';c.textBaseline='middle';
+  c.fillStyle='#16191c';c.fillText(txt,cv.width/2+6,90);c.fillStyle='#ecece6';c.fillText(txt,cv.width/2,84);
+  const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
+  const m=new THREE.MeshStandardMaterial({map:tx,transparent:true,alphaTest:.4,roughness:.8,side:THREE.DoubleSide});
+  for(const s of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(h*cv.width/cv.height,h),m);d.rotation.y=s*Math.PI/2;d.position.set(s*x,y,z);parent.add(d);}
+}
+function latticeMast(p,z,y0,y1,w,m){ // four-legged tapering mast
+  const hw=y=>w-(y-y0)/(y1-y0)*w*.6;
+  for(const [sx,sz] of [[1,1],[1,-1],[-1,1],[-1,-1]])strut(sx*w,y0,z+sz*w,sx*hw(y1),y1,z+sz*hw(y1),.09,m,p);
+  for(let y=y0+2.5;y<y1;y+=2.5){const a=hw(y);strut(-a,y,z-a,a,y,z+a,.04,m,p);strut(a,y,z-a,-a,y,z+a,.04,m,p);}
+}
+function makeEscort(o){
+  const g=new THREE.Group();g.rotation.order='YXZ';scene.add(g);
+  const dy=z=>o.deck(z/o.L+.5);
+  escortHull(o.L,o.B,o.T,o.deck,g);
+  const e={g,name:o.name,num:o.num,L:o.L,B:o.B,deck:o.deck,ox:o.ox,oz:o.oz,ph:o.ph,rk:o.rk,rp:o.rp,spin:[],boxes:[],
+    mot:{heave:0,vh:0,pitch:0,vp:0,roll:0,vr:0}};
+  o.build(g,dy,e);
+  // hull number about an eighth of the way aft; place it just off the flared bow
+  const t=.12,zz=(t-.5)*o.L,bt=o.B/2*Math.pow(Math.sin(t/.25*Math.PI/2),.6);
+  pennant(o.num,g,bt+.12,o.deck(t)*.62,zz,o.deck(t)*.45);
+  g.updateMatrixWorld(true);
+  g.children.forEach((c,i)=>{if(i&&c.isMesh&&c.geometry.type==='BoxGeometry')e.boxes.push(new THREE.Box3().setFromObject(c).expandByScalar(.5));});
+  e.boxes.push(...(o.extra||[]).map(([x0,y0,z0,x1,y1,z1])=>new THREE.Box3(new THREE.Vector3(x0,y0,z0),new THREE.Vector3(x1,y1,z1))));
+  escorts.push(e);return e;
+}
+const mEsc=M(0x7d868c),mEscD=M(0x5e666c);
+const dish=(r,x,y,z,ry,p)=>{const d=cyl(r,r,.25,x,y,z,mWhite,14,p);d.rotation.set(Math.PI/2,ry,0);return d;};
+
+// HMAS Perth (DDG 38): Perth (Charles F. Adams) class guided missile destroyer, screening ahead on the starboard bow
+makeEscort({name:'HMAS Perth',num:'38',L:134,B:14.3,T:4.6,ox:900,oz:-2400,ph:0,rk:1.5,rp:8,
+  deck:t=>6.6-2.3*t+(t<.15?1.4*Math.pow(1-t/.15,2):0),
+  extra:[[-1,0,-18,1,32,-12],[-1,0,-1,1,26,5]],
+  build(g,dy,e){
+    box(3.8,2.6,5.6,0,dy(-42)+1.3,-42,mEsc,g);strut(0,dy(-42)+1.7,-44.5,0,dy(-42)+2.1,-51.5,.17,mDark,g);   // 5in Mk 42 forward
+    box(9.5,3,17,0,dy(-24)+1.5,-24,mEsc,g);box(8.4,2.6,9,0,dy(-24)+4.3,-26,mEsc,g);box(8.5,.7,9.1,0,dy(-24)+4.9,-26,mDark,g);
+    box(5.5,2,5,0,dy(-24)+6.6,-26.5,mEsc,g);
+    box(8.5,2.6,46,0,dy(0)+1.3,4,mEsc,g);                                     // long midships deckhouse
+    latticeMast(g,-15,dy(-15)+7.6,dy(-15)+26,1.5,mMast);
+    const r1=new THREE.Group();r1.position.set(0,dy(-15)+26.6,-15);g.add(r1);box(7,1.3,.25,0,0,0,mMast,r1);e.spin.push([r1,1.6]);
+    for(const z of [-6,12]){box(3.2,6.4,5.2,0,dy(z)+5.8,z,mEsc,g);box(3.3,.7,5.3,0,dy(z)+9.2,z,mBlack,g);}   // the two stacks
+    latticeMast(g,2,dy(2)+2.6,dy(2)+17,1.3,mMast);
+    const r2=new THREE.Group();r2.position.set(0,dy(2)+18.6,2);g.add(r2);const p52=box(4.2,4.2,.3,0,0,0,mMast,r2);p52.rotation.x=-.3;e.spin.push([r2,1.1]);
+    box(2,1,4.5,0,dy(4)+3.1,4,mEscD,g);                                       // Ikara launcher between the stacks
+    box(7,2.4,10,0,dy(28)+1.2,28,mEsc,g);
+    dish(1.2,0,dy(24)+3.8,24,0,g);dish(1.2,0,dy(31)+3.8,31,Math.PI,g);       // SPG-51 directors
+    cyl(1.6,2,1.4,0,dy(39)+.7,39,mEscD,12,g);box(.7,.7,3.4,0,dy(39)+1.9,38.5,mEsc,g);   // Mk 13 launcher
+    box(3.8,2.6,5.6,0,dy(52)+1.3,52,mEsc,g);strut(0,dy(52)+1.7,54.5,0,dy(52)+2.1,61.5,.17,mDark,g);           // 5in Mk 42 aft
+  }});
+
+// HMAS Derwent (DE 49): River class destroyer escort, plane guard on the carrier's port quarter
+makeEscort({name:'HMAS Derwent',num:'49',L:112.8,B:12.5,T:4,ox:-450,oz:1500,ph:2.1,rk:1.8,rp:7,
+  deck:t=>6.4-2.2*THREE.MathUtils.smoothstep(t,.5,.56)+(t<.15?1.1*Math.pow(1-t/.15,2):0),
+  extra:[[-1,0,-12,1,30,-6]],
+  build(g,dy,e){
+    box(4.2,2.4,5.4,0,dy(-31)+1.2,-31,mEsc,g);                                  // twin 4.5in turret
+    for(const x of [-.6,.6])strut(x,dy(-31)+1.5,-33.6,x,dy(-31)+1.8,-39.5,.14,mDark,g);
+    box(9,3,13,0,dy(-18)+1.5,-18,mEsc,g);box(8,2.5,7,0,dy(-18)+4.2,-20,mEsc,g);box(8.1,.7,7.1,0,dy(-18)+4.8,-20,mDark,g);
+    box(5,1.6,4,0,dy(-18)+6.3,-20.5,mEsc,g);
+    latticeMast(g,-9,dy(-9)+3,dy(-9)+23,1.3,mMast);
+    const r1=new THREE.Group();r1.position.set(0,dy(-9)+23.6,-9);g.add(r1);box(5.5,1.2,.25,0,0,0,mMast,r1);e.spin.push([r1,1.9]);
+    box(8,2.4,30,0,dy(2)+1.2,3,mEsc,g);
+    const f=cyl(1.7,2.2,7,0,dy(4)+5.6,4,mEsc,14,g);f.scale.z=1.6;f.rotation.x=.12;    // raked funnel
+    const fc=cyl(1.65,1.7,.8,0,dy(4)+9.2,4.45,mBlack,14,g);fc.scale.z=1.6;fc.rotation.x=.12;
+    box(5,2.2,8,0,dy(26)+1.1,26,mEsc,g);box(2.2,1.4,2.2,0,dy(26)+2.9,28,mEscD,g);   // Seacat launcher aft
+    box(5,.4,9,0,dy(42)+.2,42,mDark,g);                                         // Ikara / Limbo well
+  }});
+
+// HMAS Supply (AO 195): Tide class fleet oiler, keeping station on the starboard beam
+makeEscort({name:'HMAS Supply',num:'195',L:177.6,B:21.6,T:8,ox:2000,oz:250,ph:4.4,rk:1.1,rp:11,
+  deck:t=>8+(t<.15?2.4*Math.pow(1-t/.15,2):0)+(t>.85?.9*(t-.85)/.15:0),
+  extra:[[-1,0,-34,1,30,-28]],
+  build(g,dy,e){
+    box(12,2.6,10,0,dy(-80)+1.3,-78,mEsc,g);                                    // forecastle
+    box(17,4,16,0,dy(-30)+2,-30,mEsc,g);box(15,3,12,0,dy(-30)+5.5,-31,mEsc,g);box(15.1,.8,12.1,0,dy(-30)+6.4,-31,mDark,g);
+    box(12,2.4,7,0,dy(-30)+8.2,-32,mEsc,g);
+    latticeMast(g,-31,dy(-31)+9.4,dy(-31)+22,1,mMast);
+    const r1=new THREE.Group();r1.position.set(0,dy(-31)+22.6,-31);g.add(r1);box(4.5,1,.25,0,0,0,mMast,r1);e.spin.push([r1,2.2]);
+    for(const z of [-58,-6,30]){                                                 // replenishment kingposts
+      for(const x of [-4.5,4.5]){strut(x,dy(z),z,x,dy(z)+15,z,.35,mEsc,g);strut(x,dy(z)+2,z,x*2.1,dy(z)+11,z+9,.15,mEscD,g);}
+      box(9.6,.6,.6,0,dy(z)+15,z,mEsc,g);}
+    for(const x of [-2,2])strut(x,dy(0)+.8,-70,x,dy(0)+.8,48,.3,mEscD,g);       // cargo pipe runs
+    box(19,5,30,0,dy(64)+2.5,64,mEsc,g);box(16,3,18,0,dy(64)+6.5,61,mEsc,g);
+    const f=cyl(2.6,3.1,8,0,dy(68)+12,68,mEsc,16,g);f.scale.z=1.4;
+    const fc=cyl(2.62,2.6,1,0,dy(68)+16.3,68,mBlack,16,g);fc.scale.z=1.4;
+    for(const s of [1,-1]){const b=add(new THREE.Mesh(new THREE.SphereGeometry(1,12,8),mWhite),s*10.2,dy(56)+6.2,56,g);b.scale.set(1,.8,4);}
+  }});
+
+function updateEscorts(dt){
+  const t=state.t;
+  escorts.forEach((e,i)=>{
+    const x=ship.position.x+e.ox+Math.sin(t*.031+e.ph)*12,z=ship.position.z+e.oz+Math.sin(t*.023+e.ph*2)*20,h2=e.L*.4,m=e.mot;
+    const hb=waveHeight(x,z-h2,t),hs=waveHeight(x,z+h2,t),hm=waveHeight(x,z,t);
+    const tPitch=Math.atan2(hb-hs,e.L*.8),tRoll=Math.atan2(waveHeight(x+e.B/2,z,t)-waveHeight(x-e.B/2,z,t),e.B)*e.rk;
+    [m.heave,m.vh]=spring(m.heave,m.vh,(hb+hs+hm)/3*.9,e.L/22,.6,dt);
+    [m.pitch,m.vp]=spring(m.pitch,m.vp,tPitch,e.L/24,.55,dt);
+    [m.roll,m.vr]=spring(m.roll,m.vr,tRoll,e.rp,.3,dt);
+    e.g.position.set(x,m.heave,z);e.g.rotation.set(m.pitch,Math.sin(t*.05+e.ph)*.006,m.roll);
+    for(const [r,w] of e.spin)r.rotation.y+=dt*w;
+    e.g.updateMatrixWorld(true);
+    oceanU.uEsc.value[i].set(x,z,e.L/2,e.B/2);
+  });
+}
+function escortHit(p){ // name of the escort the point is inside, if any
+  for(const e of escorts){
+    const l=e.g.worldToLocal(_eL.copy(p));
+    if(Math.abs(l.z)>e.L/2+2||Math.abs(l.x)>e.B/2+12)continue;
+    if(Math.abs(l.x)<e.B/2&&l.y<e.deck(l.z/e.L+.5)+.5)return e.name;
+    if(e.boxes.some(b=>b.containsPoint(l)))return e.name;
+  }
+  return null;
+}
+
 /* ---------- environment by time of day ---------- */
 const sunDir=new THREE.Vector3();let dayF=1;
 const lerpC=(a,b,t)=>new THREE.Color(a).lerp(new THREE.Color(b),t);
@@ -1013,6 +1170,7 @@ function airStep(h){
       (local.x>13&&local.x<17.5&&local.z>-16&&local.z<-10&&local.y<DECK_Y+33))crash('Hit the island');
     else if(local.y<DECK_Y+AC.gearH+4.5&&PARKED.some(([x,z])=>Math.hypot(local.x-x,local.z-z)<8.5))crash('Collided with a parked aircraft');
   }else if(Math.abs(local.x)<12.3&&Math.abs(local.z)<106&&local.y<DECK_Y-.3)crash('Hit the ship');
+  else if(escortHit(ac.pos))crash('Hit '+escortHit(ac.pos));
   else if(ac.pos.y<waveHeight(ac.pos.x,ac.pos.z,state.t)+.8)crash('Hit the water');
 }
 function controls(dt){
@@ -1048,6 +1206,8 @@ function pressKey(k){
   else if(k==='r'){stopTut();track('flight_start',{start:'catapult',source:'key'});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');}
   else if(k==='t'){stopTut();track('flight_start',{start:'approach',source:'key'});resetAircraft('approach');if(!FLY[state.cam])setCam('chase');}
   else if(k==='c')setCam(state.cam==='cockpit'?'chase':'cockpit');
+  else if(k==='o'){view.focus=(view.focus+1)%(escorts.length+1);if(state.cam!=='orbit')setCam('orbit');
+    track('camera_change',{camera:'orbit_'+(view.focus?escorts[view.focus-1].num:'21'),source:'key'});}
 }
 function stepAircraft(dt){
   controls(dt);
@@ -1419,7 +1579,7 @@ function updateTut(dt){
 }
 
 /* ---------- cameras ---------- */
-const view={az:-0.62,el:0.2,dist:340,yaw:0,pitch:0,fly:null,appr:900,cAz:0,cEl:.264,cD:25,cPx:0,cPy:0};
+const view={az:-0.62,el:0.2,dist:340,yaw:0,pitch:0,fly:null,appr:900,cAz:0,cEl:.264,cD:25,cPx:0,cPy:0,focus:0};
 function resetChase(){view.cAz=0;view.cEl=.264;view.cD=25;view.cPx=0;view.cPy=0;}
 const LOOK={deck:{pos:[2.8,DECK_Y+1.8,99],yaw:.096,pitch:-.03,fov:60},island:{pos:[11.7,DECK_Y+9.8,-2],yaw:2.8,pitch:-.28,fov:65}};
 function setCam(name){
@@ -1430,7 +1590,7 @@ function setCam(name){
   if(name==='chase')resetChase();
   $('hint').textContent=FLY[name]?
     'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nchase cam: drag orbit \u00b7 shift/right-drag pan \u00b7 scroll zoom \u00b7 double-click reset\nR  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
-    'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nU tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach';
+    'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nU tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach\nO orbit the escorts';
 }
 const tmp=new THREE.Vector3(),tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 function updateCamera(dt){
@@ -1440,6 +1600,8 @@ function updateCamera(dt){
     camera.position.set(sp.x+view.dist*ce*Math.sin(view.az),10+view.dist*Math.sin(view.el),sp.z+view.dist*ce*Math.cos(view.az));
     camera.position.y=Math.max(camera.position.y,waveHeight(camera.position.x,camera.position.z,state.t)+2);
     camera.lookAt(sp.x,9,sp.z);
+    if(view.focus){const fo=escorts[view.focus-1].g.position;camera.position.x+=fo.x-sp.x;camera.position.z+=fo.z-sp.z;
+      camera.position.y=Math.max(camera.position.y,waveHeight(camera.position.x,camera.position.z,state.t)+2);camera.lookAt(fo.x,7,fo.z);}
   }else if(LOOK[state.cam]){
     const L=LOOK[state.cam];fov=L.fov;
     camera.position.copy(ship.localToWorld(tmp.set(...L.pos)));
@@ -1538,7 +1700,7 @@ let last=performance.now(),hudT=0;
 function frame(now){
   const dt=Math.min((now-last)/1000,.05);last=now;state.t+=dt;
   seaH+=(SEA_H[state.sea]-seaH)*Math.min(1,dt*1.2);setWaveAmps();
-  updateShip(dt);ship.updateMatrixWorld(true);life.update(dt);stepAircraft(dt);
+  updateShip(dt);ship.updateMatrixWorld(true);updateEscorts(dt);life.update(dt);stepAircraft(dt);
   updateTut(dt);updateAudio();
   updateEject(dt);updateFx(dt);
   plane.visible=!ac.wrecked&&state.cam!=='cockpit';updateCamera(dt);
@@ -1575,8 +1737,8 @@ for(const [x,z,psi] of [[8.2,-62,.62],[8.2,-74,.62],[8.2,-86,.62]]){            
   for(const m of parts.crew)m.visible=false;const p=plane.clone(true);for(const m of parts.crew)m.visible=true;p.rotation.order='YXZ';p.position.set(x,DECK_Y+AC.gearH,z);p.rotation.set(AC.sit,psi,0);ship.add(p);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
 document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
-window.__sim={life,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
-  advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);life.update(1/60);stepAircraft(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
+window.__sim={escorts,escortHit,life,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
+  advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);updateEscorts(1/60);life.update(1/60);stepAircraft(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
 requestAnimationFrame(frame);
 })();
 </script>
