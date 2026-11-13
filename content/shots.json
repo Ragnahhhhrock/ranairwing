@@ -342,5 +342,19 @@
    "el": 0.1,
    "dist": 190
   }
+ },
+ "s35-s2-tracker": {
+  "cam": "chase",
+  "hour": 15,
+  "sea": 3,
+  "speed": 20,
+  "type": "s2",
+  "start": "approach",
+  "view": {
+   "cAz": 0.8,
+   "cEl": 0.35,
+   "cD": 34
+  },
+  "advance": 4
  }
 }

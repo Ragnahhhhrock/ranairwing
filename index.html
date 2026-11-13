@@ -89,6 +89,7 @@ gtag('config','G-H0ZE9XML6B');
   <button id="bTut">Tutorial: launch and land (U)</button>
   <button id="bSnd">Sound: on (M)</button>
   <div id="fly"><button id="bCat">Fly catapult (R)</button><button id="bApp">Fly approach (T)</button></div>
+  <button id="bType">Aircraft: A-4G Skyhawk (N)</button>
   <label>Sea state<input id="sSea" type="range" min="0" max="6" step="1" value="3"><output id="oSea"></output></label>
   <label>Ship speed<input id="sSpd" type="range" min="0" max="24" step="1" value="20"><output id="oSpd"></output></label>
   <label>Time<input id="sTime" type="range" min="5.5" max="18.5" step="0.25" value="15.5"><output id="oTime"></output></label>
@@ -565,36 +566,45 @@ const life=(function(){
   const wheel=(g,x,y,z,r,w)=>{const c=cyl(r,r,w,x,y,z,mBk,12,g);c.rotation.z=Math.PI/2;return c;};
 
   /* S-2 Tracker (axis height above the deck on its wheels: 1.78 m) with the outer wings folded up and back */
-  function makeS2(){
-    const g=new THREE.Group();
+  function makeS2(fly){                    // fly=true: wings out, gear/flaps/hook/props animated (flyable); otherwise folded and static
+    const g=new THREE.Group(),P={legs:[],flaps:[],brakes:[],crew:[],canopy:null,props:[],discs:[]},GG=fly?new THREE.Group():g;
+    if(fly){g.add(GG);P.gearG=GG;}
     const fg=lathe([[.02,-6],[.4,-5.7],[.75,-5],[1,-4],[1.12,-2.8],[1.15,-1],[1.15,1.5],[1,3.2],[.7,4.8],[.45,6],[.22,7]]);fg.scale(1,1.1,1);
     const p=fg.attributes.position,col=new Float32Array(p.count*3);
     for(let i=0;i<p.count;i++){const top=p.getY(i)>-.25;col[i*3]=top?.74:.94;col[i*3+1]=top?.76:.94;col[i*3+2]=top?.77:.92;}   // grey over white
     fg.setAttribute('color',new THREE.BufferAttribute(col,3));fg.computeVertexNormals();
     add(new THREE.Mesh(fg,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.05,side:THREE.DoubleSide})),0,0,0,g);
-    add(new THREE.Mesh(new THREE.SphereGeometry(1,16,12),mGl),0,.95,-3.3,g).scale.set(.62,.5,1.5);          // cockpit
+    const cm=fly?new THREE.MeshStandardMaterial({color:0x7fa6bd,roughness:.1,metalness:.3,transparent:true,opacity:.42,depthWrite:false}):mGl;
+    const can=add(new THREE.Mesh(new THREE.SphereGeometry(1,16,12),cm),0,.95,-3.3,g);can.scale.set(.62,.5,1.5);P.canopy=can;     // cockpit
+    if(fly){P.crew=[box(.34,.5,.34,0,.55,-3.2,mBk,g),add(new THREE.Mesh(new THREE.SphereGeometry(.15,10,8),mW),0,.93,-3.25,g),box(.3,.3,.3,0,.62,-3.25,M(0x4a5a3a),g)];}
     add(new THREE.Mesh(new THREE.SphereGeometry(1,12,8),mW),0,-1.15,.9,g).scale.set(.75,.45,1.2);           // retracted radome
     const wing=[[-5.6,-1],[-1.2,-1.7],[1.2,-1.7],[5.6,-1],[5.6,1.3],[1.2,1.6],[-1.2,1.6],[-5.6,1.3]];      // high wing, inner panels
     add(slab(wing,.25,mG),0,.85,0,g);add(slab(wing,.03,mW),0,.82,0,g);
     for(const sd of [1,-1]){                                                                                 // outer panels folded
       const h=new THREE.Group();h.position.set(sd*5.6,.85,0);
-      h.quaternion.setFromAxisAngle(XA,.3).multiply(new THREE.Quaternion().setFromAxisAngle(ZA,sd*1.45));g.add(h);
+      if(!fly)h.quaternion.setFromAxisAngle(XA,.3).multiply(new THREE.Quaternion().setFromAxisAngle(ZA,sd*1.45));g.add(h);
       const op=[[0,-1],[sd*5.4,-.7],[sd*5.4,.6],[0,1.3]];add(slab(op,.2,mG),0,0,0,h);add(slab(op,.03,mW),0,-.03,0,h);
       add(new THREE.Mesh(lathe([[.2,-3.2],[.55,-3],[.72,-2.5],[.75,-1.2],[.7,.8],[.55,2],[.22,3]]),mGD),sd*3.1,.3,0,g);   // engine nacelle
       cyl(.3,.04,.6,sd*3.1,.3,-3.5,mBk,10,g).rotation.x=Math.PI/2;                                           // spinner
       const hub=new THREE.Group();hub.position.set(sd*3.1,.3,-3.65);hub.rotation.z=sd*.5;g.add(hub);         // three-blade propeller
       for(let k=0;k<3;k++){const b=new THREE.Group();b.rotation.z=k*2.094;hub.add(b);box(.2,1.8,.04,0,.95,0,mBk,b);box(.2,.3,.045,0,1.8,0,mYel,b);}
-      strut(sd*3.1,-.3,-.4,sd*3.1,-1.3,-.4,.09,mMt,g);wheel(g,sd*3.1,-1.3,-.4,.48,.4);                      // main gear
+      if(fly){P.props.push(hub);const dm=new THREE.Mesh(new THREE.CircleGeometry(1.95,28),P.discMat||(P.discMat=new THREE.MeshBasicMaterial({color:0x20262b,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide})));
+        dm.position.set(sd*3.1,.3,-3.68);g.add(dm);
+        const fl=new THREE.Group();fl.position.set(sd*3.4,.8,1.55);g.add(fl);box(3.6,.04,.7,0,0,.35,mW,fl);P.flaps.push(fl);}   // flaps
+      const lg=new THREE.Group();lg.position.set(sd*3.1,-.3,-.4);lg.userData.dir=-1;GG.add(lg);P.legs.push(lg);                    // main gear
+      strut(0,0,0,0,-1,0,.09,mMt,lg);wheel(lg,0,-1,0,.48,.4);
     }
     add(slab([[0,5.1],[3.4,6],[3.4,6.8],[-3.4,6.8],[-3.4,6]],.1,mG),0,.55,0,g);                              // tailplane
     const fs=new THREE.Shape();[[4.4,.9],[6,3.2],[6.9,3.2],[7.1,.6]].forEach(([z,y],i)=>i?fs.lineTo(z,y):fs.moveTo(z,y));fs.closePath();
     const fgm=new THREE.ExtrudeGeometry(fs,{depth:.12,bevelEnabled:false});fgm.translate(0,0,-.06);fgm.rotateY(-Math.PI/2);
     add(new THREE.Mesh(fgm,mG),0,0,0,g);                                                                     // fin
     strut(0,.25,7,0,.4,8.7,.05,mMt,g);                                                                       // MAD boom
-    strut(0,-.6,5.6,0,-1,6.9,.04,mMt,g);                                                                     // arrestor hook
-    strut(0,-.7,-3.6,0,-1.45,-3.6,.06,mMt,g);wheel(g,-.2,-1.45,-3.6,.3,.16);wheel(g,.2,-1.45,-3.6,.3,.16);   // nose gear
+    const hg=new THREE.Group();hg.position.set(0,-.6,5.6);g.add(hg);strut(0,0,0,0,-.4,1.3,.04,mMt,hg);P.hookG=hg;       // arrestor hook
+    const ng=new THREE.Group();ng.position.set(0,-.7,-3.6);ng.userData.dir=-1;GG.add(ng);P.legs.push(ng);                // nose gear
+    strut(0,0,0,0,-.75,0,.06,mMt,ng);wheel(ng,-.2,-.75,0,.3,.16);wheel(ng,.2,-.75,0,.3,.16);
     sides(g,decal(64,64,roundel),.8,.8,1.06,.25,2.4);sides(g,decal(256,64,label('NAVY',58)),1.9,.48,.73,.3,4.7);
     sides(g,decal(128,64,label('851',54)),.8,.4,1.03,.25,-3.4);
+    g.userData.P=P;
     return g;
   }
 
@@ -677,7 +687,7 @@ const life=(function(){
   function moveLift(L,dt){L.l+=Math.max(-dt/9,Math.min(dt/9,L.target-L.l));L.pf.position.y=liftTop(L.l);}
 
   // the towed S-2 and its tractor
-  const s2=makeS2();ship.add(s2);
+  const s2=makeS2(false);ship.add(s2);
   const tractor=new THREE.Group();ship.add(tractor);
   box(1.5,.6,2.8,0,.6,0,mYel,tractor);box(.9,.12,.8,0,.98,.5,mBk,tractor);box(.9,.5,.1,0,1.2,.9,mBk,tractor);
   for(const sx of [-.8,.8])for(const sz of [-.9,.9]){const w=cyl(.38,.38,.25,sx,.38,sz,mBk,10,tractor);w.rotation.z=Math.PI/2;}
@@ -738,7 +748,7 @@ const life=(function(){
     guard.g.rotation.set(-.05+.02*Math.sin(t*.5),.15*Math.sin(t*.09),.04*Math.sin(t*.31));
     guard.rotor.rotation.y-=18*dt;guard.tail.rotation.x+=40*dt;
   }
-  return {update,lifts,liftDown,get towZ(){return towZ;},get towX(){return towX;},guard:guard.g};
+  return {makeS2,update,lifts,liftDown,get towZ(){return towZ;},get towX(){return towX;},guard:guard.g};
 })();
 
 /* ---------- task group escorts (as sailed with Melbourne in 1980) ---------- */
@@ -925,11 +935,14 @@ function updateShip(dt){
 }
 
 /* ---------- A-4G Skyhawk ---------- */
-const AC={m:6800,S:24.15,Tmax:41000,CLa:3.5,gearH:1.9,sit:.09};
+const TYPES={ // flight model constants per aircraft: mass, wing area, thrust, lift slope, stall angle, drag, catapult acceleration, approach set-up
+  a4:{name:'A-4G Skyhawk',m:6800,S:24.15,Tmax:41000,CLa:3.5,gearH:1.9,sit:.09,c0:.1,cf:.35,as:.30,cd0:.024,k:.137,gearD:.03,qk:1,cat:30,vApp:63.5,thrApp:.28,apPitch:.13,prop:0,hasBrakes:1,eye:[0,1.05,-2.9],aoa:[9.2,11.8]},
+  s2:{name:'S-2 Tracker',m:11000,S:45,Tmax:32000,CLa:5.2,gearH:1.78,sit:.07,c0:.2,cf:.9,as:.25,cd0:.032,k:.06,gearD:.04,qk:1.5,cat:28,vApp:52,thrApp:.64,apPitch:.01,prop:165,hasBrakes:0,eye:[0,1.25,-3.3],aoa:[2.6,5.2]}};
+const AC=Object.assign({type:'a4'},TYPES.a4);
 const WIRES=[22,28,34,40,46];
 const V3=THREE.Vector3;
 const plane=new THREE.Group();scene.add(plane);
-const gearG=new THREE.Group(),hookG=new THREE.Group(),parts={legs:[],flaps:[],brakes:[],crew:[],canopy:null};
+const gearG=new THREE.Group(),hookG=new THREE.Group(),partsA4={legs:[],flaps:[],brakes:[],crew:[],canopy:null};let parts=partsA4;
 (function(){
   const mTop=M(0xc2c7ca,{roughness:.55}),mWht=M(0xf0f0ea,{roughness:.5}),mGlass=M(0x14202b,{roughness:.15,metalness:.4}),
     mBlk=M(0x101113),mMetal=M(0x8a8f93,{metalness:.5,roughness:.5});
@@ -1003,7 +1016,7 @@ const gearG=new THREE.Group(),hookG=new THREE.Group(),parts={legs:[],flaps:[],br
     const b=new THREE.Group();b.position.set(sd*.7,-.05,3.3);plane.add(b);          // fuselage speedbrakes
     box(.04,.55,1.05,0,0,.525,mTop,b);const red=box(.02,.5,1,-sd*.03,0,.525,M(0xa3322a),b);parts.brakes.push({g:b,sd,red});
   }
-  plane.add(gearG);plane.add(hookG);
+  plane.add(gearG);plane.add(hookG);partsA4.gearG=gearG;partsA4.hookG=hookG;
   const leg=(x,y,z,len,r,wr)=>{const g=new THREE.Group();g.position.set(x,y,z);gearG.add(g);
     strut(0,0,0,0,-len,.1,r,mWht,g);const w=cyl(wr,wr,wr*.7,0,-len,.1,mBlk,12,g);w.rotation.z=Math.PI/2;
     strut(0,-len*.35,.05,0,-len*.1,.5,r*.6,mMetal,g);parts.legs.push(g);};
@@ -1012,6 +1025,7 @@ const gearG=new THREE.Group(),hookG=new THREE.Group(),parts={legs:[],flaps:[],br
   strut(0,0,0,0,-1.25,2.3,.05,mMetal,hookG);
 })();
 
+const a4G=new THREE.Group();while(plane.children.length)a4G.add(plane.children[0]);plane.add(a4G);   // A-4 model; the S-2 is a sibling
 const ac={mode:'ground',pos:new V3(),vel:new V3(),q:new THREE.Quaternion(),w:new V3(),
   lx:-7,lz:-56,psi:0,u:0,onCat:true,launching:false,trapped:false,
   thr:0,rpm:0,gear:true,flap:.5,hook:false,brake:false,stick:{p:0,r:0,y:0},
@@ -1027,13 +1041,13 @@ function inDeck(x,z){
   return c;
 }
 const windMS=()=>SEA_WIND[state.sea]*KN;           // true wind, blowing down the deck (+Z)
-const cl0=()=>.1+.35*ac.flapPos;
+const cl0=()=>AC.c0+AC.cf*ac.flapPos;
 function CLf(a){
-  const as=.30,c0=cl0();
+  const as=AC.as,c0=cl0();
   if(a>as)return Math.max((c0+AC.CLa*as)*(1-1.6*(a-as)),.3);
   return c0+AC.CLa*Math.max(a,-.2);
 }
-function thrust(rho){return AC.Tmax*(.04+.96*ac.rpm)*Math.pow(rho/1.225,.7);}
+function thrust(rho,V){return AC.Tmax*(.04+.96*ac.rpm)*Math.pow(rho/1.225,.7)*(AC.prop?Math.max(.25,1-(V||0)/AC.prop):1);}   // propeller thrust falls with airspeed
 const _a=new V3(),_b=new V3(),_c=new V3(),_fwd=new V3(),_up=new V3(),_right=new V3(),_q=new THREE.Quaternion(),_q2=new THREE.Quaternion();
 const _loc=new V3(),chaseDir=new V3(0,0,-1),X_AX=new V3(1,0,0),Y_AX=new V3(0,1,0);
 
@@ -1047,16 +1061,16 @@ function resetAircraft(kind){
     say('On the catapult. Run up to full power ( = ), then Space to launch.',9);
     syncGround();
   }else{
-    const tutor=kind==='tutapp',d=tutor?6500:2200,V=tutor?113:63.5,GS=Math.tan(3.5*Math.PI/180);
+    const tutor=kind==='tutapp',d=tutor?6500:2200,V=tutor?113:AC.vApp,GS=Math.tan(3.5*Math.PI/180);
     const sp=ship.position,tx=ANG_A.x+ANG_DIR.x*34,tz=ANG_A.y+ANG_DIR.y*34;
-    Object.assign(ac,{mode:'air',onCat:false},tutor?{thr:.16,rpm:.16,flap:0,hook:false,gear:false}:{thr:.28,rpm:.28,flap:1,hook:true});
+    Object.assign(ac,{mode:'air',onCat:false},tutor?{thr:.16,rpm:.16,flap:0,hook:false,gear:false}:{thr:AC.thrApp,rpm:AC.thrApp,flap:1,hook:true});
     ac.pos.set(sp.x+tx-ANG_DIR.x*d,tutor?244:DECK_Y+AC.gearH+d*GS,sp.z+tz-ANG_DIR.y*d);
     // pick the air velocity whose track relative to the moving ship runs down the angled deck
     const head=state.speedKn*KN+windMS();let k=50;
     for(let i=0;i<12;i++)k+=V-Math.hypot(ANG_DIR.x*k,ANG_DIR.y*k-head);
     const ax=ANG_DIR.x*k,az=ANG_DIR.y*k-head;
     ac.vel.set(ax,tutor?0:-k*GS,az+windMS());
-    ac.q.setFromAxisAngle(Y_AX,Math.atan2(-ax,-az)).multiply(_q.setFromAxisAngle(X_AX,tutor?.05:.13));
+    ac.q.setFromAxisAngle(Y_AX,Math.atan2(-ax,-az)).multiply(_q.setFromAxisAngle(X_AX,tutor?.05:AC.apPitch));
     say(tutor?'':'On approach, 1.2 nm astern. Gear, flaps and hook are down.',7);
   }
   plane.position.copy(ac.pos);plane.quaternion.copy(ac.q);animateParts(0,true);
@@ -1065,11 +1079,13 @@ function animateParts(dt,snap){ // move gear, flaps, speedbrakes and hook at abo
   const go=(v,t,rate)=>snap?t:v+Math.max(-rate*dt,Math.min(rate*dt,t-v));
   ac.gearPos=go(ac.gearPos,ac.gear?1:0,1/2.3);ac.flapPos=go(ac.flapPos,ac.flap,.33);
   ac.brakePos=go(ac.brakePos,ac.brake?1:0,2.5);ac.hookPos=go(ac.hookPos,ac.hook?1:0,ac.hook?2:.8);
-  gearG.visible=ac.gearPos>.03;
-  for(const g of parts.legs)g.rotation.x=1.45*(1-ac.gearPos);
+  parts.gearG.visible=ac.gearPos>.03;
+  for(const g of parts.legs)g.rotation.x=(g.userData.dir||1)*1.45*(1-ac.gearPos);
   for(const f of parts.flaps)f.rotation.x=.9*ac.flapPos;
   for(const b of parts.brakes){b.g.rotation.y=b.sd*(-.1+1.05*ac.brakePos);b.red.visible=ac.brakePos>.04;}
-  hookG.rotation.x=-.45*(1-ac.hookPos);
+  parts.hookG.rotation.x=-.45*(1-ac.hookPos);
+  if(parts.props){const r=ac.crashed?0:ac.rpm;for(const p of parts.props)p.rotation.z+=dt*(4+26*r)*(p.position.x>0?-1:1);  // propellers blur into a disc with power
+    if(parts.discMat)parts.discMat.opacity=.32*Math.min(1,r*1.6);}
 }
 function crash(why,fatal){ // fatal unless told otherwise: the aircraft is destroyed and, if still aboard, the pilot is killed
   if(fatal===undefined)fatal=true;
@@ -1098,10 +1114,10 @@ function groundStep(h){
   const hx=-Math.sin(ac.psi),hz=-Math.cos(ac.psi);
   const air=ac.u+(state.speedKn*KN+windMS())*(-hz);
   const qbar=.5*1.225*air*Math.abs(air),CLg=cl0()+AC.CLa*AC.sit;
-  const T=thrust(1.225),D=qbar*AC.S*(.054+.045*ac.flapPos+.07*ac.brakePos+.137*CLg*CLg);
+  const T=thrust(1.225,Math.max(air,0)),D=qbar*AC.S*(AC.cd0+AC.gearD+.045*ac.flapPos+.07*ac.brakePos+AC.k*CLg*CLg);
   let a=(T-D)/AC.m;
   if(ac.onCat){
-    if(ac.launching)a=30;else{a=0;ac.u=0;}
+    if(ac.launching)a=AC.cat;else{a=0;ac.u=0;}
   }else if(ac.trapped){
     a=-Math.max(26,ac.u*ac.u/90);
   }else{
@@ -1142,17 +1158,17 @@ function airStep(h){
   const V=Math.max(va.length(),.1),vx=va.dot(_right),vy=va.dot(_up),vz=va.dot(_fwd);
   const alpha=Math.atan2(-vy,Math.max(vz,.1)),beta=Math.asin(Math.max(-1,Math.min(1,vx/V)));
   const qbar=.5*rho*V*V,qS=qbar*AC.S,mach=V/335;
-  let CL=CLf(alpha),CD=.024+6*Math.pow(Math.max(0,mach-.82),2)+.137*CL*CL+.03*ac.gearPos+.045*ac.flapPos+.07*ac.brakePos;
-  if(alpha>.30)CD+=1.5*(alpha-.30);
-  const L=qS*CL,D=qS*CD,Y=-qS*1.2*beta,T=thrust(rho);
+  let CL=CLf(alpha),CD=AC.cd0+6*Math.pow(Math.max(0,mach-.82),2)+AC.k*CL*CL+AC.gearD*ac.gearPos+.045*ac.flapPos+.07*ac.brakePos;
+  if(alpha>AC.as)CD+=1.5*(alpha-AC.as);
+  const L=qS*CL,D=qS*CD,Y=-qS*1.2*beta,T=thrust(rho,V);
   const vhat=va.multiplyScalar(1/V),lift=_b.crossVectors(_right,vhat).normalize();
   const F=_c.set(0,-AC.m*G,0).addScaledVector(lift,L).addScaledVector(vhat,-D).addScaledVector(_right,Y).addScaledVector(_fwd,T);
   ac.vel.addScaledVector(F,h/AC.m);ac.pos.addScaledVector(ac.vel,h);
   // attitude: stick commands angle of attack around the 1 g trim value
-  const qn=Math.min(qbar/6000,3),c0=cl0(),W=AC.m*G;
+  const qn=Math.min(qbar*AC.qk/6000,3),c0=cl0(),W=AC.m*G;
   const need=W*Math.cos(Math.asin(Math.max(-1,Math.min(1,ac.vel.y/V))))-T*Math.sin(alpha);   // lift that holds the current flight path
-  const a1g=Math.max(-.03,Math.min(.26,(need/(qS+1)-c0)/AC.CLa));
-  const aMax=Math.min(.36,(7.5*W/(qS+1)-c0)/AC.CLa),aMin=Math.max(-.15,(-3*W/(qS+1)-c0)/AC.CLa);
+  const a1g=Math.max(-.03,Math.min(AC.as*.87,(need/(qS+1)-c0)/AC.CLa));
+  const aMax=Math.min(AC.as+.06,(7.5*W/(qS+1)-c0)/AC.CLa),aMin=Math.max(-.15,(-3*W/(qS+1)-c0)/AC.CLa);
   const acmd=Math.max(aMin,Math.min(aMax,a1g+ac.stick.p*Math.min(.14,3*W/((qS+1)*AC.CLa))))-(ac.pilot?0:.045);   // full stick is at most about 3 g
   const w=ac.w;
   w.x+=(qn*9*(acmd-alpha)-(1.2+2.2*qn)*w.x)*h;
@@ -1192,10 +1208,12 @@ function pressKey(k){
   if(k==='g'){if(ac.mode==='air'){ac.gear=!ac.gear;sfx.gear(ac.gear);say('Gear '+(ac.gear?'down':'up'),2);}}
   else if(k==='f'){ac.flap=ac.flap>=1?0:ac.flap+.5;sfx.flap();say('Flaps '+['up','half','full'][ac.flap*2],2);}
   else if(k==='h'){ac.hook=!ac.hook;sfx.hook(ac.hook);say('Hook '+(ac.hook?'down':'up'),2);}
+  else if(k==='b'&&!AC.hasBrakes){say('The Tracker has no speedbrakes',2);}
   else if(k==='b'){ac.brake=!ac.brake;sfx.brake(ac.brake);say('Speedbrakes '+(ac.brake?'out':'in'),2);}
   else if(k===' '&&ac.onCat&&!ac.launching){
     if(ac.rpm>.85){ac.launching=true;sfx.cat();say('Launch!',2);sess.launches++;track('aircraft_launch',{launch_number:sess.launches});}else say('Run up to full power first ( = )',3);
   }
+  else if(k==='n'){nextAircraft();}
   else if(k==='l'){const L=life.lifts[1];             // aft aircraft lift (in the landing area): locked out while aircraft are recovering
     if(ac.mode==='air'&&!ac.wrecked)say('Aft lift locked out while aircraft are airborne',3);
     else{L.target=L.target>.5?0:1;say('Aft lift '+(L.target?'rising':'lowering'),3);}}
@@ -1273,12 +1291,12 @@ function drawHud(){
   // angle of attack indexer
   const aDeg=ac.alpha*180/Math.PI,ix=L,iy=cy+62;
   hc.fillText('AoA '+aDeg.toFixed(1)+'°',ix,iy+34);
-  const slow=aDeg>11.8,fast=aDeg<9.2,lit=(on,c)=>{hc.strokeStyle=hc.fillStyle=on?c:'rgba(141,255,176,.25)';};
+  const slow=aDeg>AC.aoa[1],fast=aDeg<AC.aoa[0],lit=(on,c)=>{hc.strokeStyle=hc.fillStyle=on?c:'rgba(141,255,176,.25)';};
   lit(slow,'#7dff8a');hc.beginPath();hc.moveTo(ix-9,iy-16);hc.lineTo(ix,iy-8);hc.lineTo(ix+9,iy-16);hc.stroke();
   lit(!slow&&!fast,'#ffc13d');hc.beginPath();hc.arc(ix,iy,6,0,7);hc.stroke();
   lit(fast,'#ff5a4d');hc.beginPath();hc.moveTo(ix-9,iy+16);hc.lineTo(ix,iy+8);hc.lineTo(ix+9,iy+16);hc.stroke();
   hc.strokeStyle=hc.fillStyle=GRN;
-  if(aDeg>16.5&&ac.mode==='air'){hc.fillStyle='#ff5a4d';hc.fillText('STALL',cx,cy+60);hc.fillStyle=GRN;}
+  if(aDeg>AC.as*180/Math.PI-.7&&ac.mode==='air'){hc.fillStyle='#ff5a4d';hc.fillText('STALL',cx,cy+60);hc.fillStyle=GRN;}
   // glidepath and line-up
   const g=lso();
   if(ac.mode==='air'&&g.d>30&&g.d<5000&&Math.abs(g.off)<g.d*.6){
@@ -1519,7 +1537,7 @@ function updateAudio(){
   else{set(au.wind.g.gain,(FLY[state.cam]?1:near)*live*Math.min(.5,rush));set(au.wind.f.frequency,(ac.brake?.6:1)*(500+v*6));}
   set(au.buffet.g.gain,(FLY[state.cam]?1:near)*live*Math.min(.45,Math.pow(v/120,2)*((ac.brake?.3:0)+(ac.gear&&ac.mode==='air'?.1:0))));
   set(au.sea.g.gain,(inCockpit?.03:.14)/(1+Math.max(camera.position.y,0)/50));
-  const stall=ac.mode==='air'&&!ac.crashed&&FLY[state.cam]&&ac.alpha>.288;
+  const stall=ac.mode==='air'&&!ac.crashed&&FLY[state.cam]&&ac.alpha>AC.as-.012;
   au.stallG.gain.setTargetAtTime(stall&&state.t*5%1<.5?.04:0,t,.01);
 }
 
@@ -1560,6 +1578,7 @@ function renderTut(){
   tutEl.innerHTML=html;tutEl.style.display='block';
 }
 function startLesson(l,keepNote){
+  if(AC.type!=='a4')setType('a4');                  // the tutorial is flown in the Skyhawk
   Object.assign(tut,{active:true,l,i:0,hold:0,ended:false,retry:0,crashSeen:false});if(!keepNote)tut.note='';
   if(!keepNote)track('tutorial_begin',{lesson:l+1,lesson_name:LESSONS[l].name});
   resetAircraft(LESSONS[l].start);ac.msgT=0;if(!FLY[state.cam])setCam('chase');renderTut();
@@ -1589,7 +1608,7 @@ function setCam(name){
   if(FLY[name])ac.snap=true;
   if(name==='chase')resetChase();
   $('hint').textContent=FLY[name]?
-    'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nchase cam: drag orbit \u00b7 shift/right-drag pan \u00b7 scroll zoom \u00b7 double-click reset\nR  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
+    'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nchase cam: drag orbit \u00b7 shift/right-drag pan \u00b7 scroll zoom \u00b7 double-click reset\nN  switch aircraft (Skyhawk / Tracker)     R  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
     'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nU tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach\nO orbit the escorts';
 }
 const tmp=new THREE.Vector3(),tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ');
@@ -1612,7 +1631,7 @@ function updateCamera(dt){
     camera.position.set(sp.x+tx-ANG_DIR.x*d,DECK_Y+2.2+d*Math.tan(3.5*Math.PI/180),sp.z+tz-ANG_DIR.y*d);
     camera.lookAt(ship.localToWorld(tmp.set(tx+ANG_DIR.x*40,DECK_Y,tz+ANG_DIR.y*40)));
   }else if(state.cam==='cockpit'){
-    fov=70;camera.position.copy(tmp.set(0,1.05,-2.9).applyQuaternion(ac.q).add(ac.pos));camera.quaternion.copy(ac.q);
+    fov=70;camera.position.copy(tmp.set(...AC.eye).applyQuaternion(ac.q).add(ac.pos));camera.quaternion.copy(ac.q);
   }else if(state.cam==='chase'){
     fov=55;_fwd.set(0,0,-1).applyQuaternion(ac.q);tmp.set(_fwd.x,0,_fwd.z);
     if(tmp.lengthSq()<1e-4)tmp.copy(chaseDir);tmp.normalize();
@@ -1675,6 +1694,7 @@ window.addEventListener('blur',()=>{for(const k in keys)keys[k]=false;});
 $('bSnd').addEventListener('click',e=>{setMuted(!muted);e.target.blur();});
 window.addEventListener('pointerdown',initAudio);window.addEventListener('keydown',initAudio);
 $('bTut').addEventListener('click',e=>{startLesson(0);e.target.blur();});
+$('bType').addEventListener('click',e=>{nextAircraft();e.target.blur();});
 $('bCat').addEventListener('click',e=>{stopTut();track('flight_start',{start:'catapult',source:'button'});resetAircraft('cat');setCam('chase');e.target.blur();});
 $('bApp').addEventListener('click',e=>{stopTut();track('flight_start',{start:'approach',source:'button'});resetAircraft('approach');setCam('chase');e.target.blur();});
 document.querySelectorAll('#cams button').forEach(b=>b.addEventListener('click',()=>{setCam(b.dataset.cam);track('camera_change',{camera:b.dataset.cam,source:'button'});}));
@@ -1735,9 +1755,15 @@ function frame(now){
 ac.gear=true;ac.flap=0;ac.hook=ac.brake=false;animateParts(0,true);
 for(const [x,z,psi] of [[8.2,-62,.62],[8.2,-74,.62],[8.2,-86,.62]]){              // spare Skyhawks parked forward of the island
   for(const m of parts.crew)m.visible=false;const p=plane.clone(true);for(const m of parts.crew)m.visible=true;p.rotation.order='YXZ';p.position.set(x,DECK_Y+AC.gearH,z);p.rotation.set(AC.sit,psi,0);ship.add(p);}
+const s2F=life.makeS2(true),partsS2=s2F.userData.P;s2F.visible=false;plane.add(s2F);
+function setType(k){
+  Object.assign(AC,TYPES[k]);AC.type=k;a4G.visible=k==='a4';s2F.visible=k==='s2';parts=k==='a4'?partsA4:partsS2;
+  $('bType').textContent='Aircraft: '+AC.name+' (N)';
+}
+function nextAircraft(){stopTut();setType(AC.type==='a4'?'s2':'a4');track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
 document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
-window.__sim={escorts,escortHit,life,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
+window.__sim={escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
   advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);updateEscorts(1/60);life.update(1/60);stepAircraft(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
 requestAnimationFrame(frame);
 })();

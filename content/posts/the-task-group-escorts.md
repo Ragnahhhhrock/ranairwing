@@ -40,4 +40,4 @@ Press <kbd>O</kbd> to move the orbit camera from Melbourne to Perth, Derwent, Su
 - The models are simplified. Hulls are lofted shapes, superstructures are blocks, and the guns, launchers and masts are outlines rather than accurate copies.
 - Station distances are chosen to look right and stay out of the way of flying. They are not taken from a 1980 formation plan.
 - HMAS Stalwart, the fifth ship of that deployment, is not modelled yet.
-- The escorts do not manoeuvre on their own, and there is no plane guard helicopter yet.
+- The escorts do not manoeuvre on their own. The plane guard helicopter hovers off the port quarter of the carrier, separate from Derwent's station.

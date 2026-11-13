@@ -10,7 +10,7 @@ Here is where the sim could go next. These are ideas, not commitments.
 ## Already done
 
 - The carrier at sea, with sea states and a time-of-day slider.
-- A flyable A-4G with a catapult launch and an arrested landing.
+- A flyable A-4G and a flyable S-2 Tracker, each with a catapult launch and an arrested landing.
 - A guided tutorial with two lessons.
 - Seven cameras, a HUD and sound.
 - Deck life: crew in coloured jerseys that react to launches, working aircraft lifts, an S-2 Tracker being towed to the forward lift, and Sea Kings on deck and on plane guard.
@@ -19,7 +19,6 @@ Here is where the sim could go next. These are ideas, not commitments.
 
 **Aircraft**
 - A flyable Sea King helicopter.
-- A flyable S-2 Tracker.
 - Individual side numbers on each Skyhawk.
 
 **Eras**

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fly the S-2 Tracker · RAN Air Wing</title>
+<meta name="description" content="The S-2 Tracker is now flyable from the catapult and onto the angled deck, with a slower, heavier propeller feel than the Skyhawk.">
+<link rel="canonical" href="https://ranairwing.com/blog/fly-the-s-2-tracker/">
+<link rel="alternate" type="application/rss+xml" title="RAN Air Wing dev blog" href="/blog/feed.xml">
+<link rel="stylesheet" href="/blog/style.css">
+<meta property="og:site_name" content="RAN Air Wing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fly the S-2 Tracker">
+<meta property="og:description" content="The S-2 Tracker is now flyable from the catapult and onto the angled deck, with a slower, heavier propeller feel than the Skyhawk.">
+<meta property="og:url" content="https://ranairwing.com/blog/fly-the-s-2-tracker/">
+<meta property="og:image" content="https://ranairwing.com/blog/img/s35-s2-tracker.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b1622">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Fly the S-2 Tracker", "description": "The S-2 Tracker is now flyable from the catapult and onto the angled deck, with a slower, heavier propeller feel than the Skyhawk.", "datePublished": "2026-11-13T09:10+08:00", "dateModified": "2026-11-13T09:10+08:00", "image": "https://ranairwing.com/blog/img/s35-s2-tracker.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/fly-the-s-2-tracker/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-13T09:10+08:00"><meta property="article:tag" content="Dev diary"><meta property="article:tag" content="Aircraft"><meta property="article:tag" content="How to fly">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H0ZE9XML6B"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H0ZE9XML6B');</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="/blog/">RAN Air Wing<small>HMAS Melbourne (R21) flight sim · dev blog</small></a>
+<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
+</div></header>
+<main><div class="wrap">
+<article class="post">
+<p class="chips"><a class="chip" href="/blog/category/dev-diary/">Dev diary</a><a class="chip" href="/blog/category/aircraft/">Aircraft</a><a class="chip" href="/blog/category/how-to-fly/">How to fly</a></p>
+<h1>Fly the S-2 Tracker</h1>
+<div class="meta"><time datetime="2026-11-13T09:10+08:00">13 November 2026</time> · 2 min read</div>
+<p class="lede">The S-2 Tracker is now flyable from the catapult and onto the angled deck, with a slower, heavier propeller feel than the Skyhawk.</p>
+<figure class="hero"><img src="/blog/img/s35-s2-tracker.jpg" width="1280" height="720" alt="A grey and white S-2 Tracker on final approach to HMAS Melbourne, wings level, gear and flaps down, with the HUD showing 101 knots and the angle of attack indexer lit."><figcaption>Screenshot from the sim. Chase camera, 15:00, sea state 3, ship at 20 kn.</figcaption></figure>
+<p>The S-2 Tracker is now the second aircraft you can fly. It launches from the same catapult and lands on the same angled deck and wires as the A-4G, but it feels like a different aeroplane.</p>
+<h2>Try it</h2>
+<p>Press <kbd>N</kbd>, or use the Aircraft button in the side panel, to switch between the Skyhawk and the Tracker. The sim restarts you on the catapult in the new aircraft. <kbd>R</kbd> and <kbd>T</kbd> restart on the catapult or on approach in whichever aircraft is selected. Controls are the same as the Skyhawk: <kbd>G</kbd> gear, <kbd>F</kbd> flaps, <kbd>H</kbd> hook.</p>
+<p>The guided tutorial is written for the Skyhawk, so starting it switches you back to the A-4G.</p>
+<h2>What is different</h2>
+<ul>
+<li><strong>Propellers.</strong> Two propellers that blur into a disc as you add power. Thrust falls away as airspeed rises, so the Tracker accelerates hard at low speed and more slowly at high speed.</li>
+<li><strong>Slower.</strong> The approach starts at about 101 knots with gear, full flaps and hook down. The Skyhawk's starts at about 123.</li>
+<li><strong>Gentler catapult.</strong> The shot is a little weaker than the Skyhawk's. With the default ship speed and wind it is enough to fly away; with the ship stopped and no wind it is not.</li>
+<li><strong>Bigger wing.</strong> Roughly twice the wing area at a heavier weight, so it floats more and bleeds speed differently when you pull power.</li>
+<li><strong>No speedbrakes.</strong> <kbd>B</kbd> does nothing in the Tracker.</li>
+<li><strong>Angle of attack.</strong> The indexer uses lower angles than the Skyhawk's. The on-speed circle is about 2.6 to 5.2 degrees.</li>
+<li><strong>Gear, flaps and hook.</strong> The gear folds back into the engine nacelles, the flaps drop below the wing, and the hook is under the tail.</li>
+</ul>
+<h2>Hold on: what is approximate</h2>
+<ul>
+<li>The mass, wing area, thrust, drag and stall values are chosen to give plausible handling and a workable catapult shot. They are not taken from a flight manual or a performance chart.</li>
+<li>The side number on the fuselage is a placeholder.</li>
+<li>The model has been checked against the reference photographs only by eye.</li>
+<li>The sound is the same engine sound as the Skyhawk's. It does not yet sound like a piston engine.</li>
+<li>There is no radome, MAD boom animation or weapons bay.</li>
+</ul>
+<p>The Tracker that is towed around the deck and taken down the forward lift is a separate, static model with its wings folded.</p>
+<aside class="panel cta"><p>Launch from the catapult, fly the pattern and land on the angled deck, in your browser.</p><a class="btn" href="/">Fly the sim</a></aside>
+
+<div class="share" data-url="https://ranairwing.com/blog/fly-the-s-2-tracker/" data-title="Fly the S-2 Tracker" data-slug="fly-the-s-2-tracker"><span class="label">Share</span><a data-method="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Franairwing.com%2Fblog%2Ffly-the-s-2-tracker%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a><a data-method="x" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Franairwing.com%2Fblog%2Ffly-the-s-2-tracker%2F&text=Fly%20the%20S-2%20Tracker" target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a><a data-method="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Franairwing.com%2Fblog%2Ffly-the-s-2-tracker%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">LinkedIn</a><a data-method="reddit" href="https://www.reddit.com/submit?url=https%3A%2F%2Franairwing.com%2Fblog%2Ffly-the-s-2-tracker%2F&title=Fly%20the%20S-2%20Tracker" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">Reddit</a><a data-method="email" href="mailto:?subject=Fly%20the%20S-2%20Tracker&body=https%3A%2F%2Franairwing.com%2Fblog%2Ffly-the-s-2-tracker%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Email">Email</a><button type="button" data-copy>Copy link</button><button type="button" data-native hidden>Share…</button></div>
+<p class="meta">Filed under <a href="/blog/category/dev-diary/">Dev diary</a>, <a href="/blog/category/aircraft/">Aircraft</a>, <a href="/blog/category/how-to-fly/">How to fly</a></p>
+<nav class="adj" aria-label="More posts"><a class="prev" href="/blog/the-task-group-escorts/"><span class="label">&larr; Previous</span><span>The task group: Perth, Derwent and Supply join Melbourne</span></a><span></span></nav>
+<section class="related"><h3>More like this</h3><ul><li><a href="/blog/the-task-group-escorts/">The task group: Perth, Derwent and Supply join Melbourne</a> <span class="meta">· 13 November 2026</span></li></ul></section>
+</article>
+</div></main>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<script src="/blog/share.js" defer></script>
+</body></html>

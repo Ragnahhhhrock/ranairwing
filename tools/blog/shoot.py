@@ -23,6 +23,7 @@ SETUP = """(r) => {
   if (r.sea !== undefined) set('sSea', r.sea);
   if (r.speed !== undefined) set('sSpd', r.speed);
   if (r.hour !== undefined) set('sTime', r.hour);
+  if (r.type) S.setType(r.type);
   if (r.start) S.resetAircraft(r.start);
   if (r.lesson !== undefined) S.startLesson(r.lesson);
   S.setCam(r.cam || 'orbit');
