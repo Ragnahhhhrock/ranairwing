@@ -1043,7 +1043,7 @@ let crewRig=null;                                  // the pilot sitting in the A
   const sm5=t=>{t=cl01(t);return t*t*t*(t*(t*6-15)+10);};                          // smootherstep: zero slope at both ends
   const loftRings=(zs,ring,colour)=>{                                             // ring(z,angle) -> [x,y]; stitches rings into one smooth skin
     const NZ=zs.length,NR=36,pos=[],col=[],idx=[];
-    zs.forEach(z=>{for(let j=0;j<NR;j++){const [x,y]=ring(z,j/NR*Math.PI*2),c=colour(y);pos.push(x,y,z);col.push(c[0],c[1],c[2]);}});
+    zs.forEach(z=>{for(let j=0;j<NR;j++){const [x,y]=ring(z,j/NR*Math.PI*2),c=colour(y,z);pos.push(x,y,z);col.push(c[0],c[1],c[2]);}});
     for(let i=0;i<NZ-1;i++)for(let j=0;j<NR;j++){const a=i*NR+j,b=i*NR+(j+1)%NR,c=a+NR,d=b+NR;idx.push(a,b,c,b,d,c);}
     const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
     g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();return g;};
@@ -1058,24 +1058,18 @@ let crewRig=null;                                  // the pilot sitting in the A
   buildSeat(crewG,false);crewRig=buildPilot(crewG);setPose(crewRig,POSES.seat);
   parts.crew=[crewG];parts.crewRig=crewRig;parts.ejectAt=[0,.45,-2.62];
   const glare=box(.34,.03,1.5,0,.585,-4.3,mBlk,plane);glare.rotation.x=-.15;        // anti-glare panel
-  (function(){ // avionics hump: rises behind the canopy and fades back into the top of the fuselage
-    const bump=z=>sm5((z+1.9)/1.0)*(1-sm5((z-.4)/2.3));
-    add(new THREE.Mesh(loftRings(Array.from({length:41},(_,i)=>-1.9+4.6*i/40),(z,a)=>{
-      const b=bump(z),k=Math.pow(b,.6),ry=.2*k,cy=1.12*fusR(z)+.16*b-ry;return [.27*k*sp(Math.cos(a),2.4),cy+ry*sp(Math.sin(a),2.4)];},()=>GREY),mSkin),0,0,0,plane);
+  (function(){ // dorsal spine: rises just behind the canopy and tapers gently back into the fin root
+    const bump=z=>sm5((z+1.75)/.5)*(1-sm5((z+.6)/4.2));
+    add(new THREE.Mesh(loftRings(Array.from({length:49},(_,i)=>-1.75+5.35*i/48),(z,a)=>{
+      const b=bump(z),k=Math.pow(b,.6),ry=.21*k,cy=1.12*fusR(z)+.2*b-ry;return [.28*k*sp(Math.cos(a),2.4),cy+ry*sp(Math.sin(a),2.4)];},()=>GREY),mSkin),0,0,0,plane);
   })();
-  (function(){ // engine intakes: oval lip that grows out of the fuselage side and fades back into the skin (no hard edges)
-    const Y0=.3,Z0=-2.26,Z1=-.3,NS=16,NR=28,hull=z=>fusX(z,Y0),sm=sm5;                // hull = fuselage half-width at intake height
+  (function(){ // engine intakes: tall oval mouth behind the cockpit with a red lip, nearly flush, fading back into the fuselage side
+    const Y0=.22,Z0=-2.0,Z1=.5,NS=40,hull=z=>fusX(z,Y0),RED=[.72,.12,.1];
     for(const s of [1,-1]){
-      const pos=[],idx=[];
-      for(let i=0;i<NS;i++){
-        const t=i/(NS-1),z=Z0+(Z1-Z0)*t,k=1-sm(t),rx=.2*k,ry=.27*k,cx=hull(z)-.12;     // centre sits inside the hull; only the lip stands proud
-        for(let j=0;j<NR;j++){const a=j/NR*Math.PI*2;pos.push(s*(cx+Math.cos(a)*rx),Y0+Math.sin(a)*ry,z);}
-      }
-      for(let i=0;i<NS-1;i++)for(let j=0;j<NR;j++){const a=i*NR+j,b=i*NR+(j+1)%NR,c=a+NR,d=b+NR;idx.push(a,b,c,b,d,c);}
-      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
-      const it=add(new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xc2c7ca,roughness:.55,side:THREE.DoubleSide})),0,0,0,plane);
-      const ic=new THREE.Mesh(new THREE.CircleGeometry(1,24),mBlk);ic.scale.set(.15,.215,1);                // dark mouth, set just inside the lip
-      ic.position.set(s*(hull(Z0)-.12),Y0,Z0-.012);ic.rotation.y=Math.PI;plane.add(ic);
+      add(new THREE.Mesh(loftRings(Array.from({length:NS},(_,i)=>Z0+(Z1-Z0)*i/(NS-1)),(z,a)=>{
+        const k=1-sm5((z-Z0)/(Z1-Z0)),rx=.22*k,ry=.46*k,cx=hull(z)-.15;return [s*(cx+Math.cos(a)*rx),Y0+Math.sin(a)*ry];},(y,z)=>z<Z0+.1?RED:GREY),mSkin),0,0,0,plane);
+      const ic=new THREE.Mesh(new THREE.CircleGeometry(1,28),mBlk);ic.scale.set(.17,.4,1);                  // dark mouth, just inside the lip
+      ic.position.set(s*(hull(Z0)-.15),Y0,Z0-.012);ic.rotation.y=Math.PI;plane.add(ic);
     }
   })();
   const ex=cyl(.34,.34,.08,0,0,6.02,mBlk,14,plane);ex.rotation.x=Math.PI/2;
@@ -1091,16 +1085,16 @@ let crewRig=null;                                  // the pilot sitting in the A
     g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));g.setIndex(idx);g.computeVertexNormals();
     return add(new THREE.Mesh(g,mSkin),0,0,0,plane);};
   loft([{x:-4.19,zle:1.6,zte:2.7,y:-.45,t:.08},{x:0,zle:-1.9,zte:2.5,y:-.45,t:.26},{x:4.19,zle:1.6,zte:2.7,y:-.45,t:.08}]);   // delta wing
-  loft([{x:-1.7,zle:5.3,zte:5.85,y:1.09,t:.05},{x:0,zle:3.7,zte:5.7,y:1.09,t:.14},{x:1.7,zle:5.3,zte:5.85,y:1.09,t:.05}]);       // tailplane
+  loft([{x:-1.8,zle:5.5,zte:6.05,y:.33,t:.05},{x:0,zle:4.1,zte:5.95,y:.33,t:.14},{x:1.8,zle:5.5,zte:6.05,y:.33,t:.05}]);       // tailplane, low-set
   (function(){ // fin
-    const s=new THREE.Shape();[[2.7,.6],[5.0,3.35],[5.9,3.35],[6.0,.6]].forEach(([z,y],i)=>i?s.lineTo(z,y):s.moveTo(z,y));s.closePath();
+    const s=new THREE.Shape();[[2.2,.6],[5.2,2.6],[6.0,2.6],[6.1,.3]].forEach(([z,y],i)=>i?s.lineTo(z,y):s.moveTo(z,y));s.closePath();
     const g=new THREE.ExtrudeGeometry(s,{depth:.06,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:3});g.translate(0,0,-.03);g.rotateY(-Math.PI/2);
     add(new THREE.Mesh(g,mTop),0,0,0,plane);
     const cv=document.createElement('canvas');cv.width=64;cv.height=160;const c=cv.getContext('2d');   // checkerboard rudder
     for(let r=0;r<10;r++)for(let q=0;q<4;q++){c.fillStyle=(r+q)%2?'#b3261e':'#f2f0ea';c.fillRect(q*16,r*16,16,16);}
     const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
     const m=new THREE.MeshStandardMaterial({map:tx,roughness:.6,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
-    for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(.9,2.3),m);d.rotation.y=sd*Math.PI/2;d.position.set(sd*.062,2.05,5.45);plane.add(d);}
+    for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(.8,1.5),m);d.rotation.y=sd*Math.PI/2;d.position.set(sd*.062,1.75,5.62);plane.add(d);}
   })();
   (function(){ // wing roundels
     const cv=document.createElement('canvas');cv.width=cv.height=64;const c=cv.getContext('2d');
@@ -1122,7 +1116,7 @@ let crewRig=null;                                  // the pilot sitting in the A
     add(new THREE.Mesh(new THREE.BoxGeometry(.08,.08,.25),new THREE.MeshBasicMaterial({color:sd>0?0x2bff6a:0xff3b2f})),sd*4.2,-.45,2.1,plane).castShadow=false;
   }
   const pipe=cyl(.4,.36,.5,0,0,5.8,mMetal,14,plane);pipe.rotation.x=-Math.PI/2;
-  box(.14,.1,.95,0,3.4,5.45,mTop,plane);                                            // fin cap
+  box(.14,.1,.9,0,2.62,5.6,mTop,plane);                                            // fin cap
   (function(){ // fuselage markings: NAVY, side number, roundel
     const mk=(w,h,draw)=>{const cv=document.createElement('canvas');cv.width=w;cv.height=h;draw(cv.getContext('2d'));
       const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
@@ -1131,7 +1125,8 @@ let crewRig=null;                                  // the pilot sitting in the A
     const navy=mk(256,64,text('NAVY',58)),num=mk(128,64,text('885',54)),rnd=mk(64,64,c=>{
       c.fillStyle='#1c2f6b';c.beginPath();c.arc(32,32,30,0,7);c.fill();c.fillStyle='#f2f0ea';c.beginPath();c.arc(32,32,19,0,7);c.fill();
       c.fillStyle='#b3261e';c.beginPath();c.ellipse(32,33,11,7,-.3,0,7);c.fill();});
-    for(const sd of [1,-1])for(const [m,w,h,x,y,z,tilt] of [[navy,1.9,.48,.675,.12,3.75,.09],[num,.8,.4,.585,.05,-3.95,-.11],[rnd,.62,.62,.795,.0,.75,0]]){
+    for(const sd of [1,-1])for(const [m,w,h,y,z] of [[navy,1.9,.48,.45,3.6],[num,.8,.4,.12,-3.9],[rnd,.62,.62,-.26,3.5]]){
+      const x=fusX(z,y)+.012,tilt=-Math.atan((fusX(z+.2,y)-fusX(z-.2,y))/.4);
       const d=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);d.rotation.y=sd*(Math.PI/2+tilt);d.position.set(sd*x,y,z);plane.add(d);}
   })();
   for(const sd of [1,-1]){                                                          // split flaps under the inboard wing
@@ -1143,7 +1138,7 @@ let crewRig=null;                                  // the pilot sitting in the A
   const leg=(x,y,z,len,r,wr)=>{const g=new THREE.Group();g.position.set(x,y,z);gearG.add(g);
     strut(0,0,0,0,-len,.1,r,mWht,g);const w=cyl(wr,wr,wr*.7,0,-len,.1,mBlk,12,g);w.rotation.z=Math.PI/2;
     strut(0,-len*.35,.05,0,-len*.1,.5,r*.6,mMetal,g);parts.legs.push(g);};
-  leg(0,-.7,-3.75,1.3,.07,.22);leg(1.15,-.5,.8,1.02,.08,.3);leg(-1.15,-.5,.8,1.02,.08,.3);
+  leg(0,-.7,-2.9,1.3,.07,.22);leg(1.15,-.5,.8,1.02,.08,.3);leg(-1.15,-.5,.8,1.02,.08,.3);
   hookG.position.set(0,-.75,4.4);
   strut(0,0,0,0,-1.25,2.3,.05,mMetal,hookG);
 })();
