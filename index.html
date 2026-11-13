@@ -1419,15 +1419,17 @@ function updateTut(dt){
 }
 
 /* ---------- cameras ---------- */
-const view={az:-0.62,el:0.2,dist:340,yaw:0,pitch:0,fly:null,appr:900};
+const view={az:-0.62,el:0.2,dist:340,yaw:0,pitch:0,fly:null,appr:900,cAz:0,cEl:.264,cD:25,cPx:0,cPy:0};
+function resetChase(){view.cAz=0;view.cEl=.264;view.cD=25;view.cPx=0;view.cPy=0;}
 const LOOK={deck:{pos:[2.8,DECK_Y+1.8,99],yaw:.096,pitch:-.03,fov:60},island:{pos:[11.7,DECK_Y+9.8,-2],yaw:2.8,pitch:-.28,fov:65}};
 function setCam(name){
   state.cam=name;view.fly=null;view.appr=900;
   if(LOOK[name]){view.yaw=LOOK[name].yaw;view.pitch=LOOK[name].pitch;}
   document.querySelectorAll('#cams button').forEach(b=>b.classList.toggle('on',b.dataset.cam===name));
   if(FLY[name])ac.snap=true;
+  if(name==='chase')resetChase();
   $('hint').textContent=FLY[name]?
-    'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nR  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
+    'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nchase cam: drag orbit \u00b7 shift/right-drag pan \u00b7 scroll zoom \u00b7 double-click reset\nR  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
     'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nU tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach';
 }
 const tmp=new THREE.Vector3(),tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ');
@@ -1453,9 +1455,12 @@ function updateCamera(dt){
     fov=55;_fwd.set(0,0,-1).applyQuaternion(ac.q);tmp.set(_fwd.x,0,_fwd.z);
     if(tmp.lengthSq()<1e-4)tmp.copy(chaseDir);tmp.normalize();
     if(ac.snap){chaseDir.copy(tmp);ac.snap=false;}else chaseDir.lerp(tmp,1-Math.exp(-dt*3)).normalize();
-    camera.position.copy(ac.pos).addScaledVector(chaseDir,-24);camera.position.y+=6.5;
+    const ca=Math.cos(view.cAz),sa=Math.sin(view.cAz),ce=Math.cos(view.cEl),cd=view.cD;
+    const bx=-chaseDir.x*ca-(-chaseDir.z)*sa,bz=-chaseDir.x*sa+(-chaseDir.z)*ca; // back vector rotated by orbit azimuth
+    camera.position.set(ac.pos.x+bx*cd*ce,ac.pos.y+cd*Math.sin(view.cEl),ac.pos.z+bz*cd*ce);
+    camera.lookAt(ac.pos.x+chaseDir.x*10*(cd/25),ac.pos.y+1.5,ac.pos.z+chaseDir.z*10*(cd/25));
+    if(view.cPx||view.cPy){camera.translateX(view.cPx);camera.translateY(view.cPy);}
     camera.position.y=Math.max(camera.position.y,waveHeight(camera.position.x,camera.position.z,state.t)+1.5);
-    camera.lookAt(ac.pos.x+chaseDir.x*10,ac.pos.y+1.5,ac.pos.z+chaseDir.z*10);
   }else if(state.cam==='eject'){
     fov=55;const p=ej.pos,up=3+6*ej.chute;
     camera.position.set(p.x+ej.camDir.x*(14+8*ej.chute),p.y+up,p.z+ej.camDir.z*(14+8*ej.chute));
@@ -1472,7 +1477,9 @@ function updateCamera(dt){
 
 /* ---------- input ---------- */
 const ptrs=new Map();let pinch=0;
-canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY]);pinch=0;});
+canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,[e.clientX,e.clientY,e.button===2||e.button===1||e.shiftKey]);pinch=0;});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+canvas.addEventListener('dblclick',()=>{if(state.cam==='chase')resetChase();});
 canvas.addEventListener('pointerup',e=>{ptrs.delete(e.pointerId);pinch=0;});
 canvas.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId);pinch=0;});
 canvas.addEventListener('pointermove',e=>{
@@ -1483,9 +1490,13 @@ canvas.addEventListener('pointermove',e=>{
     if(pinch)zoom(pinch/d);pinch=d;return;
   }
   if(state.cam==='orbit'){view.az-=dx*.005;view.el=Math.min(1.45,Math.max(-.02,view.el+dy*.004));}
+  else if(state.cam==='chase'){
+    if(p[2]){const k=view.cD*.0015;view.cPx=Math.max(-40,Math.min(40,view.cPx-dx*k));view.cPy=Math.max(-25,Math.min(25,view.cPy+dy*k));}
+    else{view.cAz-=dx*.006;view.cEl=Math.min(1.4,Math.max(-.3,view.cEl+dy*.005));}
+  }
   else if(LOOK[state.cam]){view.yaw+=dx*.003;view.pitch=Math.min(1.2,Math.max(-1.2,view.pitch+dy*.003));}
 });
-function zoom(f){view.dist=Math.min(2500,Math.max(70,view.dist*f));}
+function zoom(f){if(state.cam==='chase'){view.cD=Math.min(120,Math.max(8,view.cD*f));return;}view.dist=Math.min(2500,Math.max(70,view.dist*f));}
 canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(e.deltaY*.001));},{passive:false});
 const CAMS=['orbit','deck','island','approach','flyby','cockpit','chase'];
 const FLIGHT_KEYS=new Set(['arrowup','arrowdown','arrowleft','arrowright',' ','pageup','pagedown']);

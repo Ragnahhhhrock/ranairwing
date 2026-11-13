@@ -316,5 +316,18 @@
    "dist": 400
   },
   "advance": 5
+ },
+ "s33-chase-camera": {
+  "cam": "chase",
+  "hour": 15,
+  "sea": 3,
+  "speed": 20,
+  "start": "approach",
+  "view": {
+   "cAz": 0.9,
+   "cEl": 0.45,
+   "cD": 38
+  },
+  "advance": 2
  }
 }
