@@ -1041,10 +1041,24 @@ let crewRig=null;                                  // the pilot sitting in the A
   parts.crew=[crewG];parts.crewRig=crewRig;parts.ejectAt=[0,.45,-2.62];
   const glare=box(.34,.03,1.5,0,.585,-4.3,mBlk,plane);glare.rotation.x=-.15;        // anti-glare panel
   box(.5,.32,4.6,0,.82,.2,mTop,plane);                                             // spine
-  for(const s of [1,-1]){
-    const it=cyl(.3,.34,1.5,s*.8,.3,-1.5,mTop,12,plane);it.rotation.x=Math.PI/2;
-    const ic=cyl(.25,.25,.06,s*.8,.3,-2.26,mBlk,12,plane);ic.rotation.x=Math.PI/2;
-  }
+  (function(){ // engine intakes: oval lip that grows out of the fuselage side and fades back into the skin (no hard edges)
+    const prof=[[-2.6,.74],[-1,.78],[1.4,.78]],Y0=.3,Z0=-2.26,Z1=-.3,NS=16,NR=28;
+    const hull=z=>{let r=prof[prof.length-1][1];for(let i=0;i<prof.length-1;i++){const[a,ra]=prof[i],[b,rb]=prof[i+1];if(z<=b){r=ra+(rb-ra)*Math.max(0,(z-a)/(b-a));break;}}
+      return Math.sqrt(Math.max(.01,r*r-(Y0/1.12)*(Y0/1.12)));};                      // fuselage half-width at intake height
+    const sm=t=>{t=Math.min(1,Math.max(0,t));return t*t*t*(t*(t*6-15)+10);};          // smootherstep: zero slope at both ends
+    for(const s of [1,-1]){
+      const pos=[],idx=[];
+      for(let i=0;i<NS;i++){
+        const t=i/(NS-1),z=Z0+(Z1-Z0)*t,k=1-sm(t),rx=.2*k,ry=.27*k,cx=hull(z)-.12;     // centre sits inside the hull; only the lip stands proud
+        for(let j=0;j<NR;j++){const a=j/NR*Math.PI*2;pos.push(s*(cx+Math.cos(a)*rx),Y0+Math.sin(a)*ry,z);}
+      }
+      for(let i=0;i<NS-1;i++)for(let j=0;j<NR;j++){const a=i*NR+j,b=i*NR+(j+1)%NR,c=a+NR,d=b+NR;idx.push(a,b,c,b,d,c);}
+      const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setIndex(idx);g.computeVertexNormals();
+      const it=add(new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xc2c7ca,roughness:.55,side:THREE.DoubleSide})),0,0,0,plane);
+      const ic=new THREE.Mesh(new THREE.CircleGeometry(1,24),mBlk);ic.scale.set(.15,.215,1);                // dark mouth, set just inside the lip
+      ic.position.set(s*(hull(Z0)-.12),Y0,Z0-.012);ic.rotation.y=Math.PI;plane.add(ic);
+    }
+  })();
   const ex=cyl(.34,.34,.08,0,0,6.02,mBlk,14,plane);ex.rotation.x=Math.PI/2;
   const flat=(pts,d,m,y)=>{const g=new THREE.ExtrudeGeometry(planShape(pts),{depth:d,bevelEnabled:false});g.rotateX(-Math.PI/2);return add(new THREE.Mesh(g,m),0,y,0,plane);};
   flat([[0,-1.9],[4.19,1.6],[4.19,2.7],[0,2.5],[-4.19,2.7],[-4.19,1.6]],.14,mTop,-.52);   // delta wing
