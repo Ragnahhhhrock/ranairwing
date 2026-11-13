@@ -1471,6 +1471,18 @@ function initAudio(){
   const wf=actx.createBiquadFilter();wf.type='lowpass';wf.frequency.value=5000;wf.connect(au.whineG);au.whineG.connect(au.master);
   au.whine=[1,1.503].map(m=>{const o=actx.createOscillator();o.type='sawtooth';o.frequency.value=1400*m;
     const g=actx.createGain();g.gain.value=m===1?.5:.22;o.connect(g);g.connect(wf);o.start();return {o,m};});   // compressor whine
+  // radial piston engines (S-2): the firing order of a nine-cylinder radial over two crank turns is recorded once and looped
+  // at a rate that follows rpm. Two engines run a hair apart so their beats drift in and out of step.
+  {const rev=10,N=Math.floor(sr*2/rev),pb=actx.createBuffer(1,N,sr),pd=pb.getChannelData(0),len=Math.floor(sr*.024);
+    for(let c=0;c<9;c++){const t0=Math.floor((c/9+(Math.random()-.5)*.014)*N),amp=.65+Math.random()*.7;   // uneven cylinders give the lumpy burble
+      for(let i=0;i<len;i++){const k=i/len,e=Math.exp(-k*4.5);
+        pd[(t0+i)%N]+=amp*e*(Math.sin(2*Math.PI*(88-30*k)*i/sr)*.95+(Math.random()*2-1)*.5*Math.exp(-k*8));}}   // thump plus a crack of exhaust
+    let pk=0;for(let i=0;i<N;i++)pk=Math.max(pk,Math.abs(pd[i]));for(let i=0;i<N;i++)pd[i]*=.9/pk;
+    au.radLp=actx.createBiquadFilter();au.radLp.type='lowpass';au.radLp.frequency.value=2200;au.radLp.Q.value=.6;
+    au.radG=actx.createGain();au.radG.gain.value=0;au.radLp.connect(au.radG);au.radG.connect(au.master);
+    au.rad=[1,-1].map(()=>{const sn=actx.createBufferSource();sn.buffer=pb;sn.loop=true;sn.connect(au.radLp);sn.start();return sn;});
+    au.propG=actx.createGain();au.propG.gain.value=0;const pf=actx.createBiquadFilter();pf.type='lowpass';pf.frequency.value=500;   // propeller blade beat
+    au.prop=actx.createOscillator();au.prop.type='sawtooth';au.prop.frequency.value=40;au.prop.connect(pf);pf.connect(au.propG);au.propG.connect(au.master);au.prop.start();}
   au.stallG=actx.createGain();au.stallG.gain.value=0;au.stallG.connect(au.master);
   const so=actx.createOscillator();so.type='square';so.frequency.value=380;so.connect(au.stallG);so.start();
 }
@@ -1528,9 +1540,14 @@ function updateAudio(){
   const inCockpit=state.cam==='cockpit',d=camera.position.distanceTo(ac.pos);
   const near=inCockpit?.55:1/(1+Math.pow(d/120,2));au.near=near;       // how loud the aircraft is from this camera
   const r=ac.crashed?0:ac.rpm,live=ac.crashed?0:1;
-  set(au.roar.g.gain,near*live*(.07+.55*r*r));set(au.roar.f.frequency,(inCockpit?180:260)+(inCockpit?500:1500)*r);
-  set(au.hiss.g.gain,near*live*(inCockpit?.02+.03*r:.04+.13*r*r));set(au.hiss.f.frequency,1800+2500*r);
-  set(au.whineG.gain,near*live*(.012+.022*r));
+  const jet=AC.prop?0:1,rev=10+27*r;                                    // jet sounds are off in the propeller aircraft
+  set(au.roar.g.gain,near*live*(.07+.55*r*r)*(jet||.3));set(au.roar.f.frequency,(inCockpit?180:260)+(inCockpit?500:1500)*r);
+  set(au.hiss.g.gain,near*live*(inCockpit?.02+.03*r:.04+.13*r*r)*jet);set(au.hiss.f.frequency,1800+2500*r);
+  set(au.whineG.gain,near*live*(.012+.022*r)*jet);
+  set(au.radG.gain,near*live*(1-jet)*(.3+.55*r));                       // radial engines: pitch and loudness follow rpm
+  au.rad[0].playbackRate.setTargetAtTime(rev/10*.991,t,.12);au.rad[1].playbackRate.setTargetAtTime(rev/10*1.009,t,.12);
+  set(au.radLp.frequency,(inCockpit?900:1900)+2200*r);
+  set(au.propG.gain,near*live*(1-jet)*(.05+.13*r));au.prop.frequency.setTargetAtTime(6*.5625*rev/2*2,t,.12);
   for(const w of au.whine)set(w.o.frequency,(1400+2600*r)*w.m);
   const v=ac.mode==='air'?ac.ias:ac.ias*.5,rush=Math.pow(v/160,2)*.4*(ac.brake?1.5:1)*(ac.gear&&ac.mode==='air'?1.25:1);
   if(ej.active&&!ej.done){const ev=ej.vel.length();set(au.wind.g.gain,Math.min(.35,Math.pow(ev/70,2)*.4+.03*ej.chute));set(au.wind.f.frequency,400+ev*6);}

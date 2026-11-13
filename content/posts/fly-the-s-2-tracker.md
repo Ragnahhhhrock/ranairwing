@@ -16,6 +16,7 @@ The guided tutorial is written for the Skyhawk, so starting it switches you back
 
 ## What is different
 
+- **Radial engine sound.** Two nine-cylinder radials with an uneven, burbling idle. Pitch and loudness follow the throttle, the two engines drift in and out of step, and the jet whine is switched off. It sounds muffled in the cockpit view.
 - **Propellers.** Two propellers that blur into a disc as you add power. Thrust falls away as airspeed rises, so the Tracker accelerates hard at low speed and more slowly at high speed.
 - **Slower.** The approach starts at about 101 knots with gear, full flaps and hook down. The Skyhawk's starts at about 123.
 - **Gentler catapult.** The shot is a little weaker than the Skyhawk's. With the default ship speed and wind it is enough to fly away; with the ship stopped and no wind it is not.
@@ -29,7 +30,7 @@ The guided tutorial is written for the Skyhawk, so starting it switches you back
 - The mass, wing area, thrust, drag and stall values are chosen to give plausible handling and a workable catapult shot. They are not taken from a flight manual or a performance chart.
 - The side number on the fuselage is a placeholder.
 - The model has been checked against the reference photographs only by eye.
-- The sound is the same engine sound as the Skyhawk's. It does not yet sound like a piston engine.
+- The engine sound is synthesised, not recorded. It imitates the firing pattern of a nine-cylinder radial, not a particular engine, and has not been compared with a real Tracker.
 - There is no radome, MAD boom animation or weapons bay.
 
 The Tracker that is towed around the deck and taken down the forward lift is a separate, static model with its wings folded.
