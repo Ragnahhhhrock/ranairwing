@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 1: a carrier at sea, in your browser · RAN Air Wing</title>
+<meta name="description" content="The first build was just the ship: ocean, hull, motion and cameras, with no aircraft yet.">
+<link rel="canonical" href="https://ranairwing.com/blog/phase-1-a-carrier-at-sea/">
+<link rel="alternate" type="application/rss+xml" title="RAN Air Wing dev blog" href="/blog/feed.xml">
+<link rel="stylesheet" href="/blog/style.css">
+<meta property="og:site_name" content="RAN Air Wing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Phase 1: a carrier at sea, in your browser">
+<meta property="og:description" content="The first build was just the ship: ocean, hull, motion and cameras, with no aircraft yet.">
+<meta property="og:url" content="https://ranairwing.com/blog/phase-1-a-carrier-at-sea/">
+<meta property="og:image" content="https://ranairwing.com/blog/img/s02-phase1.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b1622">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Phase 1: a carrier at sea, in your browser", "description": "The first build was just the ship: ocean, hull, motion and cameras, with no aircraft yet.", "datePublished": "2026-11-14T06:28+08:00", "dateModified": "2026-11-14T06:28+08:00", "image": "https://ranairwing.com/blog/img/s02-phase1.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/phase-1-a-carrier-at-sea/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-14T06:28+08:00"><meta property="article:tag" content="Dev diary">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H0ZE9XML6B"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H0ZE9XML6B');</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="/blog/">RAN Air Wing<small>HMAS Melbourne (R21) flight sim · dev blog</small></a>
+<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
+</div></header>
+<main><div class="wrap">
+<article class="post">
+<p class="chips"><a class="chip" href="/blog/category/dev-diary/">Dev diary</a></p>
+<h1>Phase 1: a carrier at sea, in your browser</h1>
+<div class="meta"><time datetime="2026-11-14T06:28+08:00">14 November 2026</time> · 1 min read</div>
+<p class="lede">The first build was just the ship: ocean, hull, motion and cameras, with no aircraft yet.</p>
+<figure class="hero"><img src="/blog/img/s02-phase1.jpg" width="1280" height="720" alt="HMAS Melbourne seen side-on from the orbit camera in a rough sea at sea state 5, with spray and a long wake."><figcaption>Screenshot from the sim. Orbit camera, 10:00, sea state 5, ship at 22 kn.</figcaption></figure>
+<p>The first version of the sim had no aircraft at all. The goal of Phase 1 was a ship that looked and moved like a carrier at sea, so that everything added later would sit on a deck that felt right.</p>
+<h2>What Phase 1 contained</h2>
+<ul>
+<li><strong>Ocean and sky.</strong> An animated swell, horizon haze and a sea-state control from 0 to 6.</li>
+<li><strong>The ship.</strong> A model built entirely in code: hull, flight deck, angled deck, island, catapult, arrestor wires, mirror landing aid and deck markings.</li>
+<li><strong>Ship motion.</strong> Pitch, roll and heave driven by the waves, plus a wake behind the ship.</li>
+<li><strong>Cameras.</strong> Orbit, deck, island, approach and flyby.</li>
+<li><strong>Readouts.</strong> Heading, speed, wind, wind over deck, pitch, roll and heave.</li>
+</ul>
+<p>The ship steams on a heading of 250 degrees, straight into the wind, which is how a carrier runs flying operations. The next post on wind over deck explains why.</p>
+<h2>Why start with the ship</h2>
+<p>A flight sim of a carrier lives or dies on the deck. Wire positions, the mirror, the catapult and the angled deck all have to be in the right places before a landing means anything. Building the ship first also meant it could be checked against reference photographs before any flight code existed. That process is the subject of a later post.</p>
+<h2>Try it</h2>
+<p>Open the <a href="/">sim</a>, drag to look around, scroll to zoom, and use the sea-state slider to see how the ship's motion changes. The orbit camera at sea state 5 is a good place to start.</p>
+<aside class="panel cta"><p>Launch from the catapult, fly the pattern and land on the angled deck, in your browser.</p><a class="btn" href="/">Fly the sim</a></aside>
+
+<div class="share" data-url="https://ranairwing.com/blog/phase-1-a-carrier-at-sea/" data-title="Phase 1: a carrier at sea, in your browser" data-slug="phase-1-a-carrier-at-sea"><span class="label">Share</span><a data-method="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Franairwing.com%2Fblog%2Fphase-1-a-carrier-at-sea%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a><a data-method="x" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Franairwing.com%2Fblog%2Fphase-1-a-carrier-at-sea%2F&text=Phase%201%3A%20a%20carrier%20at%20sea%2C%20in%20your%20browser" target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a><a data-method="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Franairwing.com%2Fblog%2Fphase-1-a-carrier-at-sea%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">LinkedIn</a><a data-method="reddit" href="https://www.reddit.com/submit?url=https%3A%2F%2Franairwing.com%2Fblog%2Fphase-1-a-carrier-at-sea%2F&title=Phase%201%3A%20a%20carrier%20at%20sea%2C%20in%20your%20browser" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">Reddit</a><a data-method="email" href="mailto:?subject=Phase%201%3A%20a%20carrier%20at%20sea%2C%20in%20your%20browser&body=https%3A%2F%2Franairwing.com%2Fblog%2Fphase-1-a-carrier-at-sea%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Email">Email</a><button type="button" data-copy>Copy link</button><button type="button" data-native hidden>Share…</button></div>
+<p class="meta">Filed under <a href="/blog/category/dev-diary/">Dev diary</a></p>
+<nav class="adj" aria-label="More posts"><a class="prev" href="/blog/hide-the-menu/"><span class="label">&larr; Previous</span><span>Hide the menu and readouts for a clear view</span></a><span></span></nav>
+<section class="related"><h3>More like this</h3><ul><li><a href="/blog/hide-the-menu/">Hide the menu and readouts for a clear view</a> <span class="meta">· 13 November 2026</span></li><li><a href="/blog/chase-camera-orbit-pan-zoom/">Chase camera: orbit, pan and zoom</a> <span class="meta">· 13 November 2026</span></li><li><a href="/blog/welcome-to-ran-air-wing/">Welcome to RAN Air Wing</a> <span class="meta">· 13 November 2026</span></li></ul></section>
+</article>
+</div></main>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<script src="/blog/share.js" defer></script>
+</body></html>
