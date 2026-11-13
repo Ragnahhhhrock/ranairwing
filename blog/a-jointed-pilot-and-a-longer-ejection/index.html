@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A jointed pilot and a longer ejection · RAN Air Wing</title>
+<meta name="description" content="The pilot now has a head, torso, arms and legs, and an ejection runs as a sequence from seat rocket to parachute to landing.">
+<link rel="canonical" href="https://ranairwing.com/blog/a-jointed-pilot-and-a-longer-ejection/">
+<link rel="alternate" type="application/rss+xml" title="RAN Air Wing dev blog" href="/blog/feed.xml">
+<link rel="stylesheet" href="/blog/style.css">
+<meta property="og:site_name" content="RAN Air Wing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A jointed pilot and a longer ejection">
+<meta property="og:description" content="The pilot now has a head, torso, arms and legs, and an ejection runs as a sequence from seat rocket to parachute to landing.">
+<meta property="og:url" content="https://ranairwing.com/blog/a-jointed-pilot-and-a-longer-ejection/">
+<meta property="og:image" content="https://ranairwing.com/blog/img/s34-eject-chute.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b1622">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "A jointed pilot and a longer ejection", "description": "The pilot now has a head, torso, arms and legs, and an ejection runs as a sequence from seat rocket to parachute to landing.", "datePublished": "2026-11-13T09:10+08:00", "dateModified": "2026-11-13T09:10+08:00", "image": "https://ranairwing.com/blog/img/s34-eject-chute.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/a-jointed-pilot-and-a-longer-ejection/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-13T09:10+08:00"><meta property="article:tag" content="Dev diary"><meta property="article:tag" content="How to fly">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H0ZE9XML6B"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H0ZE9XML6B');</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="/blog/">RAN Air Wing<small>HMAS Melbourne (R21) flight sim · dev blog</small></a>
+<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
+</div></header>
+<main><div class="wrap">
+<article class="post">
+<p class="chips"><a class="chip" href="/blog/category/dev-diary/">Dev diary</a><a class="chip" href="/blog/category/how-to-fly/">How to fly</a></p>
+<h1>A jointed pilot and a longer ejection</h1>
+<div class="meta"><time datetime="2026-11-13T09:10+08:00">13 November 2026</time> · 3 min read</div>
+<p class="lede">The pilot now has a head, torso, arms and legs, and an ejection runs as a sequence from seat rocket to parachute to landing.</p>
+<figure class="hero"><img src="/blog/img/s34-eject-chute.jpg" width="1280" height="720" alt="A pilot in a flight suit and white helmet hangs under an orange and white parachute over the sea, hands up on the risers."><figcaption>Screenshot from the sim. Ejection camera, 15:00, sea state 3, ship at 20 kn. About four seconds after pressing X twice.</figcaption></figure>
+<p>The pilot used to be three boxes and a helmet. Now there is a body, and the ejection is a sequence you can watch.</p>
+<h2>The pilot</h2>
+<p>The pilot has a helmet with a visor and oxygen mask, a torso with harness straps and a parachute pack, a life preserver around the neck, and two arms and two legs, each with its joints. Gloves and boots are modelled.</p>
+<p>In the cockpit of the A-4G or the S-2 Tracker the pilot sits in a rocket seat. The right hand follows the stick and the left hand follows the throttle, and the head sags a little under g. You see this from the outside cameras, for example Chase (<kbd>7</kbd>). The Cockpit camera (<kbd>6</kbd>) looks out from the pilot's eyes, so the body is not drawn there.</p>
+<h2>The ejection</h2>
+<p>Press <kbd>X</kbd> twice, as before. What happens next, with times from the moment of the second press:</p>
+<ol>
+<li><strong>Canopy.</strong> The canopy goes first. The pilot's hands come up to the face and the legs are drawn in.</li>
+<li><strong>Seat rocket, 0 to 0.45 s.</strong> The seat fires along its rails and climbs away from the aircraft.</li>
+<li><strong>Windblast.</strong> Once the hands let go, the arms and legs flail. The faster the air moves past, the harder they are thrown about, up to about 65 m/s (roughly 125 kn).</li>
+<li><strong>Drogue, from 0.45 s.</strong> After the rocket burns out the seat pitches backwards. A small drogue parachute streams downwind of the seat and damps the tumble.</li>
+<li><strong>Separation, at 1.3 s.</strong> The seat falls away on its drogue and the pilot is pushed clear.</li>
+<li><strong>Main parachute, from 1.6 s.</strong> The canopy opens over about a second and a half. The pilot swings upright with both hands on the risers and the legs hanging, and sways a little on the way down at about 6.5 m/s.</li>
+</ol>
+<p>The readout under the camera follows the stages: seat rocket, drogue chute, seat separated, parachute opening, parachute open.</p>
+<figure class="shot"><img src="/blog/img/s33-eject-seat.jpg" width="1280" height="720" loading="lazy" alt="Screenshot from the sim. Ejection camera, 15:00, sea state 3, ship at 20 kn. About one second after pressing X twice: the drogue is out and the arms are blown back."><figcaption>Screenshot from the sim. Ejection camera, 15:00, sea state 3, ship at 20 kn. About one second after pressing X twice: the drogue is out and the arms are blown back.</figcaption></figure>
+
+<h2>Landing</h2>
+<p>The rules are the same as before. A pilot who hits the deck or the sea before the parachute is almost fully open, while falling fast, is killed. Otherwise:</p>
+<ul>
+<li><strong>In the water.</strong> The life preserver inflates and the pilot floats head up. The message says the rescue helicopter picks the pilot up.</li>
+<li><strong>On the flight deck.</strong> The pilot lands and sits up.</li>
+<li><strong>Too low.</strong> The pilot lies still and the life preserver stays flat.</li>
+</ul>
+<h2>What is still approximate</h2>
+<ul>
+<li>The seat is a generic rocket seat. It is not a model of the seat fitted to either aircraft, and the timings are tuned to look right, not taken from seat data.</li>
+<li>The limbs are animated, not simulated. The flailing is a set of overlapping oscillations scaled by airspeed, not a physics model of a body in the airstream.</li>
+<li>The drogue steadies the tumble but adds no drag, so the seat and pilot fall at the same rate as before.</li>
+<li>The pilot's hands in the cockpit move with the controls but are not placed on a modelled stick or throttle.</li>
+</ul>
+<p>See <a href="/blog/crashes-and-ejecting/">crashes, ejecting and the counters</a> for what the counters do after an ejection.</p>
+<aside class="panel cta"><p>Launch from the catapult, fly the pattern and land on the angled deck, in your browser.</p><a class="btn" href="/">Fly the sim</a></aside>
+
+<div class="share" data-url="https://ranairwing.com/blog/a-jointed-pilot-and-a-longer-ejection/" data-title="A jointed pilot and a longer ejection" data-slug="a-jointed-pilot-and-a-longer-ejection"><span class="label">Share</span><a data-method="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Franairwing.com%2Fblog%2Fa-jointed-pilot-and-a-longer-ejection%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a><a data-method="x" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Franairwing.com%2Fblog%2Fa-jointed-pilot-and-a-longer-ejection%2F&text=A%20jointed%20pilot%20and%20a%20longer%20ejection" target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a><a data-method="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Franairwing.com%2Fblog%2Fa-jointed-pilot-and-a-longer-ejection%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">LinkedIn</a><a data-method="reddit" href="https://www.reddit.com/submit?url=https%3A%2F%2Franairwing.com%2Fblog%2Fa-jointed-pilot-and-a-longer-ejection%2F&title=A%20jointed%20pilot%20and%20a%20longer%20ejection" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">Reddit</a><a data-method="email" href="mailto:?subject=A%20jointed%20pilot%20and%20a%20longer%20ejection&body=https%3A%2F%2Franairwing.com%2Fblog%2Fa-jointed-pilot-and-a-longer-ejection%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Email">Email</a><button type="button" data-copy>Copy link</button><button type="button" data-native hidden>Share…</button></div>
+<p class="meta">Filed under <a href="/blog/category/dev-diary/">Dev diary</a>, <a href="/blog/category/how-to-fly/">How to fly</a></p>
+<nav class="adj" aria-label="More posts"><a class="prev" href="/blog/fly-the-s-2-tracker/"><span class="label">&larr; Previous</span><span>Fly the S-2 Tracker</span></a><a class="next" href="/blog/welcome-to-ran-air-wing/"><span class="label">Next &rarr;</span><span>Welcome to RAN Air Wing</span></a></nav>
+<section class="related"><h3>More like this</h3><ul><li><a href="/blog/welcome-to-ran-air-wing/">Welcome to RAN Air Wing</a> <span class="meta">· 13 November 2026</span></li><li><a href="/blog/fly-the-s-2-tracker/">Fly the S-2 Tracker</a> <span class="meta">· 13 November 2026</span></li><li><a href="/blog/the-task-group-escorts/">The task group: Perth, Derwent and Supply join Melbourne</a> <span class="meta">· 13 November 2026</span></li></ul></section>
+</article>
+</div></main>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<script src="/blog/share.js" defer></script>
+</body></html>

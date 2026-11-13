@@ -356,5 +356,29 @@
    "cD": 34
   },
   "advance": 4
+ },
+ "s33-eject-seat": {
+  "cam": "orbit",
+  "start": "approach",
+  "hour": 15,
+  "sea": 3,
+  "speed": 20,
+  "keys": [
+   "x",
+   "x"
+  ],
+  "advance": 0.95
+ },
+ "s34-eject-chute": {
+  "cam": "orbit",
+  "start": "approach",
+  "hour": 15,
+  "sea": 3,
+  "speed": 20,
+  "keys": [
+   "x",
+   "x"
+  ],
+  "advance": 4
  }
 }

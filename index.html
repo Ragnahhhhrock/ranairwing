@@ -576,7 +576,7 @@ const life=(function(){
     add(new THREE.Mesh(fg,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.05,side:THREE.DoubleSide})),0,0,0,g);
     const cm=fly?new THREE.MeshStandardMaterial({color:0x7fa6bd,roughness:.1,metalness:.3,transparent:true,opacity:.42,depthWrite:false}):mGl;
     const can=add(new THREE.Mesh(new THREE.SphereGeometry(1,16,12),cm),0,.95,-3.3,g);can.scale.set(.62,.5,1.5);P.canopy=can;     // cockpit
-    if(fly){P.crew=[box(.34,.5,.34,0,.55,-3.2,mBk,g),add(new THREE.Mesh(new THREE.SphereGeometry(.15,10,8),mW),0,.93,-3.25,g),box(.3,.3,.3,0,.62,-3.25,M(0x4a5a3a),g)];}
+    if(fly){const cg=new THREE.Group();cg.position.set(0,.62,-3.25);g.add(cg);buildSeat(cg,false);P.crewRig=buildPilot(cg);setPose(P.crewRig,POSES.seat);P.crew=[cg];P.ejectAt=[0,.62,-3.25];}   // pilot and seat, hips at the origin
     add(new THREE.Mesh(new THREE.SphereGeometry(1,12,8),mW),0,-1.15,.9,g).scale.set(.75,.45,1.2);           // retracted radome
     const wing=[[-5.6,-1],[-1.2,-1.7],[1.2,-1.7],[5.6,-1],[5.6,1.3],[1.2,1.6],[-1.2,1.6],[-5.6,1.3]];      // high wing, inner panels
     add(slab(wing,.25,mG),0,.85,0,g);add(slab(wing,.03,mW),0,.82,0,g);
@@ -934,6 +934,84 @@ function updateShip(dt){
   ship.position.y=mot.heave;ship.rotation.x=mot.pitch;ship.rotation.z=mot.roll;
 }
 
+/* ---------- pilot (jointed body) and ejection seat ---------- */
+// Joint angles in radians. Shoulder/hip x = swing forward (+), a = abduction (+ = away from the body), elbow flexes forward (+), knee bends back (-).
+const POSES={
+  seat: {spX:-.04,spZ:0,nkX:0,nkZ:0,shLx:.35,shLa:.1,shRx:.5,shRa:-.1,elL:.9,elR:1.1,hpLx:1.3,hpLa:.06,hpRx:1.3,hpRa:.06,knL:-1.25,knR:-1.25},     // hands on throttle and stick, feet on the pedals
+  pull: {spX:.03,spZ:0,nkX:.18,nkZ:0,shLx:2.1,shLa:.15,shRx:2.1,shRa:.15,elL:2,elR:2,hpLx:1.45,hpLa:.02,hpRx:1.45,hpRa:.02,knL:-1.9,knR:-1.9},          // hands at the face-blind handle, legs drawn in by the garters
+  blast:{spX:.12,spZ:0,nkX:.15,nkZ:0,shLx:-.9,shLa:.75,shRx:-.9,shRa:.75,elL:.35,elR:.35,hpLx:.25,hpLa:.25,hpRx:.25,hpRa:.25,knL:-.5,knR:-.5},        // arms and legs blown back and out by the airstream
+  hang: {spX:.05,spZ:0,nkX:.12,nkZ:0,shLx:2.5,shLa:-.12,shRx:2.5,shRa:-.12,elL:.85,elR:.85,hpLx:.2,hpLa:.05,hpRx:.12,hpRa:.05,knL:-.25,knR:-.2},     // hands on the risers, legs hanging
+  sit:  {spX:.15,spZ:0,nkX:.1,nkZ:0,shLx:.5,shLa:.3,shRx:.6,shRa:.3,elL:.6,elR:.6,hpLx:1.45,hpLa:.2,hpRx:1.45,hpRa:.2,knL:-.15,knR:-.25},                    // sitting up on the deck after landing
+  limp: {spX:.1,spZ:0,nkX:.2,nkZ:0,shLx:.3,shLa:.5,shRx:.15,shRa:.55,elL:.3,elR:.25,hpLx:.15,hpLa:.2,hpRx:.1,hpRa:.25,knL:-.2,knR:-.15}             // arms and legs slack
+};
+const mixPose=(o,a,b,k)=>{for(const key in a)o[key]=a[key]+(b[key]-a[key])*k;return o;};
+function flutter(p,t,A){ // windblast: limbs flail about their pose, harder the faster the air
+  const w=(f,ph)=>Math.sin(t*f+ph)+.45*Math.sin(t*f*2.3+ph*1.7);
+  p.shLx+=A*.7*w(11,0);p.shRx+=A*.7*w(12,2);p.shLa+=A*.5*w(9,1);p.shRa+=A*.5*w(10,3);
+  p.elL+=A*.6*w(13,4);p.elR+=A*.6*w(14,5);
+  p.hpLx+=A*.45*w(10,6);p.hpRx+=A*.45*w(11,7);p.hpLa+=A*.3*w(8,8);p.hpRa+=A*.3*w(9,9);
+  p.knL+=A*.5*w(12,1.3);p.knR+=A*.5*w(13,2.3);
+  p.nkX+=A*.35*w(7,2);p.nkZ+=A*.2*w(6,5);p.spX+=A*.08*w(9,3);
+}
+function setPose(R,p){
+  R.sp.rotation.set(p.spX,0,p.spZ);R.nk.rotation.set(p.nkX,0,p.nkZ);
+  for(let i=0;i<2;i++){const s=i?1:-1;
+    R.sh[i].rotation.set(i?p.shRx:p.shLx,0,s*(i?p.shRa:p.shLa));
+    R.el[i].rotation.set(Math.max(0,i?p.elR:p.elL),0,0);                  // elbows and knees only bend one way
+    R.hip[i].rotation.set(i?p.hpRx:p.hpLx,0,s*(i?p.hpRa:p.hpLa));
+    R.kn[i].rotation.set(Math.min(0,i?p.knR:p.knL),0,0);}
+}
+const mshAt=(geo,mat,par,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=true;par.add(m);return m;};
+function buildPilot(parent){ // origin at the hips; faces -z; about 1.75 m tall standing
+  const mSuit=M(0x55633f),mSuit2=M(0x47543a),mGlove=M(0x2b2b27),mHelm=M(0xf0f0ea,{roughness:.35}),mVisor=M(0x16181a,{roughness:.1,metalness:.5}),
+    mMask=M(0x1d1f20),mBoot=M(0x1b1a18),mVest=M(0xff5f12,{roughness:.8}),mStrap=M(0x16181b),mPack=M(0x2f3a2c);
+  const J=(par,x,y,z)=>{const g=new THREE.Group();g.position.set(x,y,z);par.add(g);return g;};
+  const limb=(par,len,r1,r2,mat)=>{mshAt(new THREE.CylinderGeometry(r1,r2,len,8),mat,par,0,-len/2,0);mshAt(new THREE.SphereGeometry(r1,8,6),mat,par,0,0,0);};
+  const root=J(parent,0,0,0),pel=J(root,0,0,0);
+  mshAt(new THREE.BoxGeometry(.32,.17,.22),mSuit2,pel,0,0,0);
+  mshAt(new THREE.BoxGeometry(.35,.05,.24),mStrap,pel,0,.04,0);                                // lap belt
+  const sp=J(pel,0,.06,0);
+  mshAt(new THREE.CylinderGeometry(.19,.15,.42,10),mSuit,sp,0,.2,0).scale.z=.62;                 // torso
+  for(const s of [-1,1])mshAt(new THREE.BoxGeometry(.045,.4,.012),mStrap,sp,s*.085,.21,-.122);  // harness straps over the shoulders
+  mshAt(new THREE.BoxGeometry(.3,.36,.1),mPack,sp,0,.2,.15);                                    // parachute pack on the back
+  const vest=mshAt(new THREE.TorusGeometry(.16,.035,6,14),mVest,sp,0,.4,-.01);vest.rotation.x=Math.PI/2;   // life preserver, inflates in the water
+  const nk=J(sp,0,.44,0);
+  mshAt(new THREE.CylinderGeometry(.045,.05,.08,8),mSuit,nk,0,.02,0);
+  const hs=[1,1.05,1.15];
+  mshAt(new THREE.SphereGeometry(.13,14,10),mHelm,nk,0,.13,0).scale.set(...hs);                    // helmet
+  mshAt(new THREE.SphereGeometry(.136,12,8,Math.PI*1.5-.7,1.4,.95,.75),mVisor,nk,0,.13,0).scale.set(...hs);   // visor
+  mshAt(new THREE.BoxGeometry(.09,.075,.05),mMask,nk,0,.07,-.145);                              // oxygen mask
+  const sh=[],el=[],hip=[],kn=[];
+  for(const s of [-1,1]){
+    const a=J(sp,s*.21,.37,0);limb(a,.3,.052,.042,mSuit);
+    const e=J(a,0,-.3,0);limb(e,.27,.042,.034,mSuit);
+    const w=J(e,0,-.27,0);mshAt(new THREE.SphereGeometry(.046,8,6),mGlove,w,0,-.02,0);          // glove
+    const h=J(pel,s*.095,-.03,0);limb(h,.42,.085,.06,mSuit2);
+    const k=J(h,0,-.42,0);limb(k,.42,.06,.045,mSuit2);
+    const an=J(k,0,-.42,0);mshAt(new THREE.BoxGeometry(.1,.07,.27),mBoot,an,0,-.03,-.06);       // boot
+    sh.push(a);el.push(e);hip.push(h);kn.push(k);
+  }
+  return {root,pel,sp,nk,sh,el,hip,kn,vest};
+}
+function buildSeat(parent,drogue){ // rocket seat, origin about the pilot's hips
+  const mS=M(0x24282b),mR=M(0x8a8f93,{metalness:.5,roughness:.4}),mO=M(0xd9a21f),g=new THREE.Group();parent.add(g);
+  const bx=(w,h,d,x,y,z,m)=>mshAt(new THREE.BoxGeometry(w,h,d),m||mS,g,x,y,z);
+  bx(.44,.06,.46,0,-.1,-.04);                 // seat pan
+  bx(.44,.8,.07,0,.28,.15);                   // back
+  bx(.3,.22,.1,0,.8,.15);                     // head box
+  bx(.24,.08,.04,0,.8,.1,M(0x4a5a3a));        // head rest
+  mshAt(new THREE.CylinderGeometry(.07,.07,.95,10),mR,g,0,.1,.27);          // rocket motor
+  for(const s of [-1,1])mshAt(new THREE.CylinderGeometry(.02,.02,1.05,6),mR,g,s*.2,.3,.2);   // guide rails
+  bx(.12,.03,.04,0,-.06,-.22,mO);             // lower handle
+  let d=null;
+  if(drogue){ // drogue parachute streaming behind the seat
+    d=new THREE.Group();d.position.set(0,.93,.15);g.add(d);d.visible=false;
+    const ln=new THREE.BufferGeometry();ln.setAttribute('position',new THREE.Float32BufferAttribute([0,0,0,0,1.1,0],3));
+    d.add(new THREE.Line(ln,new THREE.LineBasicMaterial({color:0xe8e8e2})));
+    mshAt(new THREE.CylinderGeometry(.15,.03,.4,10,1,true),new THREE.MeshStandardMaterial({color:0xe0501a,side:THREE.DoubleSide,roughness:.9}),d,0,1.3,0);
+  }
+  return {g,drogue:d};
+}
 /* ---------- A-4G Skyhawk ---------- */
 const TYPES={ // flight model constants per aircraft: mass, wing area, thrust, lift slope, stall angle, drag, catapult acceleration, approach set-up
   a4:{name:'A-4G Skyhawk',m:6800,S:24.15,Tmax:41000,CLa:3.5,gearH:1.9,sit:.09,c0:.1,cf:.35,as:.30,cd0:.024,k:.137,gearD:.03,qk:1,cat:30,vApp:63.5,thrApp:.28,apPitch:.13,prop:0,hasBrakes:1,eye:[0,1.05,-2.9],aoa:[9.2,11.8]},
@@ -943,6 +1021,7 @@ const WIRES=[22,28,34,40,46];
 const V3=THREE.Vector3;
 const plane=new THREE.Group();scene.add(plane);
 const gearG=new THREE.Group(),hookG=new THREE.Group(),partsA4={legs:[],flaps:[],brakes:[],crew:[],canopy:null};let parts=partsA4;
+let crewRig=null;                                  // the pilot sitting in the A-4G cockpit
 (function(){
   const mTop=M(0xc2c7ca,{roughness:.55}),mWht=M(0xf0f0ea,{roughness:.5}),mGlass=M(0x14202b,{roughness:.15,metalness:.4}),
     mBlk=M(0x101113),mMetal=M(0x8a8f93,{metalness:.5,roughness:.5});
@@ -954,10 +1033,12 @@ const gearG=new THREE.Group(),hookG=new THREE.Group(),partsA4={legs:[],flaps:[],
   for(let i=0;i<fp.count;i++){const top=fp.getY(i)>-.12;fc[i*3]=top?.76:.94;fc[i*3+1]=top?.78:.94;fc[i*3+2]=top?.79:.92;}
   fg.setAttribute('color',new THREE.BufferAttribute(fc,3));fg.computeVertexNormals();
   add(new THREE.Mesh(fg,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.05,side:THREE.DoubleSide})),0,0,0,plane);
-  const can=add(new THREE.Mesh(new THREE.SphereGeometry(1,16,12),new THREE.MeshStandardMaterial({color:0x7fa6bd,roughness:.1,metalness:.3,transparent:true,opacity:.42,depthWrite:false})),0,.7,-2.75,plane);
-  can.scale.set(.4,.46,1.25);can.castShadow=false;
-  parts.canopy=can;parts.crew=[box(.34,.5,.34,0,.55,-2.45,mBlk,plane),                // ejection seat, helmet, shoulders
-    add(new THREE.Mesh(new THREE.SphereGeometry(.15,10,8),mWht),0,.86,-2.72,plane),box(.3,.3,.3,0,.6,-2.75,M(0x4a5a3a),plane)];
+  const can=add(new THREE.Mesh(new THREE.SphereGeometry(1,16,12),new THREE.MeshStandardMaterial({color:0x7fa6bd,roughness:.1,metalness:.3,transparent:true,opacity:.42,depthWrite:false})),0,.78,-2.75,plane);
+  can.scale.set(.42,.6,1.3);can.castShadow=false;
+  parts.canopy=can;
+  const crewG=new THREE.Group();crewG.position.set(0,.45,-2.62);plane.add(crewG);                // ejection seat and pilot, hips at the origin
+  buildSeat(crewG,false);crewRig=buildPilot(crewG);setPose(crewRig,POSES.seat);
+  parts.crew=[crewG];parts.crewRig=crewRig;parts.ejectAt=[0,.45,-2.62];
   const glare=box(.34,.03,1.5,0,.585,-4.3,mBlk,plane);glare.rotation.x=-.15;        // anti-glare panel
   box(.5,.32,4.6,0,.82,.2,mTop,plane);                                             // spine
   for(const s of [1,-1]){
@@ -1255,7 +1336,7 @@ function drawHud(){
     else{
       hc.fillText('EJECTED',w/2,h*.8);hc.font='13px ui-monospace,Menlo,Consolas,monospace';
       hc.fillText(Math.max(0,Math.round(ej.pos.y*3.281/10)*10)+' ft   '+Math.round(ej.vel.y*196.85/10)*10+' fpm   '+
-        (ej.t<1.3?'seat rocket':ej.chute<=0?'seat separated':ej.chute<1?'parachute opening':'parachute open'),w/2,h*.8+24);
+        (ej.t<.45?'seat rocket':ej.t<1.3?'drogue chute':ej.chute<=0?'seat separated':ej.chute<1?'parachute opening':'parachute open'),w/2,h*.8+24);
     }
     return;
   }
@@ -1332,21 +1413,21 @@ function track(name,params){
 }
 const clean=s=>String(s).replace(/,.*$/,'').toLowerCase();
 const ej={active:false,pos:new V3(),vel:new V3(),q:new THREE.Quaternion(),t:0,chute:0,sepd:false,popped:false,done:false,doneT:0,armT:0,
-  camDir:new V3(0,0,1),prevCam:'chase',msg:'',local:null};
+  camDir:new V3(0,0,1),prevCam:'chase',msg:'',local:null,w:0,air:0,rest:0,vestK:1,lieQ:new THREE.Quaternion()};
 const ejG=new THREE.Group();ejG.visible=false;scene.add(ejG);
-const ejSeat=box(.46,1,.4,0,.1,.14,M(0x1c1f22),ejG),chuteG=new THREE.Group();
-box(.42,.6,.28,0,.25,-.06,M(0x4a5a3a),ejG);box(.36,.2,.55,0,-.12,-.3,M(0x4a5a3a),ejG);
-add(new THREE.Mesh(new THREE.SphereGeometry(.15,10,8),M(0xf0f0ea)),0,.7,-.06,ejG);
-(function(){ // parachute: striped canopy and rigging lines
+const ejSeat=buildSeat(ejG,true),ejRig=buildPilot(ejG),chuteG=new THREE.Group(),risers=new THREE.LineSegments(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0xe8e8e2}));
+const ejPose=Object.assign({},POSES.pull);
+(function(){ // parachute: striped canopy, suspension lines to a confluence point, and two risers down to the harness
   const cv=document.createElement('canvas');cv.width=96;cv.height=8;const c=cv.getContext('2d');
   for(let i=0;i<12;i++){c.fillStyle=i%2?'#f2f0ea':'#e0661f';c.fillRect(i*8,0,8,8);}
   const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
   const dome=new THREE.Mesh(new THREE.SphereGeometry(4.2,24,8,0,Math.PI*2,0,Math.PI/2),new THREE.MeshStandardMaterial({map:tx,side:THREE.DoubleSide,roughness:.9}));
-  dome.scale.y=.62;dome.position.y=9;dome.castShadow=true;chuteG.add(dome);
-  const pts=[];for(let i=0;i<12;i++){const a=i*Math.PI/6;pts.push(Math.cos(a)*4.2,9,Math.sin(a)*4.2,0,.9,0);}
+  dome.scale.y=.62;dome.position.y=8;dome.castShadow=true;chuteG.add(dome);
+  const pts=[];for(let i=0;i<12;i++){const a=i*Math.PI/6;pts.push(Math.cos(a)*4.2,8,Math.sin(a)*4.2,0,1.9,0);}
   const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));
   chuteG.add(new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:0xe8e8e2})));
-  chuteG.visible=false;ejG.add(chuteG);
+  risers.geometry.setAttribute('position',new THREE.Float32BufferAttribute([-.16,.5,.03,0,1.9,0,.16,.5,.03,0,1.9,0],3));   // harness D-rings to the confluence point
+  risers.visible=chuteG.visible=false;ejG.add(chuteG,risers);
 })();
 const fx=[],debris=[],fxGeo=new THREE.SphereGeometry(1,10,8);
 function spawnFx(pos,kind){
@@ -1375,24 +1456,54 @@ function worldVel(out){ // aircraft velocity over the sea, in either mode
 }
 function eject(){
   if(ej.active||ac.crashed)return;
-  Object.assign(ej,{active:true,t:0,chute:0,sepd:false,popped:false,done:false,msg:'',local:null,armT:0});
+  Object.assign(ej,{active:true,t:0,chute:0,sepd:false,popped:false,done:false,msg:'',local:null,armT:0,w:0,air:0,rest:0,vestK:1});
   _up.set(0,1,0).applyQuaternion(ac.q);_fwd.set(0,0,-1).applyQuaternion(ac.q);
-  ej.pos.set(0,.7,-2.6).applyQuaternion(ac.q).add(ac.pos);worldVel(ej.vel);ej.q.copy(ac.q);
+  ej.pos.set(...parts.ejectAt).applyQuaternion(ac.q).add(ac.pos);worldVel(ej.vel);ej.q.copy(ac.q);
   ej.camDir.set(-_fwd.x,0,-_fwd.z);if(ej.camDir.lengthSq()<.01)ej.camDir.set(0,0,1);ej.camDir.normalize();
   sess.ejections++;track('pilot_eject',{altitude_ft:Math.round(Math.max(ac.pos.y,0)*3.281),airspeed_kn:Math.round(ac.ias||0),flight_mode:ac.mode,eject_number:sess.ejections});
   ac.pilot=false;parts.canopy.visible=false;for(const m of parts.crew)m.visible=false;
   const cn=parts.canopy.clone();cn.position.copy(ej.pos);cn.quaternion.copy(ac.q);scene.add(cn);     // canopy goes first
   debris.push({m:cn,vel:ej.vel.clone().addScaledVector(_up,12).addScaledVector(_fwd,-8),life:6});
-  ejG.visible=true;ejSeat.visible=true;chuteG.visible=false;ejG.position.copy(ej.pos);ejG.quaternion.copy(ej.q);
+  ejG.visible=true;ejSeat.g.visible=true;ejSeat.drogue.visible=false;risers.visible=chuteG.visible=false;ejRig.vest.scale.setScalar(1);ejG.position.copy(ej.pos);ejG.quaternion.copy(ej.q);
+  setPose(ejRig,Object.assign(ejPose,POSES.pull));
   if(state.cam!=='eject')ej.prevCam=state.cam;setCam('eject');
   const n=au.near;au.near=1;sfx.eject();au.near=n;
+}
+const sstep=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+function posePilot(dt){ // joint angles through the sequence
+  const t=ej.t,c=sstep(ej.chute);
+  if(ej.done){
+    ej.rest=Math.min(1,ej.rest+dt*1.2);
+    mixPose(ejPose,POSES.hang,ej.local&&!ej.dead?POSES.sit:POSES.limp,ej.dead?1:sstep(ej.rest));
+    setPose(ejRig,ejPose);return;
+  }
+  const b=sstep((t-.12)/.45),A=Math.min(1,ej.air/65)*(1-.9*c);
+  mixPose(ejPose,POSES.pull,POSES.blast,b);                     // hands leave the handle and the airstream takes the limbs
+  flutter(ejPose,t,A*b);
+  mixPose(ejPose,ejPose,POSES.hang,c);                          // under the canopy: hands go to the risers, legs hang
+  ejPose.hpLx+=Math.sin(t*1.9)*.1*c;ejPose.hpRx+=Math.sin(t*1.9+.8)*.1*c;ejPose.nkX+=Math.sin(t*1.1)*.05*c;
+  setPose(ejRig,ejPose);
+}
+const cockpitPose={};
+function animatePilot(dt){ // the pilot in the cockpit: right hand follows the stick, left hand the throttle, head sags under g
+  if(!ac.pilot||!parts.crewRig||state.cam==='cockpit')return;
+  const p=Object.assign(cockpitPose,POSES.seat),st=ac.stick;
+  p.shRx-=st.p*.2;p.shRa+=st.r*.18;p.elR-=st.p*.2;
+  p.shLx+=ac.thr*.25-.1;p.elL-=ac.thr*.2;
+  p.nkX-=Math.max(-.2,Math.min(.4,(ac.g-1)*.05));p.spX-=Math.max(0,ac.g-1)*.015;
+  setPose(parts.crewRig,p);
 }
 function updateEject(dt){
   if(ej.armT>0)ej.armT-=dt;
   if(!ej.active)return;
   if(ej.done){
-    if(ej.local)ej.pos.copy(ship.localToWorld(_a.copy(ej.local)));else ej.pos.y=waveHeight(ej.pos.x,ej.pos.z,state.t)-.2;
+    if(ej.local)ej.pos.copy(ship.localToWorld(_a.copy(ej.local)));else ej.pos.y=waveHeight(ej.pos.x,ej.pos.z,state.t)-.05;
     ejG.position.copy(ej.pos);
+    // slump onto the back: flat on the deck, or floating head-up in the life preserver
+    _q.setFromAxisAngle(Y_AX,ej.lieYaw);if(ej.local)_q.premultiply(ship.quaternion);
+    ej.q.slerp(_q.multiply(_q2.setFromAxisAngle(X_AX,ej.local?(ej.dead?1.45:.25):1)),1-Math.exp(-dt*3));ejG.quaternion.copy(ej.q);
+    if(!ej.local&&!ej.dead)ejRig.vest.scale.setScalar(ej.vestK=Math.min(1.9,ej.vestK+dt*2.5));      // life preserver inflates
+    posePilot(dt);
     ej.doneT-=dt;if(ej.doneT<=0)resetAircraft(ac.start);
     return;
   }
@@ -1402,26 +1513,39 @@ function updateEject(dt){
     const h=Math.min(t,1/120);
     ej.chute=ej.t<1.6?0:Math.min(1,(ej.t-1.6)/1.5);
     const k=.004+.226*ej.chute*ej.chute;                       // drag: seat and man, then the open canopy (about 6.5 m/s descent)
-    _a.copy(ej.vel);_a.z-=wind;const v=_a.length();
+    _a.copy(ej.vel);_a.z-=wind;const v=_a.length();ej.air=v;
     ej.vel.addScaledVector(_a,-k*v*h);ej.vel.y-=G*h;
     if(ej.t<.45)ej.vel.addScaledVector(_b.set(0,1,0).applyQuaternion(ej.q),62*h);   // seat rocket
     ej.pos.addScaledVector(ej.vel,h);
   }
-  if(ej.t>1.3&&!ej.sepd){ // seat falls away
-    ej.sepd=true;ejSeat.visible=false;
-    const s=ejSeat.clone();s.position.copy(ej.pos);s.quaternion.copy(ej.q);scene.add(s);debris.push({m:s,vel:ej.vel.clone(),life:20});
+  if(ej.t>.45&&ej.t<1.6){ // after burnout the seat pitches back; the drogue chute then damps the tumble
+    if(ej.w===0)ej.w=2.2;
+    if(ej.t>.65)ej.w*=Math.exp(-3.5*dt);
+    ej.q.multiply(_q2.setFromAxisAngle(X_AX,ej.w*dt));
   }
-  if(ej.t>1.6&&!ej.popped){ej.popped=true;chuteG.visible=true;const n=au.near;au.near=1;sfx.chute();au.near=n;}
-  if(ej.t>.6){ // swing upright under the canopy, with a little sway
+  if(!ej.sepd){ // drogue streams downwind of the seat
+    const d=ejSeat.drogue;d.visible=ej.t>.45;
+    if(d.visible){_a.copy(ej.vel);_a.z-=wind;_a.negate().applyQuaternion(_q.copy(ej.q).invert());if(_a.lengthSq()>.01)d.quaternion.setFromUnitVectors(Y_AX,_a.normalize());d.scale.setScalar(Math.min(1,(ej.t-.45)/.2));}
+  }
+  if(ej.t>1.3&&!ej.sepd){ // man-seat separation: the seat falls away on its drogue, the pilot is kicked clear
+    ej.sepd=true;ejSeat.g.visible=false;
+    _up.set(0,1,0).applyQuaternion(ej.q);
+    const s=ejSeat.g.clone();s.visible=true;s.position.copy(ej.pos);s.quaternion.copy(ej.q);scene.add(s);
+    debris.push({m:s,vel:ej.vel.clone().addScaledVector(_up,-4),life:20});
+    ej.vel.addScaledVector(_up,1.5);
+  }
+  if(ej.t>1.6&&!ej.popped){ej.popped=true;risers.visible=chuteG.visible=true;const n=au.near;au.near=1;sfx.chute();au.near=n;}
+  if(ej.t>1.6){ // swing upright under the canopy, with a little sway
     _fwd.set(0,0,-1).applyQuaternion(ej.q);
     _q.setFromAxisAngle(Y_AX,Math.atan2(-_fwd.x,-_fwd.z)).multiply(_q2.setFromAxisAngle(X_AX,Math.sin(ej.t*1.3)*.07*ej.chute));
-    ej.q.slerp(_q,Math.min(1,dt*2.5));
+    ej.q.slerp(_q,Math.min(1,dt*(1+2*ej.chute)));
   }
   const o=.12+.88*ej.chute;chuteG.scale.set(o,1,o);
   ejG.position.copy(ej.pos);ejG.quaternion.copy(ej.q);
-  // landing
+  posePilot(dt);
+  // landing: feet first, so the hips are still about 0.9 m up
   const local=ship.worldToLocal(_loc.copy(ej.pos)),onDeck=inDeck(local.x,local.z)&&local.y<=DECK_Y+.9&&local.y>DECK_Y-2.5;
-  if(onDeck||ej.pos.y<=waveHeight(ej.pos.x,ej.pos.z,state.t)+.3){
+  if(onDeck||ej.pos.y<=waveHeight(ej.pos.x,ej.pos.z,state.t)+.85){
     const dead=ej.chute<.85&&(ej.vel.y<-11||ej.vel.length()>22);
     if(dead){stats.killed++;track('pilot_killed',{cause:'ejected_too_low'});}
     const lost=ac.crashed?ac.wrecked:!(ac.mode==='ground'&&Math.abs(ac.u)<1);
@@ -1429,8 +1553,10 @@ function updateEject(dt){
     track('eject_outcome',{result:dead?'killed':onDeck?'landed_on_deck':'rescued_from_water',aircraft_lost:!!lost});
     ej.msg=(dead?'Ejected too low: the parachute had not opened. Pilot killed.':onDeck?'Pilot landed on the flight deck.':'Pilot in the water, picked up by the rescue helicopter.')+
       (lost?' Aircraft lost.':' Aircraft left on deck.');
-    if(onDeck){local.y=DECK_Y+.5;ej.local=local.clone();}else{spawnFx(ej.pos,'splash');const n=au.near;au.near=1;sfx.splash();au.near=n;}
-    chuteG.visible=false;ej.done=true;ej.doneT=7;ej.dead=dead;
+    _fwd.set(0,0,-1).applyQuaternion(ej.q);ej.lieYaw=Math.atan2(-_fwd.x,-_fwd.z);
+    if(onDeck){local.y=DECK_Y+(dead?.2:.12);ej.local=local.clone();_c.set(0,0,-1).applyQuaternion(ship.quaternion);ej.lieYaw-=Math.atan2(-_c.x,-_c.z);}   // heading relative to the ship
+    else{spawnFx(ej.pos,'splash');const n=au.near;au.near=1;sfx.splash();au.near=n;}
+    risers.visible=chuteG.visible=false;ej.done=true;ej.doneT=7;ej.dead=dead;
   }
 }
 const PARKED=[[8.2,-62],[8.2,-74],[8.2,-86]],TRACTORS=[[10.6,-37],[10.9,14]];
@@ -1660,10 +1786,10 @@ function updateCamera(dt){
     if(view.cPx||view.cPy){camera.translateX(view.cPx);camera.translateY(view.cPy);}
     camera.position.y=Math.max(camera.position.y,waveHeight(camera.position.x,camera.position.z,state.t)+1.5);
   }else if(state.cam==='eject'){
-    fov=55;const p=ej.pos,up=3+6*ej.chute;
-    camera.position.set(p.x+ej.camDir.x*(14+8*ej.chute),p.y+up,p.z+ej.camDir.z*(14+8*ej.chute));
+    fov=55;const p=ej.pos,up=2+7*ej.chute;
+    camera.position.set(p.x+ej.camDir.x*(9+12*ej.chute),p.y+up,p.z+ej.camDir.z*(9+12*ej.chute));
     camera.position.y=Math.max(camera.position.y,waveHeight(camera.position.x,camera.position.z,state.t)+1.5);
-    camera.lookAt(p.x,p.y+4*ej.chute,p.z);
+    camera.lookAt(p.x,p.y+.5+3.5*ej.chute,p.z);
   }else{ // flyby: fixed point the ship steams past
     if(!view.fly||sp.z<view.fly.z-380)view.fly=new THREE.Vector3(sp.x-80,7,sp.z-380);
     camera.position.copy(view.fly);
@@ -1739,7 +1865,7 @@ function frame(now){
   seaH+=(SEA_H[state.sea]-seaH)*Math.min(1,dt*1.2);setWaveAmps();
   updateShip(dt);ship.updateMatrixWorld(true);updateEscorts(dt);life.update(dt);stepAircraft(dt);
   updateTut(dt);updateAudio();
-  updateEject(dt);updateFx(dt);
+  updateEject(dt);updateFx(dt);animatePilot(dt);
   plane.visible=!ac.wrecked&&state.cam!=='cockpit';updateCamera(dt);
   radarA.rotation.y+=dt*2.2;radarB.rotation.y+=dt*.9;
 
@@ -1780,7 +1906,7 @@ function setType(k){
 function nextAircraft(){stopTut();setType(AC.type==='a4'?'s2':'a4');track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
 document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
-window.__sim={escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
+window.__sim={crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
   advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);updateEscorts(1/60);life.update(1/60);stepAircraft(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
 requestAnimationFrame(frame);
 })();

@@ -22,7 +22,8 @@ The reasons and limits are in [arrestor wires, bolters and the hook](/blog/wires
 Press <kbd>X</kbd> twice. The first press shows "Press X again to eject" for about a second and a half. The second fires the seat.
 
 - The canopy goes first.
-- The pilot leaves the aircraft in the seat and then under a parachute, and the camera follows.
+- The pilot leaves the aircraft in a rocket seat. A drogue parachute steadies the seat, the pilot separates from it, and a main parachute opens. The camera follows. The stages are in [a jointed pilot and a longer ejection](/blog/a-jointed-pilot-and-a-longer-ejection/).
+- Too low, with the parachute not yet open, the pilot is killed. Otherwise the pilot is picked up from the water or lands on the deck.
 - The aircraft carries on and crashes without a pilot. It is counted as lost, but the pilot is not counted as killed.
 
 ## The counters
