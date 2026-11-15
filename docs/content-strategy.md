@@ -42,3 +42,6 @@ GA4 (already on the sim) is on the blog. Watch: blog to sim click-through, top c
 
 ## Review
 Every 30 days: drop or rework the lowest 20% categories by sessions, move slots to what is working, correct any errors readers report.
+
+## Ship-history series (added 15 Nov 2026)
+Thirty chronological posts on HMAS Melbourne, 16 Nov to 15 Dec 2026, published as a second daily post with explicit dates. Calendar, briefs, sources and source conflicts: `docs/ship-history-series.md`. Three posts (Voyager 1964, USS Frank E. Evans 1969, Albatross fire 1976) are sensitive: official wording, no promotion.
