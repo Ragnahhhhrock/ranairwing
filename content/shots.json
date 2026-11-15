@@ -431,5 +431,26 @@
   "uiOff": true,
   "js": "S.advance(1/60);S.ac.mode='air';const V=THREE.Vector3;const tip=new V(.62,-.05,-6.7).applyQuaternion(S.ac.q);S.ac.pos.copy(S.tank.dr).add(new V(0,0,14)).sub(tip);S.ac.vel.copy(S.tank.vel);S.ac.msgT=0;S.view.cAz=.5;S.view.cEl=.2;S.view.cD=20;",
   "advance": 0.05
+ },
+ "ailerons-and-rudder": {
+  "cam": "chase",
+  "start": "approach",
+  "hour": 10,
+  "sea": 2,
+  "speed": 20,
+  "ac": {
+   "gear": false,
+   "flap": 0
+  },
+  "js": "S.keys['d']=true;S.keys['e']=true;",
+  "advance": 0.4,
+  "view": {
+   "cAz": 0.35,
+   "cEl": 0.12,
+   "cD": 11
+  },
+  "uiOff": true,
+  "hideHint": true,
+  "hidePanels": true
  }
 }

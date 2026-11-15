@@ -1252,14 +1252,18 @@ let crewRig=null;                                  // the pilot sitting in the A
   loft([{x:-4.19,zle:1.6,zte:2.7,y:-.45,t:.08},{x:0,zle:-1.9,zte:2.5,y:-.45,t:.26},{x:4.19,zle:1.6,zte:2.7,y:-.45,t:.08}]);   // delta wing
   loft([{x:-1.8,zle:5.5,zte:6.05,y:.33,t:.05},{x:0,zle:4.1,zte:5.95,y:.33,t:.14},{x:1.8,zle:5.5,zte:6.05,y:.33,t:.05}]);       // tailplane, low-set
   (function(){ // fin
-    const s=new THREE.Shape();[[2.2,.6],[5.2,2.6],[6.0,2.6],[6.1,.3]].forEach(([z,y],i)=>i?s.lineTo(z,y):s.moveTo(z,y));s.closePath();
+    const s=new THREE.Shape();[[2.2,.6],[5.2,2.6],[5.3,2.6],[5.35,.3]].forEach(([z,y],i)=>i?s.lineTo(z,y):s.moveTo(z,y));s.closePath();
     const g=new THREE.ExtrudeGeometry(s,{depth:.06,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:3});g.translate(0,0,-.03);g.rotateY(-Math.PI/2);
     add(new THREE.Mesh(g,mTop),0,0,0,plane);
     const cv=document.createElement('canvas');cv.width=64;cv.height=160;const c=cv.getContext('2d');   // checkerboard rudder
     for(let r=0;r<10;r++)for(let q=0;q<4;q++){c.fillStyle=(r+q)%2?'#b3261e':'#f2f0ea';c.fillRect(q*16,r*16,16,16);}
     const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
     const m=new THREE.MeshStandardMaterial({map:tx,roughness:.6,polygonOffset:true,polygonOffsetFactor:-4,polygonOffsetUnits:-4});
-    for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(.8,1.5),m);d.rotation.y=sd*Math.PI/2;d.position.set(sd*.062,1.75,5.62);plane.add(d);}
+    const rud=new THREE.Group();rud.position.set(0,0,5.3);plane.add(rud);parts.rud=rud;                       // rudder hinged on the fin's rear edge, swings with Q / E
+    const rs=new THREE.Shape();[[0,2.6],[.7,2.6],[.79,.6],[0,.6]].forEach(([z,y],i)=>i?rs.lineTo(z,y):rs.moveTo(z,y));rs.closePath();
+    const rg=new THREE.ExtrudeGeometry(rs,{depth:.06,bevelEnabled:true,bevelThickness:.03,bevelSize:.03,bevelSegments:3});rg.translate(0,0,-.03);rg.rotateY(-Math.PI/2);
+    rud.add(new THREE.Mesh(rg,mTop));
+    for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(.68,1.5),m);d.rotation.y=sd*Math.PI/2;d.position.set(sd*.062,1.75,.35);rud.add(d);}
   })();
   (function(){ // wing roundels
     const cv=document.createElement('canvas');cv.width=cv.height=64;const c=cv.getContext('2d');
@@ -1294,6 +1298,11 @@ let crewRig=null;                                  // the pilot sitting in the A
       const x=fusX(z,y)+.012,tilt=-Math.atan((fusX(z+.2,y)-fusX(z-.2,y))/.4);
       const d=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);d.rotation.y=sd*(Math.PI/2+tilt);d.position.set(sd*x,y,z);plane.add(d);}
   })();
+  parts.ail=[];
+  for(const sd of [1,-1]){                                                          // ailerons: outboard trailing edge, hinged at the front, differential with the stick
+    const a=new THREE.Group();a.position.set(sd*3.15,-.45,2.24);plane.add(a);
+    box(1.7,.045,.42,0,0,.21,mTop,a);a.userData.sd=sd;parts.ail.push(a);
+  }
   for(const sd of [1,-1]){                                                          // split flaps under the inboard wing
     const f=new THREE.Group();f.position.set(sd*1.75,-.5,1.95);plane.add(f);box(1.9,.03,.75,0,0,.375,mWht,f);parts.flaps.push(f);
     const b=new THREE.Group();b.position.set(sd*.7,-.05,3.3);plane.add(b);          // fuselage speedbrakes
@@ -1369,6 +1378,8 @@ function animateParts(dt,snap){ // move gear, flaps, speedbrakes and hook at abo
   for(const f of parts.flaps)f.rotation.x=.9*ac.flapPos;
   for(const b of parts.brakes){b.g.rotation.y=b.sd*(-.1+1.05*ac.brakePos);b.red.visible=ac.brakePos>.04;}
   parts.hookG.rotation.x=-.45*(1-ac.hookPos);
+  if(parts.ail){const r=ac.stick.r;for(const a of parts.ail)a.rotation.x=-a.userData.sd*r*.35;}   // roll right: right aileron up, left down (about 20 degrees)
+  if(parts.rud)parts.rud.rotation.y=ac.stick.y*.45;                                                  // pedal right: trailing edge swings right (about 26 degrees)
   if(parts.props){const r=ac.crashed?0:ac.rpm;for(const p of parts.props)p.rotation.z+=dt*(4+26*r)*(p.position.x>0?-1:1);  // propellers blur into a disc with power
     if(parts.discMat)parts.discMat.opacity=.32*Math.min(1,r*1.6);}
 }
