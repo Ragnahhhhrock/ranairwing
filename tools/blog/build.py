@@ -236,6 +236,14 @@ def main():
         related = [r for r in P if r is not p and set(r["categories"]) & set(p["categories"])][:3]
         post_page(p, newer, older, related)
         urls.append((f"/blog/{p['slug']}/", p.get("updated_dt") or p["dt"]))
+    # homepage "latest post" card (between markers in index.html)
+    if P:
+        lp = P[0]
+        card = f'<!--latest-post--><a class="latest" href="blog/{lp["slug"]}/"><small>Latest post</small><img src="blog/img/{lp["shot"]}.jpg" width="1280" height="720" alt=""><strong>{e(lp["title"])}</strong></a><!--/latest-post-->'
+        hp = ROOT / "index.html"
+        hs = hp.read_text(encoding="utf-8")
+        hn = re.sub(r"<!--latest-post-->.*?<!--/latest-post-->", lambda m: card, hs, count=1, flags=re.S)
+        if hn != hs: hp.write_text(hn, encoding="utf-8")
     # RSS
     items = "".join(f"<item><title>{e(p['title'])}</title><link>{url('/blog/'+p['slug']+'/')}</link><guid isPermaLink=\"true\">{url('/blog/'+p['slug']+'/')}</guid><pubDate>{p['dt'].astimezone(timezone.utc).strftime('%a, %d %b %Y %H:%M:%S +0000')}</pubDate>{''.join('<category>'+e(CAT[c]['name'])+'</category>' for c in p['categories'])}<description>{e(p['summary'])}</description></item>" for p in P[:20])
     write("/blog/feed.xml", f'<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>RAN Air Wing dev blog</title><link>{SITE}/blog/</link><description>HMAS Melbourne (R21) flight sim: history, carrier operations and dev diary.</description><language>en-au</language>{items}</channel></rss>')

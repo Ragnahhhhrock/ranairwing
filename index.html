@@ -43,6 +43,12 @@ gtag('config','G-H0ZE9XML6B');
   #title .more{margin-top:6px}
   #title a{color:#e8c547;text-decoration:none;border-bottom:1px solid rgba(232,197,71,.4)}
   #title a:hover{border-bottom-color:#e8c547}
+  #title .latest{display:block;margin-top:8px;width:200px;max-width:100%;border:none;text-decoration:none}
+  #title .latest small{display:block;color:#8fa6b5;font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+  #title .latest img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border:1px solid rgba(200,220,235,.18);border-radius:3px}
+  #title .latest strong{display:block;margin-top:5px;color:#e8c547;font-size:12px;font-weight:600;line-height:1.35;border-bottom:1px solid rgba(232,197,71,.4);padding-bottom:1px}
+  #title a.latest{border-bottom:none}
+  #title a.latest:hover strong{border-bottom-color:#e8c547;color:#f3d86b}
   #title .more.menu{display:flex;gap:8px}
   #title .menu a{flex:1;text-align:center;padding:12px 10px;font-size:16px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:2px solid #e8c547;border-radius:3px;background:rgba(232,197,71,.12)}
   #title .menu a:hover{background:rgba(232,197,71,.3)}
@@ -69,7 +75,7 @@ gtag('config','G-H0ZE9XML6B');
   input[type=range]{width:100%;accent-color:#e8c547;margin:0;height:28px;cursor:pointer}
   #hint{position:fixed;top:14px;right:14px;color:rgba(240,245,248,.9);text-shadow:0 1px 3px rgba(0,0,0,.8);font-size:11px;text-align:right;pointer-events:none}
   #err{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;text-align:center}
-  @media (max-width:640px){#hint{display:none}#ctl{width:auto;left:12px;bottom:12px}#read{bottom:auto;top:236px}#title{max-width:calc(100vw - 92px);box-sizing:border-box}#ctl{max-height:min(58vh,calc(100vh - 250px))}}
+  @media (max-width:640px){#hint{display:none}#title .latest img{display:none}#ctl{width:auto;left:12px;bottom:12px}#read{bottom:auto;top:236px}#title{max-width:calc(100vw - 92px);box-sizing:border-box}#ctl{max-height:min(58vh,calc(100vh - 250px))}}
   #hud{position:fixed;inset:0;pointer-events:none}
   #fly{display:flex;gap:6px;margin-bottom:6px}
   #ctl #fly button{flex:1 1 0;padding:6px 4px;background:rgba(93,255,143,.14);border-color:#5dff8f}
@@ -115,7 +121,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a></p><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
+<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a></p><!--latest-post--><a class="latest" href="blog/hmas-melbourne-by-the-numbers/"><small>Latest post</small><img src="blog/img/s03-numbers.jpg" width="1280" height="720" alt=""><strong>HMAS Melbourne by the numbers</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="mis" class="panel"></div>
 <div id="msn" class="panel"></div>
