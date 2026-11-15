@@ -660,15 +660,19 @@ const life=(function(){
     /* raised glazed cockpit: windscreen panes, side windows, roof and rear fairing */
     const cm=fly?new THREE.MeshStandardMaterial({color:0x7fa6bd,roughness:.1,metalness:.3,transparent:true,opacity:.42,depthWrite:false}):mGl;
     const can=new THREE.Group();g.add(can);P.canopy=can;
-    const pane=(w,h,d,x,y,z,rx,ry,rz,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m||cm);o.position.set(x,y,z);o.rotation.set(rx||0,ry||0,rz||0);can.add(o);return o;};
-    pane(.82,.8,.03,0,1.34,-4.28,.69,0,0);                                                                   // windscreen centre
-    for(const sd of [1,-1]){pane(.55,.8,.03,sd*.62,1.32,-4.12,.69,-sd*.55,0);                                // windscreen quarter panes
-      pane(.03,.66,.82,sd*.76,1.3,-3.68,0,0,sd*.14);pane(.03,.66,.8,sd*.78,1.3,-2.8,0,0,sd*.14);               // side windows
-      pane(.05,.76,.07,sd*.5,1.3,-4.55,.69,-sd*.25,0,mG);}
-    pane(.06,.8,.05,0,1.34,-4.27,.69,0,0,mG);pane(.04,.7,.1,.76,1.3,-3.27,0,0,.14,mG);pane(.04,.7,.1,-.76,1.3,-3.27,0,0,-.14,mG);   // centre bar, side pillars
-    pane(1.18,.05,1.9,0,1.65,-3.25,0,0,0,mG);                                                                // roof
-    pane(1,.05,.9,0,1.42,-1.95,.52,0,0,mG);                                                                  // rear fairing
-    for(const sd of [1,-1])pane(.05,.72,.8,sd*.72,1.28,-2.0,0,0,sd*.12,mG);                                  // rear cheek panels
+    const CZ0=-4.6,CZ1=-1.7,CY0=.88,CW=.8,CH=.84;                                                             // curved canopy: z range, base height, half-width, height
+    const cf=t=>Math.pow(Math.sin(Math.PI*Math.pow(Math.min(1,Math.max(0,t)),.72)),.55);                     // plan profile: steep at the windscreen, long taper aft
+    const cz=t=>CZ0+(CZ1-CZ0)*t;
+    const dome=(a0,a1,k,m)=>{const NT=40,NA=22,pos=[],idx=[];                                                  // arc of the canopy skin between two angles, scaled by k
+      for(let i=0;i<=NT;i++){const t=i/NT,f=cf(t);for(let j=0;j<=NA;j++){const a=a0+(a1-a0)*j/NA;pos.push(k*CW*f*Math.cos(a),CY0+k*CH*f*Math.pow(Math.max(0,Math.sin(a)),.85),cz(t));}}
+      for(let i=0;i<NT;i++)for(let j=0;j<NA;j++){const q=i*(NA+1)+j;idx.push(q,q+1,q+NA+1,q+1,q+NA+2,q+NA+1);}
+      const gm=new THREE.BufferGeometry();gm.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));gm.setIndex(idx);gm.computeVertexNormals();
+      const o=new THREE.Mesh(gm,m);o.material.side=THREE.DoubleSide;can.add(o);return o;};
+    dome(0,Math.PI,1,cm);                                                                                    // glazing
+    dome(Math.PI/2-.75,Math.PI/2+.75,1.02,mG);                                                              // painted roof panel, following the curve
+    const rib=(t,r)=>{const f=cf(t),o=new THREE.Mesh(new THREE.TorusGeometry(1,r||.03,6,20,Math.PI),mG);o.position.set(0,CY0,cz(t));o.scale.set(CW*f*1.012,CH*f*1.012,1);can.add(o);};
+    for(const t of [.08,.2,.4,.62,.8])rib(t,t<.1?.045:.03);                                                    // windscreen arch, pillars and rear frame
+    for(const sd of [1,-1]){const q=new THREE.Mesh(new THREE.BoxGeometry(.05,.05,CZ1-CZ0-.5),mG);q.position.set(sd*.5,CY0+.52,(CZ0+CZ1)/2-.1);q.rotation.z=sd*.45;can.add(q);}   // side rails
     box(.9,.03,.7,0,1.02,-4.62,mBk,g).rotation.x=-.1;                                                         // glare shield
     if(fly){const cg=new THREE.Group();cg.position.set(0,.62,-3.25);g.add(cg);buildSeat(cg,false);P.crewRig=buildPilot(cg);setPose(P.crewRig,POSES.seat);P.crew=[cg];P.ejectAt=[0,.62,-3.25];}   // pilot and seat, hips at the origin
     add(new THREE.Mesh(new THREE.SphereGeometry(1,14,10),mW),0,-1.2,.9,g).scale.set(.7,.38,1.1);            // retracted search radome

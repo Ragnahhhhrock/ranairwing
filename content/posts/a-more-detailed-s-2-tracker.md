@@ -10,7 +10,7 @@ The first Tracker was a tube with two wings and two propellers. I have rebuilt i
 
 ## What changed
 
-- **Fuselage.** A lofted, slightly squared oval section, grey over white, with a dark nose cap and a deeper belly. The cockpit is now a raised glazed hump with a windscreen, side windows, roof and rear fairing instead of a translucent bubble. In the flyable aircraft the pilot is still visible through the side windows.
+- **Fuselage.** A lofted, slightly squared oval section, grey over white, with a dark nose cap and a deeper belly. The cockpit is now a raised, curved canopy: glazed sides and windscreen under a solid grey roof panel, with frame arches, instead of a translucent bubble. In the flyable aircraft the pilot is still visible through the side windows.
 - **Wings and tail.** Tapered wings with an airfoil section, a thin red line along the upper surface, flaps on the inboard trailing edge and navigation lights at the tips. The tailplane has an airfoil section too. The fin has a dorsal fillet. The outer panels still fold on the deck model.
 - **Engines.** Round nacelles with a cowl flap ring, a dark engine face, exhaust stacks, an oil cooler scoop and a spinner. The three-blade propellers now have tapered blades with white and red tips instead of yellow.
 - **Markings.** Kangaroo roundels on the fuselage and both upper wings, NAVY on the rear fuselage, a larger side number on the nose, a red band behind the cockpit, a small tail number and a gold badge on the fin.
