@@ -396,9 +396,9 @@
   "type": "s2",
   "start": "cat",
   "view": {
-   "cAz": 0.7,
-   "cEl": 0.22,
-   "cD": 15
+   "cAz": 2.7,
+   "cEl": 0.4,
+   "cD": 12
   },
   "advance": 0.3,
   "hideHint": true,
