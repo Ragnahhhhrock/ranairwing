@@ -500,5 +500,14 @@
    "cEl": -0.1,
    "cD": 9
   }
+ },
+ "s44-key-stats": {
+  "cam": "orbit",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "start": "cat",
+  "hideHint": true,
+  "advance": 0.3
  }
 }
