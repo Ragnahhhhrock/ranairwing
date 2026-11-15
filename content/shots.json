@@ -609,5 +609,15 @@
   "uiOff": true,
   "js": "S.advance(1/60);const t=S.tg.filter(x=>x.surface)[0];S.ac.pos.set(t.pos.x-700,380,t.pos.z+1500);S.ac.vel.set(0,0,-95);S.ac.msgT=0;",
   "advance": 0.05
+ },
+ "s51-blast-deflector": {
+  "cam": "chase",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "start": "cat",
+  "hideHint": true,
+  "hidePanels": true,
+  "js": "S.ac.thr=1;S.ac.rpm=1;S.advance(2.5);"
  }
 }

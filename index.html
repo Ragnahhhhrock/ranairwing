@@ -141,7 +141,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Arrested landings</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><div class="keystats" id="ksBox" aria-label="Key stats"><div><b id="ksF">-</b><small>Launches</small></div><div class="ks-l"><b id="ksL">-</b><small>Traps</small></div><div class="ks-c"><b id="ksC">-</b><small>Crashes</small></div></div><p class="ks-live off" id="ksLive"><i></i><span>Loading stats</span></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/lso-calls-and-the-meatball/"><small>Latest post</small><img src="blog/img/s49-lso-calls.jpg" width="1280" height="720" alt=""><strong>The LSO talks you down, and the meatball is on the mirror</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
+<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Arrested landings</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><div class="keystats" id="ksBox" aria-label="Key stats"><div><b id="ksF">-</b><small>Launches</small></div><div class="ks-l"><b id="ksL">-</b><small>Traps</small></div><div class="ks-c"><b id="ksC">-</b><small>Crashes</small></div></div><p class="ks-live off" id="ksLive"><i></i><span>Loading stats</span></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/jet-blast-deflector/"><small>Latest post</small><img src="blog/img/s51-blast-deflector.jpg" width="1280" height="720" alt=""><strong>The jet blast deflector rises behind the Skyhawk</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="mis" class="panel"></div>
 <div id="msn" class="panel"></div>
@@ -485,7 +485,8 @@ function deckTexture(){
   c.beginPath();c.moveTo(X(-7),Z(-54));c.lineTo(X(-7),Z(-106));c.stroke();
   c.strokeStyle='#9aa0a4';c.lineWidth=1.5;
   c.beginPath();c.moveTo(X(-7),Z(-54));c.lineTo(X(-7),Z(-106));c.stroke();
-  c.fillStyle='#2a2d30';c.fillRect(X(-10),Z(-53),6*S,2.6*S);         // jet blast deflector
+  c.fillStyle='#2a2d30';c.fillRect(X(-10),Z(-45.2),6*S,3.6*S);       // jet blast deflector recess (the 3D panel lies flat in it)
+  for(let x=-10;x<-4;x+=.75){c.fillStyle=(Math.round((x+10)/.75)%2)?'#17191b':YEL;c.fillRect(X(x),Z(-45.5),.75*S,.3*S);}   // hazard edge
   c.strokeStyle='#b9b9b0';c.lineWidth=2;                             // lifts, on the centreline
   LIFT.forEach(([x,z])=>{const x0=X(x-LW/2),z0=Z(z-LD/2),w=LW*S,h=LD*S,r=14;
     c.beginPath();c.moveTo(x0+r,z0);c.arcTo(x0+w,z0,x0+w,z0+h,r);c.arcTo(x0+w,z0+h,x0,z0+h,r);c.arcTo(x0,z0+h,x0,z0,r);c.arcTo(x0,z0,x0+w,z0,r);c.stroke();});
@@ -944,12 +945,46 @@ const life=(function(){
     shooter.userData.mode=!onCat?'stand':ac.launching?'point':ac.rpm>.9?'crouch':'turnup';
     holdback.userData.mode=onCat&&!ac.launching&&ac.rpm>.9?'thumb':'stand';
     for(const f of crew)pose(f,t);
+    updateJBD(dt);
     // plane guard hover, holding station on the ship
     const sp=ship.position;
     guard.g.position.set(sp.x-52+7*Math.sin(t*.11),19+1.5*Math.sin(t*.37),sp.z+135+9*Math.sin(t*.07+1));
     guard.g.rotation.set(-.05+.02*Math.sin(t*.5),.15*Math.sin(t*.09),.04*Math.sin(t*.31));
     guard.rotor.rotation.y-=18*dt;guard.tail.rotation.x+=40*dt;
     {const d=camera.position.distanceTo(guard.g.position);pedro.material.opacity=Math.max(0,Math.min(1,(900-d)/500));pedro.visible=pedro.material.opacity>.02;}
+  }
+  /* jet blast deflector: lies flush in the deck behind the port catapult, rises behind a Skyhawk at launch power, lowers once it has gone */
+  const JBD_Z=-45,JBD_X=-7,JBD_L=3.3,JBD_MAX=.9;                          // hinge on the forward edge, panel 6 m wide, rises to about 52 degrees leaning aft
+  const jbdPiv=new THREE.Group();jbdPiv.position.set(JBD_X,DECK_Y+.07,JBD_Z);ship.add(jbdPiv);
+  {const mP=M(0x3a3e41,{roughness:.7,metalness:.25}),mR=M(0x23262a,{roughness:.8}),mH=M(0xd9b21c,{roughness:.6}),mRam=M(0x9da3a7,{metalness:.6,roughness:.35});
+   const bx=(w,h,d,x,y,z,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);jbdPiv.add(o);return o;};
+   bx(5.8,.1,JBD_L,0,0,JBD_L/2,mP);                                      // the plate
+   for(let i=0;i<5;i++)bx(5.8,.08,.12,0,.09,.45+i*.6,mR);                // cross ribs on the jet-facing side
+   bx(5.8,.12,.3,0,.02,JBD_L-.15,mH);                                    // yellow top edge
+   bx(.14,.5,JBD_L,-2.9,.2,JBD_L/2,mR);bx(.14,.5,JBD_L,2.9,.2,JBD_L/2,mR);   // side rails
+  }
+  const jbdRams=[-2.3,2.3].map(x=>{const r=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,1,8),M(0x9da3a7,{metalness:.6,roughness:.35}));ship.add(r);r.userData.x=x;return r;});
+  let jbdA=0,jbdUp=false;
+  const _jv=new THREE.Vector3(),_jb=new THREE.Vector3(),_jd=new THREE.Vector3(),_jy=new THREE.Vector3(0,1,0);
+  function updateJBD(dt){
+    const have=typeof ac!=='undefined'&&typeof AC!=='undefined';
+    const mine=have&&AC.type==='a4'&&ac.onCat;                          // Skyhawk on the catapult (the Tracker's props need no deflector)
+    if(mine&&(ac.launching||ac.rpm>.85))jbdUp=true;                     // launch power set, or launching
+    else if(!mine||(!ac.launching&&ac.rpm<.6))jbdUp=false;              // aircraft gone, or power pulled back
+    const tgt=jbdUp?JBD_MAX:0,rate=jbdUp?.9:.7;                         // rises in about a second, lowers a little slower
+    jbdA+=Math.max(-rate*dt,Math.min(rate*dt,tgt-jbdA));
+    jbdPiv.rotation.x=-jbdA;
+    const sA=Math.sin(-jbdA),cA=Math.cos(-jbdA);
+    for(const r of jbdRams){                                            // hydraulic rams from the deck to the back of the plate
+      const px=JBD_X+r.userData.x;
+      _jb.set(px,DECK_Y+.05,JBD_Z+JBD_L*.8);                            // deck anchor
+      const lz=JBD_L*.7;                                                // anchor on the plate, rotated with it
+      _jv.set(px,DECK_Y+.07+(-.1*cA-lz*sA),JBD_Z+(-.1*sA+lz*cA));
+      _jd.subVectors(_jv,_jb);const len=_jd.length()||.01;
+      r.position.copy(_jb).addScaledVector(_jd,.5);r.scale.set(1,len,1);
+      r.quaternion.setFromUnitVectors(_jy,_jd.normalize());
+      r.visible=jbdA>.02;
+    }
   }
   let heloOut=false;
   function setForwardParkClear(clear){heloOut=clear;parked.g.visible=!clear;for(const c of heloCrew)c.visible=!clear;}   // Tracker launches: helicopter and handlers move off the catapult line
