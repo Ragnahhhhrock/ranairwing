@@ -572,9 +572,13 @@ for(let i=1;i<6;i++){const f=i/6;strut(-.6*f,4.3+6.2*f,17.5+12.5*f,.6*f,4.3+6.2*
   strut(0,1.2+9.3*f,18.4+11.6*f,(i%2?.6:-.6)*f,4.3+6.2*f,17.5+12.5*f,.05,mGreyD,isl);}
 
 // mirror landing aid (port side) and LSO platform
-box(3,.3,3,-22.6,DECK_Y-.5,22);box(.25,2.2,1.9,-22.8,DECK_Y+.9,22,mDark);
-add(new THREE.Mesh(new THREE.BoxGeometry(.05,.14,3.4),new THREE.MeshBasicMaterial({color:0x35ff7a})),-22.65,DECK_Y+.95,22);
-add(new THREE.Mesh(new THREE.BoxGeometry(.06,.3,.3),new THREE.MeshBasicMaterial({color:0xffb22e})),-22.6,DECK_Y+.95,22);
+box(3.4,.3,2.4,-22.6,DECK_Y-.5,22);box(3.6,2.8,.3,-22.6,DECK_Y+.9,21.9,mDark);   // optical landing sight (mirror) on the port side, facing aft
+const olsG=new THREE.Group();olsG.position.set(-22.6,DECK_Y+1,22.3);ship.add(olsG);   // lights group; scaled up with range so the ball stays readable
+const olsM=c=>new THREE.MeshBasicMaterial({color:c,fog:false,toneMapped:false});
+const olsBall=new THREE.Mesh(new THREE.SphereGeometry(.28,12,8),olsM(0xffb22e));olsG.add(olsBall);
+for(const sx of [-1,1]){const d=new THREE.Mesh(new THREE.BoxGeometry(1.3,.12,.12),olsM(0x35ff7a));d.position.set(sx*1.15,0,0);olsG.add(d);}   // green datum bars
+const olsWO=[];for(const sx of [-1,1])for(const y of [1.25,1.75]){const w=new THREE.Mesh(new THREE.BoxGeometry(.3,.3,.12),olsM(0xff2a1f));w.position.set(sx*.8,y,0);w.visible=false;olsG.add(w);olsWO.push(w);}   // red wave-off lights
+olsBall.visible=false;
 box(2.6,.25,3.4,-13.6,DECK_Y-.5,74);box(.1,2.4,3.4,-12.4,DECK_Y+.7,72.3,mDark);
 
 // bridle catcher off the port bow
@@ -1380,7 +1384,7 @@ function resetAircraft(kind){
   else if(AC.type==='s2'&&!ms.on)loadStores(kind==='cat'?wp.plan2:PRESETS2.clean.s);
   life.setForwardParkClear(kind==='cat'||AC.type==='s2');   // parked Sea King off the catapult line for every launch
   ac.start=kind;ac.crashed=null;ac.w.set(0,0,0);ac.stick.p=ac.stick.r=ac.stick.y=0;ac.snap=true;
-  ac.launching=ac.trapped=ac.trapDone=ac.bolter=false;ac.brake=false;ac.gear=true;plane.visible=true;
+  ac.launching=ac.trapped=ac.trapDone=ac.bolter=false;ac.brake=false;ac.gear=true;plane.visible=true;lsoReset(true);
   ac.pilot=true;ac.wrecked=ac.lostCounted=false;ej.active=false;ejG.visible=false;parts.canopy.visible=true;for(const m of parts.crew)m.visible=true;
   if(state.cam==='eject')setCam(ej.prevCam||'chase');
   if(kind==='cat'){
@@ -1478,7 +1482,9 @@ function touchdown(local){
   const hookD=dA-4,wire=WIRES.findIndex(d=>d>=hookD);
   if(ac.hook&&ac.u>15&&Math.abs(off)<11&&wire>=0&&f.z<0){
     ac.trapped=true;ms.wire=wire+1;stats.traps++;sfx.trap();sess.traps++;keyStats.hit('traps');track('successful_recovery',{wire:wire+1,sink_rate_fpm:Math.round(sink*196.85),recovery_number:sess.traps});say('Trapped: '+(wire+1)+' wire, '+Math.round(sink*196.85)+' fpm sink',6);
-  }else if(ac.u>20){ac.bolter=true;sess.bolters++;track('bolter',{hook_down:!!ac.hook,bolter_number:sess.bolters});say(ac.hook?'Bolter! Full power and go around.':'Hook up: touch and go.',4);}
+    if(LSOQ.wo>0||LSOQ.woGiven)LSOQ.woIgnored=true;lsoTrap(wire+1,sink);
+  }else if(ac.u>20){ac.bolter=true;sess.bolters++;track('bolter',{hook_down:!!ac.hook,bolter_number:sess.bolters});say(ac.hook?'Bolter! Full power and go around.':'Hook up: touch and go.',4);
+    if(LSOQ.woGiven)LSOQ.woIgnored=true;lsoBolter();}
 }
 function airStep(h){
   const wind=windMS(),alt=Math.max(ac.pos.y,0),rho=1.225*Math.exp(-alt/9000);
@@ -1575,6 +1581,111 @@ function lso(){ // position relative to the glidepath onto the angled deck
   return {d,off,gs:Math.atan2(ac.pos.y-AC.gearH-DECK_Y-sp.y,d)*180/Math.PI-3.5};
 }
 
+/* ---------- LSO: radio calls, meatball, wave-off and grade ---------- */
+// Approximation: the call set and thresholds are game values modelled on USN/RN mirror-landing practice, not a record of RAN procedure.
+const LSOQ={log:[],q:[],cool:0,last:{},stage:0,finalAt:0,wo:0,woGiven:false,woIgnored:false,past:false,sGs:0,sLu:0,sT:0,grade:'',lastGrade:''};
+function lsoReset(clearLog){Object.assign(LSOQ,{q:[],cool:0,last:{},stage:0,finalAt:0,wo:0,woGiven:false,woIgnored:false,past:false,sGs:0,sLu:0,sT:0,grade:''});if(clearLog)LSOQ.log=[];}
+function lsoSay(who,text){LSOQ.log.push({who,text,life:7});if(LSOQ.log.length>4)LSOQ.log.shift();sfx.radio();}
+function lsoCall(key,text,gap,force){
+  const L=LSOQ,t=state.t;
+  if(!force&&(t<L.cool||(L.last[key]!==undefined&&t-L.last[key]<(gap||6))))return false;
+  L.last[key]=t;L.cool=t+(force?1.2:2.2);lsoSay('LSO',text);return true;
+}
+const lsoSched=(dl,who,text)=>LSOQ.q.push({at:state.t+dl,who,text});
+const lsoCallsign=()=>AC.type==='a4'?'Skyhawk':'Tracker';
+function lsoGradeNow(wire,sink){ // quality of the last stretch of the pass, from the average ball and line-up error
+  const L=LSOQ;if(L.woIgnored)return 'NO GRADE, wave-off ignored';
+  if(L.sT<1.5)return 'NO GRADE, short pass';
+  const gs=L.sGs/L.sT,lu=L.sLu/L.sT;
+  if(sink>4.5)return 'NO GRADE, hard landing';
+  if(gs<.35&&lu<.45&&wire===3)return 'OK, 3 wire';
+  if(gs<.5&&lu<.6)return 'OK, '+wire+' wire';
+  if(gs<.9&&lu<1.1)return 'FAIR, '+wire+' wire';
+  return 'NO GRADE, '+wire+' wire';
+}
+function lsoTrap(wire,sink){
+  const g=lsoGradeNow(wire,sink);LSOQ.grade=ms.grade=g;LSOQ.lastGrade=g;
+  lsoSay('LSO','Grade: '+g);LSOQ.q.length=0;track('lso_grade',{grade:g,wire});
+}
+function lsoBolter(){
+  LSOQ.q.length=0;LSOQ.grade=ms.grade=LSOQ.woIgnored?'NO GRADE, wave-off ignored':'BOLTER';
+  lsoCall('bolter','Bolter, bolter, bolter. Power on, go around.',0,true);
+}
+function lsoOLS(g,vis){ // 3D mirror lights: ball position follows the glideslope error seen from the aircraft
+  olsBall.visible=vis;
+  if(vis){const s=Math.min(12,Math.max(2,g.d/160));olsG.scale.setScalar(s);
+    olsBall.position.y=Math.max(-1.6,Math.min(1.6,g.gs))*.45;
+    olsBall.material.color.setHex(g.gs<-.9?0xff2a1f:0xffb22e);}
+  const fl=LSOQ.wo>0&&Math.floor(state.t*4)%2===0;
+  if(LSOQ.wo>0&&!vis)olsG.scale.setScalar(Math.min(12,Math.max(2,g.d/160)));
+  for(const w of olsWO)w.visible=fl;
+}
+function updateLSO(dt){
+  const L=LSOQ;
+  for(const e of L.log)e.life-=dt;
+  while(L.log.length&&L.log[0].life<-1)L.log.shift();
+  for(let i=L.q.length-1;i>=0;i--)if(state.t>=L.q[i].at){const e=L.q.splice(i,1)[0];lsoSay(e.who,e.text);}
+  if(L.wo>0)L.wo-=dt;
+  const g=lso();
+  if(ac.crashed||ac.wrecked){lsoOLS(g,false);return;}
+  const hv=Math.hypot(ac.vel.x,ac.vel.z);
+  const toward=hv>20&&(ac.vel.x*ANG_DIR.x+ac.vel.z*ANG_DIR.y)>.6*hv;
+  const inCone=ac.mode==='air'&&g.d>0&&g.d<6500&&Math.abs(g.off)<g.d*.5+30&&ac.pos.y<700&&toward;
+  lsoOLS(g,inCone&&g.d<5000);
+  if(ac.mode!=='air')return;
+  if(g.d>2800){ if(L.past||L.stage||L.woGiven)lsoReset(false); return; }
+  if(g.d<-60){ L.past=true; return; }
+  if(L.past||!inCone)return;
+  const lu=Math.atan2(g.off,g.d)*180/Math.PI,aDeg=ac.alpha*180/Math.PI,cs=lsoCallsign();
+  if(g.d<1100&&g.d>60){L.sGs+=Math.abs(g.gs)*dt;L.sLu+=Math.abs(lu)*dt;L.sT+=dt;}
+  // approach sequence: contact, call the ball
+  if(L.stage<1&&g.d<2600){L.stage=1;lsoSay('PILOT',cs+', paddles contact, '+(g.d/1852).toFixed(1)+' miles');lsoSched(1.3,'LSO','Roger, '+cs+'.');}
+  if(L.stage<2&&g.d<1390){L.stage=2;L.finalAt=state.t+4.6;
+    lsoCall('ctb','Call the ball.',0,true);
+    const seen=Math.abs(g.gs)<2;
+    lsoSched(1.6,'PILOT',seen?cs+', ball'+(AC.type==='a4'?', fuel '+(engineFuel()*2.2046/1000).toFixed(1):''):cs+', Clara');
+    if(seen)lsoSched(3.2,'LSO','Roger ball.');}
+  // wave-off: dangerously low, well out of line, or not configured
+  if(!L.woGiven&&g.d<1000&&g.d>110){
+    const why=g.gs<-1.0?'low':Math.abs(lu)>2.6&&g.d<700?'line-up':(!ac.gear||!ac.hook)&&g.d<800?'configuration':'';
+    if(why){L.woGiven=true;L.wo=4;L.q.length=0;lsoCall('wo','Wave off, wave off!',0,true);lsoSched(1.2,'LSO',why==='configuration'?'Wave off. Gear and hook!':'Wave off. Climb straight ahead, go around.');
+      track('lso_waveoff',{reason:why});}}
+  if(L.woGiven||state.t<L.finalAt)return;
+  // calls in the groove
+  if(g.d<=170){ if(g.gs<-.5)lsoCall('pwr','Power! Power!',3); return; }
+  if((!ac.gear||!ac.hook)&&g.d<1300){lsoCall('cfg',!ac.gear&&!ac.hook?'Check gear and hook.':!ac.gear?'Check your gear.':'Check your hook.',6);return;}
+  const slow=aDeg>AC.aoa[1]+.6,fast=aDeg<AC.aoa[0]-.8;
+  if(g.gs<-.5&&ac.vs<-1.5&&g.d<900){if(lsoCall('pwr','Power.',4))return;}
+  if(g.gs<-.7){if(lsoCall('low',"You're low.",5))return;}
+  else if(g.gs<-.35){if(lsoCall('low2',"You're a little low.",8))return;}
+  if(g.gs>.7){if(lsoCall('high',"You're high.",5))return;}
+  else if(g.gs>.35){if(lsoCall('high2',"You're a little high.",8))return;}
+  if(slow){if(lsoCall('slow',"You're slow. Power.",6))return;}
+  else if(fast){if(lsoCall('fast',"You're fast.",6))return;}
+  if(lu>.6){if(lsoCall('lu','Left for line-up.',5))return;}
+  else if(lu<-.6){if(lsoCall('lu','Right for line-up.',5))return;}
+  if(g.gs>.2&&ac.vs>1.2&&g.d<700){if(lsoCall('ez','Easy with it.',6))return;}
+  if(Math.abs(g.gs)<.25&&Math.abs(lu)<.4&&g.d<750)lsoCall('good','Looking good.',14);
+}
+function drawLsoLog(hc,w,h,cx){
+  const L=LSOQ;
+  if(L.wo>0&&Math.floor(state.t*4)%2===0){
+    hc.font='bold 26px ui-monospace,Menlo,Consolas,monospace';hc.fillStyle='#ff4a3d';hc.textAlign='center';hc.fillText('WAVE OFF',cx,h*.46);
+  }
+  const vis=L.log.filter(e=>e.life>-1);
+  if(!vis.length)return;
+  const pw=Math.min(440,w-40),ph=14+vis.length*22,px=cx-pw/2,py=22,a0=Math.max(0,Math.min(1,vis[vis.length-1].life+1));
+  hc.save();hc.shadowBlur=0;hc.globalAlpha=a0*.9;hc.fillStyle='rgba(8,18,28,.72)';hc.fillRect(px,py,pw,ph);hc.strokeStyle='rgba(200,220,235,.25)';hc.lineWidth=1;hc.strokeRect(px+.5,py+.5,pw-1,ph-1);hc.restore();
+  hc.font='14px ui-monospace,Menlo,Consolas,monospace';hc.textBaseline='middle';
+  let y=py+18;
+  for(const e of vis){
+    const a=Math.max(0,Math.min(1,e.life+1));
+    hc.globalAlpha=a;hc.textAlign='left';hc.fillStyle=e.who==='LSO'?'#e8c547':'#8dffb0';hc.fillText(e.who==='LSO'?'LSO':'PILOT',px+10,y);
+    hc.fillStyle='#fff';hc.fillText(e.text,px+68,y);y+=22;
+  }
+  hc.globalAlpha=1;
+}
+
 /* ---------- flight HUD ---------- */
 const hud=$('hud'),hc=hud.getContext('2d');
 const FLY={cockpit:1,chase:1};
@@ -1635,7 +1746,10 @@ function drawHud(){
   if(ac.mode==='air'&&g.d>30&&g.d<5000&&Math.abs(g.off)<g.d*.6){
     const gx=R,gy=cy+70;
     hc.globalAlpha=.75;hc.fillText('BALL',gx,gy-34);hc.globalAlpha=1;
-    hc.strokeStyle='#35ff7a';hc.beginPath();hc.moveTo(gx-26,gy);hc.lineTo(gx-8,gy);hc.moveTo(gx+8,gy);hc.lineTo(gx+26,gy);hc.stroke();
+    hc.strokeStyle=hc.fillStyle='#35ff7a';hc.beginPath();hc.moveTo(gx-26,gy);hc.lineTo(gx-8,gy);hc.moveTo(gx+8,gy);hc.lineTo(gx+26,gy);hc.stroke();
+    for(const dx of [-26,-17,17,26]){hc.beginPath();hc.arc(gx+dx,gy,2.4,0,7);hc.fill();}   // datum lights
+    if(LSOQ.wo>0&&Math.floor(state.t*4)%2===0){hc.fillStyle='#ff4a3d';for(const dx of [-16,16])for(const dy of [-62,-50]){hc.beginPath();hc.arc(gx+dx,gy+dy+14,4,0,7);hc.fill();}}   // red wave-off lights
+
     const by=gy-Math.max(-1,Math.min(1,g.gs/1.2))*24;
     hc.fillStyle=g.gs<-.9?'#ff5a4d':'#ffb22e';hc.beginPath();hc.arc(gx,by,5,0,7);hc.fill();
     hc.strokeStyle=hc.fillStyle=GRN;
@@ -1653,6 +1767,7 @@ function drawHud(){
   for(const [t,on] of flags){hc.globalAlpha=on?1:.3;hc.fillText(t,fx,ty+26);fx+=87;}
   hc.globalAlpha=1;
   drawWpnHud(hc,w,h,cx,cy,L,R,GRN);
+  drawLsoLog(hc,w,h,cx);
   if(ac.msgT>0){hc.font='bold 16px ui-monospace,Menlo,Consolas,monospace';hc.fillStyle=ac.crashed?'#ff8a7d':'#fff';
     hc.globalAlpha=Math.min(1,ac.msgT);hc.fillText(ac.msg,cx,tut.active?h*.4:Math.max(96,h*.2));hc.globalAlpha=1;}
 }
@@ -1959,6 +2074,7 @@ const sfx={
   cat(){burst('white','highpass',900,3500,2.2,.5);tone('sine',70,40,.5,.6);},                 // steam and shuttle
   catEnd(){tone('sine',90,35,.35,.8);burst('brown','lowpass',500,100,.4,.9);},                // end of stroke
   touch(){tone('sine',85,40,.3,.9);burst('white','bandpass',1800,900,.25,.3,2);},             // gear thump and tyre chirp
+  radio(){burst('white','bandpass',2600,1800,.07,.07,4);burst('white','bandpass',2200,2400,.05,.05,4,.5);},   // radio key click
   trap(){burst('white','bandpass',2800,600,1.6,.5,6);tone('sawtooth',170,55,1.3,.18);},       // wire paying out
   gear(down){ // doors unlock, legs travel, then lock one after another
     thud(120,.4);hum(210,down?190:235,2.2,.05,.1);
@@ -2213,7 +2329,7 @@ function syncStores(){
 
 const wp={s:[null,null,null,null,null,null,null,null],ext:[0,0,0,0,0,0,0,0],rk:[0,0,0,0,0,0,0,0],plan:PRESETS.clean.s.slice(),plan2:PRESETS2.clean.s.slice(),ammo:200,sel:0,gunT:0,rktT:0,rktI:0,bombI:0,gunN:0,lock:null,locked:false,lockPrev:null};
 const prj=[],tg=[];
-const ms={on:false,m:null,state:'idle',t:0,launched:false,maxAlt:0,maxIas:0,hits:0,rktHits:0,bombHits:0,kills:0,refuel:0,traps0:0,bolt0:0,score:0,wire:0,bonus:0,airT:0,sel:'T1'};
+const ms={on:false,m:null,state:'idle',t:0,launched:false,maxAlt:0,maxIas:0,hits:0,rktHits:0,bombHits:0,kills:0,refuel:0,traps0:0,bolt0:0,score:0,wire:0,bonus:0,airT:0,grade:'',sel:'T1'};
 const prog={done:{},open:false};
 try{Object.assign(prog.done,JSON.parse(localStorage.getItem('ranair.prog')||'{}'));prog.open=localStorage.getItem('ranair.open')==='1';}catch(e){}
 const saveProg=()=>{try{localStorage.setItem('ranair.prog',JSON.stringify(prog.done));localStorage.setItem('ranair.open',prog.open?'1':'0');}catch(e){}};
@@ -2593,7 +2709,7 @@ function setEnv(e){const set=(id,v)=>{const el=$(id);el.value=v;el.dispatchEvent
 function startMission(id){
   const m=MISSIONS.find(x=>x.id===id);if(!m)return;
   stopTut();closeUi();clearTargets();
-  Object.assign(ms,{on:true,m,state:'fly',t:0,launched:false,maxAlt:0,maxIas:0,hits:0,rktHits:0,bombHits:0,kills:0,refuel:0,score:0,wire:0,bonus:0,airT:0,
+  Object.assign(ms,{on:true,m,state:'fly',t:0,launched:false,maxAlt:0,maxIas:0,hits:0,rktHits:0,bombHits:0,kills:0,refuel:0,score:0,wire:0,bonus:0,airT:0,grade:'',
     traps0:stats.traps,bolt0:sess.bolters});
   for(const o of m.obj)o.ok=false;
   setEnv(m.env);setType(m.ac||'a4');
@@ -2644,7 +2760,8 @@ function renderMis(){
   }else{
     h+='<div class="tt">'+(ms.state==='done'?'Mission complete':'Mission failed')+'</div>';
     if(ms.state==='fail')h+='<div class="tn">'+(ms.why||'')+'</div>';
-    else{h+='<div class="ts">Score '+ms.score+(ms.bonus?' (including '+ms.bonus+' bonus for fuel, wire and bolters)':'')+' &middot; best '+prog.done[m.id]+'</div>';}
+    else{h+='<div class="ts">Score '+ms.score+(ms.bonus?' (including '+ms.bonus+' bonus for fuel, wire and bolters)':'')+' &middot; best '+prog.done[m.id]+'</div>';
+      if(ms.grade&&m.land)h+='<div class="ts">LSO grade: '+ms.grade+'</div>';}
     const idx=MISSIONS.indexOf(m),nx=MISSIONS[idx+1];
     h+='<div class="bt"><button data-a="retry">Retry</button>'+(ms.state==='done'&&nx&&unlocked(nx)?'<button data-a="next">Next: '+nx.id+'</button>':'')+'<button data-a="list">Missions</button><button data-a="free">Free flight</button></div>';
   }
@@ -2902,7 +3019,7 @@ function frame(now){
   const dt=Math.min((now-last)/1000,.05);last=now;state.t+=dt;
   seaH+=(SEA_H[state.sea]-seaH)*Math.min(1,dt*1.2);setWaveAmps();
   if(state.tsRate&&!paused()){const lo=5.5,hi=18.5;let h=state.hour+state.tsDir*state.tsRate*TS_BASE*dt/60;if(h>hi)h=lo+(h-hi);else if(h<lo)h=hi-(lo-h);state.hour=h;applyTime();const sl=$('sTime');sl.value=h;$('oTime').textContent=String(Math.floor(h)).padStart(2,'0')+':'+String(Math.floor(h%1*60)).padStart(2,'0');}
-  if(!paused()){updateShip(dt);ship.updateMatrixWorld(true);updateEscorts(dt);life.update(dt);stepAircraft(dt);flightClock(dt);updateTut(dt);}
+  if(!paused()){updateShip(dt);ship.updateMatrixWorld(true);updateEscorts(dt);life.update(dt);stepAircraft(dt);updateLSO(dt);flightClock(dt);updateTut(dt);}
   updateAudio();
   updateEject(dt);updateFx(dt);animatePilot(dt);
   plane.visible=!ac.wrecked&&state.cam!=='cockpit';updateCamera(dt);
@@ -2947,8 +3064,8 @@ function setType(k){
 function nextAircraft(){stopTut();setType(AC.type==='a4'?'s2':'a4');track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
 document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
-window.__sim={keyStats,crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,PRESETS2,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
-  advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);updateEscorts(1/60);life.update(1/60);stepAircraft(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
+window.__sim={keyStats,crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,PRESETS2,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,LSOQ,updateLSO,
+  advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);updateEscorts(1/60);life.update(1/60);stepAircraft(1/60);updateLSO(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
 requestAnimationFrame(frame);
 })();
 </script>

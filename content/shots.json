@@ -592,5 +592,13 @@
   "speed": 20,
   "advance": 2,
   "js": "document.getElementById('bTdir').click();document.querySelector('#tskip [data-ts=\"4\"]').click();var c=document.getElementById('ctl');c.scrollTop=c.scrollHeight;"
- }
-}
+ },
+ "s49-lso-calls": {
+  "cam": "cockpit",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "start": "approach",
+  "hideHint": true,
+  "hidePanels": true,
+  "js": "if(!S.ac.hook)S.pressKey('h');const mv=700;S.ac.pos.x+=-12.5/130.6*mv;S.ac.pos.z+=-130/130.6*mv;S.ac.pos.y-=Math.tan(3.5*Math.PI/180)*mv-0.4;S.advance(5.6);"
