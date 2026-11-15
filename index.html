@@ -40,26 +40,36 @@ gtag('config','G-H0ZE9XML6B');
   #title .more{margin-top:6px}
   #title a{color:#e8c547;text-decoration:none;border-bottom:1px solid rgba(232,197,71,.4)}
   #title a:hover{border-bottom-color:#e8c547}
-  #title a.coffee{display:inline-block;margin-top:2px;padding:4px 9px;border:1px solid #e8c547;border-radius:2px;background:#e8c547;color:#10202c;font-weight:600}
+  #title .more.menu{display:flex;gap:8px}
+  #title .menu a{flex:1;text-align:center;padding:12px 10px;font-size:16px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:2px solid #e8c547;border-radius:3px;background:rgba(232,197,71,.12)}
+  #title .menu a:hover{background:rgba(232,197,71,.3)}
+  #title a.coffee{display:block;text-align:center;margin-top:2px;padding:12px 10px;font-size:16px;border:2px solid #e8c547;border-radius:3px;background:#e8c547;color:#10202c;font-weight:600}
   #title a.coffee:hover{background:#f3d86b}
   #read{bottom:12px;left:12px;display:grid;grid-template-columns:auto auto;gap:3px 14px;min-width:150px}
   #read span:nth-child(odd){color:#8fa6b5}
   #read span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
-  #ctl{bottom:12px;right:12px;width:232px}
-  #cams{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px}
+  #ctl{bottom:12px;right:12px;width:min(340px,calc(100vw - 24px));box-sizing:border-box;padding:12px;max-height:calc(100vh - 76px);overflow-y:auto;background:rgba(8,18,28,.82)}
+  #cams{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+  #ctl .grp{margin:10px 0 6px;color:#e8c547;font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;border-bottom:1px solid rgba(200,220,235,.18);padding-bottom:4px}
+  #ctl .grp:first-child{margin-top:0}
+  #ctl button{min-height:48px;font-size:15px;font-weight:600;letter-spacing:.02em;padding:8px 10px;border:2px solid rgba(200,220,235,.4);border-radius:3px;background:rgba(255,255,255,.1);color:#fff;text-align:center;line-height:1.25}
+  #ctl button:hover{background:rgba(255,255,255,.22);border-color:#e8c547}
+  #ctl button:active{transform:translateY(1px)}
+  #ctl button.on{background:#e8c547;color:#10202c;border-color:#e8c547}
+  button:focus-visible,#title a:focus-visible{outline:3px solid #5dff8f;outline-offset:2px}
   button{font:inherit;color:#d6e2ea;background:rgba(255,255,255,.06);border:1px solid rgba(200,220,235,.22);
     border-radius:2px;padding:5px 7px;cursor:pointer;flex:1 0 auto}
   button:hover{background:rgba(255,255,255,.14)}
   button.on{background:#e8c547;color:#10202c;border-color:#e8c547}
-  label{display:grid;grid-template-columns:74px 1fr 44px;align-items:center;gap:6px;margin-top:6px;color:#8fa6b5}
+  label{display:grid;grid-template-columns:96px 1fr 60px;align-items:center;gap:8px;margin-top:6px;color:#c5d5df;font-size:14px}
   label output{color:#e8eef2;text-align:right;font-variant-numeric:tabular-nums}
-  input[type=range]{width:100%;accent-color:#e8c547;margin:0}
+  input[type=range]{width:100%;accent-color:#e8c547;margin:0;height:28px;cursor:pointer}
   #hint{position:fixed;top:14px;right:14px;color:rgba(240,245,248,.9);text-shadow:0 1px 3px rgba(0,0,0,.8);font-size:11px;text-align:right;pointer-events:none}
   #err{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;text-align:center}
-  @media (max-width:640px){#hint{display:none}#ctl{width:auto;left:12px;bottom:12px}#read{bottom:auto;top:178px}#title{max-width:calc(100vw - 92px);box-sizing:border-box}}
+  @media (max-width:640px){#hint{display:none}#ctl{width:auto;left:12px;bottom:12px}#read{bottom:auto;top:236px}#title{max-width:calc(100vw - 92px);box-sizing:border-box}#ctl{max-height:min(58vh,calc(100vh - 250px))}}
   #hud{position:fixed;inset:0;pointer-events:none}
-  #fly{display:flex;gap:4px;margin-bottom:10px}
-  #fly button{flex:1 1 0;padding:5px 2px}
+  #fly{display:flex;gap:6px;margin-bottom:6px}
+  #ctl #fly button{flex:1 1 0;padding:6px 4px;background:rgba(93,255,143,.14);border-color:#5dff8f}
   #hint{line-height:1.6;white-space:pre-line}
   #tut{display:none;top:70px;left:50%;transform:translateX(-50%);width:min(560px,calc(100vw - 24px));box-sizing:border-box;
     border-left:3px solid #e8c547;transition:border-color .2s}
@@ -69,19 +79,19 @@ gtag('config','G-H0ZE9XML6B');
   #tut .ts{margin-top:6px;color:#b9c9d4;line-height:1.55;letter-spacing:.01em}
   #tut .tn{margin-top:8px;color:#ff9a8c}
   kbd{font:inherit;font-weight:600;color:#10202c;background:#e8c547;border-radius:3px;padding:1px 6px}
-  #bTut{width:100%;margin-bottom:4px;border-color:#e8c547;color:#e8c547}
-  #bSnd{width:100%;margin-bottom:4px}
+  #ctl #bTut{width:100%;margin-bottom:6px;border-color:#e8c547;color:#e8c547}
+  #ctl #bSnd,#ctl #bType{width:100%;margin-bottom:6px}
   #bMenu{position:fixed;top:12px;right:12px;z-index:5;flex:none;min-width:40px;min-height:40px;padding:6px 10px;
     background:rgba(8,18,28,.62);border-color:rgba(200,220,235,.18);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   #bMenu.on{background:#e8c547;color:#10202c;border-color:#e8c547}
-  #hint{top:60px}
+  #hint{top:auto;bottom:14px;right:368px}
   body.ui-off .panel,body.ui-off #hint{display:none!important}
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><h1>HMAS MELBOURNE &middot; R21</h1><p>Phase 2 &middot; flyable A-4G Skyhawk &middot; task group &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more menu"><a href="about.html">About</a> &middot; <a href="blog/">Blog</a></p><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee</a></p></div>
+<div id="title" class="panel"><h1>HMAS MELBOURNE &middot; R21</h1><p>Phase 2 &middot; flyable A-4G Skyhawk &middot; task group &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a></p><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="hint">drag to look &middot; scroll to zoom &middot; keys 1&ndash;5 for cameras</div>
 <div id="read" class="panel">
@@ -97,6 +107,7 @@ gtag('config','G-H0ZE9XML6B');
   <span>PILOTS LOST</span><span id="rKilled">0</span>
 </div>
 <div id="ctl" class="panel">
+  <div class="grp">Camera</div>
   <div id="cams">
     <button data-cam="orbit" class="on">1 Orbit</button>
     <button data-cam="deck">2 Deck</button>
@@ -106,10 +117,12 @@ gtag('config','G-H0ZE9XML6B');
     <button data-cam="cockpit">6 Cockpit</button>
     <button data-cam="chase">7 Chase</button>
   </div>
+  <div class="grp">Flight</div>
   <button id="bTut">Tutorial: launch and land (U)</button>
-  <button id="bSnd">Sound: on (M)</button>
   <div id="fly"><button id="bCat">Fly catapult (R)</button><button id="bApp">Fly approach (T)</button></div>
   <button id="bType">Aircraft: A-4G Skyhawk (N)</button>
+  <div class="grp">Settings</div>
+  <button id="bSnd">Sound: on (M)</button>
   <label>Sea state<input id="sSea" type="range" min="0" max="6" step="1" value="3"><output id="oSea"></output></label>
   <label>Ship speed<input id="sSpd" type="range" min="0" max="24" step="1" value="20"><output id="oSpd"></output></label>
   <label>Time<input id="sTime" type="range" min="5.5" max="18.5" step="0.25" value="15.5"><output id="oTime"></output></label>
