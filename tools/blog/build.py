@@ -75,7 +75,7 @@ GA_SNIPPET = f"""<script async src="https://www.googletagmanager.com/gtag/js?id=
 
 def page(title, desc, path, body, og_img=None, og_type="website", extra_head=""):
     full_title = title if title.startswith("HMAS") else f"{title} · RAN Air Wing"
-    og = og_img or "/blog/img/s01-welcome.jpg"
+    og = og_img or "/og.png"
     return f"""<!DOCTYPE html>
 <html lang="en-AU">
 <head>
@@ -93,6 +93,9 @@ def page(title, desc, path, body, og_img=None, og_type="website", extra_head="")
 <meta property="og:url" content="{url(path)}">
 <meta property="og:image" content="{SITE}{og}">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{e(title)}">
+<meta name="twitter:description" content="{e(desc)}">
+<meta name="twitter:image" content="{SITE}{og}">
 <meta name="theme-color" content="#0b1622">
 {extra_head}
 {GA_SNIPPET}
