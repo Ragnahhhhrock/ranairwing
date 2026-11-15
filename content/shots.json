@@ -584,5 +584,13 @@
    "el": 0.1,
    "dist": 150
   }
+ },
+ "s-time-skip": {
+  "cam": "orbit",
+  "hour": 9,
+  "sea": 3,
+  "speed": 20,
+  "advance": 2,
+  "js": "document.getElementById('bTdir').click();document.querySelector('#tskip [data-ts=\"4\"]').click();var c=document.getElementById('ctl');c.scrollTop=c.scrollHeight;"
  }
 }

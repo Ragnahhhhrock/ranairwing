@@ -82,6 +82,7 @@ gtag('config','G-H0ZE9XML6B');
   #ctl .grp:first-child{margin-top:0}
   #ctl button{min-height:48px;font-size:15px;font-weight:600;letter-spacing:.02em;padding:8px 10px;border:2px solid rgba(200,220,235,.4);border-radius:3px;background:rgba(255,255,255,.1);color:#fff;text-align:center;line-height:1.25}
   #ctl button:hover{background:rgba(255,255,255,.22);border-color:#e8c547}
+  #tskip{display:flex;gap:6px}#tskip button{flex:1;min-width:0}
   #ctl button:active{transform:translateY(1px)}
   #ctl button.on{background:#e8c547;color:#10202c;border-color:#e8c547}
   button:focus-visible,#title a:focus-visible{outline:3px solid #5dff8f;outline-offset:2px}
@@ -181,6 +182,8 @@ gtag('config','G-H0ZE9XML6B');
   <label>Sea state<input id="sSea" type="range" min="0" max="6" step="1" value="3"><output id="oSea"></output></label>
   <label>Ship speed<input id="sSpd" type="range" min="0" max="24" step="1" value="20"><output id="oSpd"></output></label>
   <label>Time<input id="sTime" type="range" min="5.5" max="18.5" step="0.25" value="15.5"><output id="oTime"></output></label>
+  <div class="grp">Time skip</div>
+  <div id="tskip"><button id="bTdir" aria-pressed="false">&#9654; Fwd</button><button data-ts="2">2x</button><button data-ts="4">4x</button><button data-ts="8">8x</button></div>
 </div>
 <button id="bMenu" type="button" aria-label="Show or hide menu and readouts (P)" aria-pressed="false">&#9776; Menu</button>
 <div id="err">This sim needs WebGL, which isn't available in this browser.</div>
@@ -211,7 +214,7 @@ const camera=new THREE.PerspectiveCamera(50,1,1,45000);
 const KN=0.5144, DECK_Y=12.2, G=9.81;
 const SEA_H=[0,0.15,0.45,1.0,2.0,3.2,5.0];       // wave height scale per sea state (m)
 const SEA_WIND=[2,5,9,14,19,25,32];              // true wind (kn)
-const state={sea:3,speedKn:20,hour:15.5,cam:'orbit',t:0};
+const state={sea:3,speedKn:20,hour:15.5,cam:'orbit',t:0,tsRate:0,tsDir:1};
 
 /* ---------- waves (shared by shader and ship motion) ---------- */
 const WAVE_DEF=[ // angle off the bow (deg), wavelength (m), weight
@@ -2874,6 +2877,16 @@ function bind(id,key,fmt,after){
 }
 bind('sSea','sea',v=>v.toFixed(0));
 bind('sSpd','speedKn',v=>v+' kn');
+const TS_BASE=5;                                    // 1x = 5 game minutes per real second; time of day wraps within the 05:30-18:30 slider range
+function setTS(rate,dir){
+  if(dir!==undefined)state.tsDir=dir;
+  state.tsRate=rate;
+  $('bTdir').innerHTML=state.tsDir>0?'&#9654; Fwd':'&#9664; Back';$('bTdir').setAttribute('aria-pressed',state.tsDir<0?'true':'false');
+  document.querySelectorAll('#tskip [data-ts]').forEach(b=>b.classList.toggle('on',+b.dataset.ts===state.tsRate));
+  track('time_skip',{rate:state.tsRate,direction:state.tsDir>0?'forward':'backward'});
+}
+$('bTdir').addEventListener('click',e=>{setTS(state.tsRate,-state.tsDir);e.currentTarget.blur();});
+document.querySelectorAll('#tskip [data-ts]').forEach(b=>b.addEventListener('click',e=>{const r=+b.dataset.ts;setTS(state.tsRate===r?0:r);b.blur();}));
 bind('sTime','hour',v=>String(Math.floor(v)).padStart(2,'0')+':'+String(Math.round(v%1*60)).padStart(2,'0'),applyTime);
 
 function resize(){
@@ -2888,6 +2901,7 @@ let last=performance.now(),hudT=0;
 function frame(now){
   const dt=Math.min((now-last)/1000,.05);last=now;state.t+=dt;
   seaH+=(SEA_H[state.sea]-seaH)*Math.min(1,dt*1.2);setWaveAmps();
+  if(state.tsRate&&!paused()){const lo=5.5,hi=18.5;let h=state.hour+state.tsDir*state.tsRate*TS_BASE*dt/60;if(h>hi)h=lo+(h-hi);else if(h<lo)h=hi-(lo-h);state.hour=h;applyTime();const sl=$('sTime');sl.value=h;$('oTime').textContent=String(Math.floor(h)).padStart(2,'0')+':'+String(Math.floor(h%1*60)).padStart(2,'0');}
   if(!paused()){updateShip(dt);ship.updateMatrixWorld(true);updateEscorts(dt);life.update(dt);stepAircraft(dt);flightClock(dt);updateTut(dt);}
   updateAudio();
   updateEject(dt);updateFx(dt);animatePilot(dt);
