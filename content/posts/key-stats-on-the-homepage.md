@@ -10,10 +10,7 @@ The title panel now carries three counters: launches, traps and crashes. They co
 
 ## Two modes
 
-Until the shared counter is switched on, the panel shows your own totals, kept in this browser's local storage, and the line under it says so. Clear your site data and they reset.
+The panel shows totals from everyone flying, and the line under it reads "Live from pilots worldwide". The shared figures refresh every minute. If the counter cannot be reached, the panel falls back to your own totals, kept in this browser's local storage, and the line says so. Clear your site data and those reset.
 
-Once the shared counter is live, the same panel shows totals from everyone flying, and the line changes to "Live from pilots worldwide". The shared figures refresh every minute. The counter is a small Cloudflare Worker, and the figures are approximate: the store is eventually consistent, and each visitor is limited to one counted event of each kind per minute, so a very fast run of crashes will undercount.
+The counts started from zero when the counter went live. The counter is a small Cloudflare Worker, and the figures are approximate: the store is eventually consistent, and each visitor is limited to one counted event of each kind per minute, so a very fast run of crashes will undercount.
 
-## Still to do
-
-The shared counter needs deploying before the worldwide figures appear. Until then you see your own flying only.

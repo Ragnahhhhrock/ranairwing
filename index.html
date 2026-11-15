@@ -1656,7 +1656,7 @@ function drawHud(){
 
 /* ---------- mishaps: ejection, debris, crash effects, tally ---------- */
 /* ---------- key stats: worldwide totals (Cloudflare Worker in tools/counter) with a this-device fallback ---------- */
-const COUNTER_URL='';   // e.g. 'https://ranairwing-counter.<account>.workers.dev'; empty = this device only
+const COUNTER_URL='https://ranairwing-counter.malgordonperth.workers.dev';   // Cloudflare Worker, see tools/counter; empty = this device only
 const keyStats=(function(){
   const KEY='ranairwing.keystats.v1',fmt=n=>Number(n).toLocaleString('en-AU');
   let local={launches:0,traps:0,crashes:0},world=null;
