@@ -571,5 +571,18 @@
    "dist": 300
   },
   "advance": 4
+ },
+ "s35-pedro": {
+  "cam": "orbit",
+  "hour": 16,
+  "sea": 3,
+  "speed": 20,
+  "advance": 3,
+  "hidePanels": true,
+  "view": {
+   "az": -2.9,
+   "el": 0.1,
+   "dist": 150
+  }
  }
 }

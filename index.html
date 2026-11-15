@@ -897,6 +897,12 @@ const life=(function(){
   const parked=makeSeaKing(true);parked.g.position.set(0,DECK_Y+1.95,-83);ship.add(parked.g);
   // plane guard Sea King, hovering off the port quarter
   const guard=makeSeaKing(false);scene.add(guard.g);
+  // "PEDRO" callsign tag over the plane guard (traditional name for the rescue helicopter on station); fades out with distance
+  const pedro=(()=>{const cv=document.createElement('canvas');cv.width=256;cv.height=64;const c=cv.getContext('2d');
+    c.font='bold 34px ui-monospace,Menlo,Consolas,monospace';c.textAlign='center';c.textBaseline='middle';c.fillStyle='rgba(8,18,28,.55)';c.fillRect(40,8,176,48);
+    c.fillStyle='#e8c547';c.fillText('PEDRO',128,33);
+    const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
+    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthWrite:false,fog:false}));sp.scale.set(16,4,1);sp.position.y=6;guard.g.add(sp);return sp;})();
 
   const sm=x=>x*x*(3-2*x),seg=(u)=>{let a=0;for(let i=0;i<SCHED.length;i++){if(u<a+SCHED[i])return [i,(u-a)/SCHED[i]];a+=SCHED[i];}return [0,0];};
   function update(dt){
@@ -936,6 +942,7 @@ const life=(function(){
     guard.g.position.set(sp.x-52+7*Math.sin(t*.11),19+1.5*Math.sin(t*.37),sp.z+135+9*Math.sin(t*.07+1));
     guard.g.rotation.set(-.05+.02*Math.sin(t*.5),.15*Math.sin(t*.09),.04*Math.sin(t*.31));
     guard.rotor.rotation.y-=18*dt;guard.tail.rotation.x+=40*dt;
+    {const d=camera.position.distanceTo(guard.g.position);pedro.material.opacity=Math.max(0,Math.min(1,(900-d)/500));pedro.visible=pedro.material.opacity>.02;}
   }
   let heloOut=false;
   function setForwardParkClear(clear){heloOut=clear;parked.g.visible=!clear;for(const c of heloCrew)c.visible=!clear;}   // Tracker launches: helicopter and handlers move off the catapult line
