@@ -675,15 +675,16 @@ const life=(function(){
     const g=new THREE.Group(),P={legs:[],flaps:[],brakes:[],crew:[],canopy:null,props:[],discs:[]},GG=fly?new THREE.Group():g;
     if(fly){g.add(GG);P.gearG=GG;}
     const mD=S2Mats.dk,mR=S2Mats.red;
+    const mSeat=M(0x2c3a33,{roughness:.9}),s2Seat=p=>{box(.46,.07,.46,0,-.1,-.04,mSeat,p);box(.46,.66,.07,0,.24,.17,mSeat,p);box(.3,.16,.08,0,.68,.17,mSeat,p);};   // plain bucket seat: pan, back, headrest
     const hull=s2Hull();
     add(new THREE.Mesh(hull.skin,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.05})),0,0,0,g);
     const inner=new THREE.Mesh(hull.skin,new THREE.MeshBasicMaterial({color:0x14171a,side:THREE.BackSide}));g.add(inner);       // dark inside, seen through the windows and the open cockpit after ejection
     const cm=fly?new THREE.MeshStandardMaterial({color:0x7fa6bd,roughness:.1,metalness:.3,transparent:true,opacity:.42,depthWrite:false,side:THREE.DoubleSide}):new THREE.MeshStandardMaterial({color:0x14202b,roughness:.15,metalness:.4,side:THREE.DoubleSide});
     hull.glass.translate(fly?.36:0,-.62,3.25);                                                                         // glazing is local to the seat so it can fly off on ejection
     const can=new THREE.Mesh(hull.glass,cm);can.position.set(fly?-.36:0,.62,-3.25);can.castShadow=false;g.add(can);P.canopy=can;
-    if(fly){const SX=.36;                                                                                    // pilot (port) and co-pilot (starboard) seated side by side, hips at each group's origin
-      const cg=new THREE.Group();cg.position.set(-SX,.62,-3.25);g.add(cg);buildSeat(cg,false);P.crewRig=buildPilot(cg);setPose(P.crewRig,POSES.seat);
-      const cp=new THREE.Group();cp.position.set(SX,.62,-3.25);g.add(cp);buildSeat(cp,false);setPose(buildPilot(cp),POSES.seat);
+    if(fly){const SX=.36;                                                                                    // pilot (port) and co-pilot (starboard) seated side by side in plain seats, no ejection seats; hips at each group's origin
+      const cg=new THREE.Group();cg.position.set(-SX,.62,-3.25);g.add(cg);s2Seat(cg);P.crewRig=buildPilot(cg);setPose(P.crewRig,POSES.seat);
+      const cp=new THREE.Group();cp.position.set(SX,.62,-3.25);g.add(cp);s2Seat(cp);setPose(buildPilot(cp),POSES.seat);
       P.crew=[cg,cp];P.ejectAt=[-SX,.62,-3.25];}
     add(new THREE.Mesh(new THREE.SphereGeometry(1,14,10),mW),0,-1.2,.9,g).scale.set(.7,.38,1.1);            // retracted search radome
     cyl(.025,.025,.5,0,1.36,-.55,mBk,6,g).rotation.x=.35;box(.03,.34,.24,0,1.4,-1.0,mBk,g).rotation.x=-.2;   // whip and blade aerials
@@ -1457,6 +1458,7 @@ function controls(dt){
 function pressKey(k){
   if(k==='x'){
     if(ej.active||ac.crashed)return;
+    if(AC.type==='s2'){say('The Tracker has no ejection seats',2.5);return;}
     if(ej.armT>0)eject();else{ej.armT=1.5;say('Press X again to eject',1.5);}
     return;
   }
@@ -1630,7 +1632,7 @@ function worldVel(out){ // aircraft velocity over the sea, in either mode
   out.set(-Math.sin(ac.psi)*ac.u,0,-Math.cos(ac.psi)*ac.u).applyQuaternion(ship.quaternion);out.z-=state.speedKn*KN;return out;
 }
 function eject(){
-  if(ej.active||ac.crashed)return;
+  if(ej.active||ac.crashed||AC.type==='s2')return;                  // the Tracker had no ejection seats
   Object.assign(ej,{active:true,t:0,chute:0,sepd:false,popped:false,done:false,msg:'',local:null,armT:0,w:0,air:0,rest:0,vestK:1});
   _up.set(0,1,0).applyQuaternion(ac.q);_fwd.set(0,0,-1).applyQuaternion(ac.q);
   ej.pos.set(...parts.ejectAt).applyQuaternion(ac.q).add(ac.pos);worldVel(ej.vel);ej.q.copy(ac.q);
@@ -1928,6 +1930,7 @@ function setCam(name){
   $('hint').textContent=FLY[name]?
     'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nchase cam: drag orbit \u00b7 shift/right-drag pan \u00b7 scroll zoom \u00b7 double-click reset\nN  switch aircraft (Skyhawk / Tracker)     R  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
     'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nP menu on/off \u00b7 U tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach\nO orbit the escorts';
+  if(FLY[name]&&AC.type==='s2')$('hint').textContent=$('hint').textContent.replace('\nX twice  eject','');   // no ejection seats in the Tracker
 }
 const tmp=new THREE.Vector3(),tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ');
 function updateCamera(dt){
@@ -2089,6 +2092,7 @@ const s2F=life.makeS2(true),partsS2=s2F.userData.P;s2F.visible=false;plane.add(s
 function setType(k){
   Object.assign(AC,TYPES[k]);AC.type=k;a4G.visible=k==='a4';life.setForwardParkClear(k==='s2');for(const p of parkedSky)p.visible=k!=='s2';s2F.visible=k==='s2';parts=k==='a4'?partsA4:partsS2;
   $('bType').textContent='Aircraft: '+AC.name+' (N)';
+  if(FLY[state.cam])setCam(state.cam);                                    // refresh the key hints for this aircraft
 }
 function nextAircraft(){stopTut();setType(AC.type==='a4'?'s2':'a4');track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
