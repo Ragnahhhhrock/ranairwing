@@ -2701,7 +2701,20 @@ const MISSIONS=[
   brief:'An enemy ship is 55 km ahead of the task group. Launch with bombs and a centreline tank, sink her, and come home. A buddy tanker is holding 18 km out if you need fuel.',
   setup(){const p=shipRel(3000,-55000);addRaft(p.x,p.z,true,120,'SHIP');const q=shipRel(-1000,-18000);addTanker(q.x,q.z,0,1000);tank.alt=2200;tank.pos.y=2200;},
   obj:[{t:'Launch',p:5,f:()=>ms.launched},{t:'Sink the enemy ship',p:60,f:()=>tg.some(t=>t.surface)&&!tg.find(t=>t.surface).alive},
-       {t:'Trap aboard',p:30,f:()=>stats.traps>ms.traps0},{t:'Bonus: take fuel from the tanker',p:15,opt:1,f:()=>ms.refuel>=200}]}
+       {t:'Trap aboard',p:30,f:()=>stats.traps>ms.traps0},{t:'Bonus: take fuel from the tanker',p:15,opt:1,f:()=>ms.refuel>=200}]},
+ {id:'C1',g:'Campaign 1977-80',date:'25 May 1977',n:'Search: the disabled merchantman',req:['T10'],ac:'s2',env:{sea:3,speed:22,hour:9},start:'air',pre:'clean',land:1,
+  hist:'In May 1977, on the voyage to the Silver Jubilee review, a Tracker from Melbourne located the disabled Dutch ship Impala Princess in the Gulf of Aden. The sim has no Gulf of Aden or Dutch ship: the vessel here is a generic merchant hull and the position is invented.',
+  brief:'A merchant ship is reported disabled to the north-west. Fly the Tracker out, find her and close to within 2 km to confirm her position, then come home and land.',
+  setup(){const p=shipRel(-9000,-30000);const t=addRaft(p.x,p.z,true,1e9,'VESSEL');placeAir(p.x+9000,600,p.z+22000,0,95,.6);},
+  obj:[{t:'Find the vessel (within 2 km)',p:60,f:()=>{const t=tg.find(x=>x.surface);return !!t&&Math.hypot(t.pos.x-ac.pos.x,t.pos.z-ac.pos.z)<2000&&ac.pos.y<1500;}},
+       {t:'Trap aboard',p:40,f:()=>stats.traps>ms.traps0}]},
+ {id:'C2',g:'Campaign 1977-80',date:'October 1980',n:'Shadowing the shadowers',req:['C1'],ac:'s2',env:{sea:2,speed:20,hour:13},start:'air',pre:'clean',land:1,
+  hist:'During the 1980 Indian Ocean deployment, reports say Soviet warships shadowed the task group and a Tracker was sent to watch them. The contacts here move with the fleet at its speed; their course and number are invented.',
+  brief:'Soviet warships are trailing the group. Find the nearest contact and stay within 4 km of it, below 1,500 m, for 60 seconds in total, then recover.',
+  setup(){const p=shipRel(6000,-26000);for(const dx of [0,1400]){const t=addRaft(p.x+dx,p.z-dx*.3,true,1e9,'CONTACT');const u=t.upd;t.upd=(q,dt)=>{q.pos.z-=ms.m.env.speed*KN*dt;u(q,dt);};}
+    ms.shadow=0;placeAir(p.x-6000,700,p.z+21000,0,95,.6);},
+  tick(dt){const near=tg.some(t=>t.surface&&Math.hypot(t.pos.x-ac.pos.x,t.pos.z-ac.pos.z)<4000)&&ac.pos.y<1500;if(near)ms.shadow=(ms.shadow||0)+dt;},
+  obj:[{t:'Shadow the contacts for 60 s',p:60,f:()=>(ms.shadow||0)>=60},{t:'Trap aboard',p:40,f:()=>stats.traps>ms.traps0}]}
 ];
 const unlocked=m=>prog.open||m.req.every(r=>prog.done[r]!==undefined);
 function setEnv(e){const set=(id,v)=>{const el=$(id);el.value=v;el.dispatchEvent(new Event('input'));};
@@ -2778,7 +2791,7 @@ function renderMsn(){
     const un=unlocked(m),s=prog.done[m.id];
     h+='<button data-id="'+m.id+'"'+(m.id===ms.sel?' class="on"':'')+(un?'':' disabled')+'>'+m.id+' &nbsp;'+m.n+(s!==undefined?' &nbsp;&#10004; '+s:'')+(un?'':' &nbsp;(locked)')+'</button>';}
   const m=MISSIONS.find(x=>x.id===ms.sel)||MISSIONS[0],un=unlocked(m);
-  h+='</div><div class="det"><div class="tl">'+m.id+' &middot; '+m.g+'</div><div class="tt">'+m.n+'</div><div class="ts">'+m.brief+'</div>'
+  h+='</div><div class="det"><div class="tl">'+m.id+' &middot; '+m.g+'</div><div class="tt">'+m.n+'</div><div class="ts">'+m.brief+'</div>'+(m.hist?'<div class="ts"><b>'+m.date+'.</b> '+m.hist+'</div>':'')
     +'<div class="ts">Loadout: '+(m.ac==='s2'?PRESETS2:PRESETS)[m.pre].n+' &middot; sea state '+m.env.sea+' &middot; ship '+m.env.speed+' kn</div>'
     +'<div class="ts">'+m.obj.map(o=>'&bull; '+o.t).join('<br>')+'</div>'
     +(un?'<div class="bt"><button data-a="fly">Fly mission</button></div>':'<div class="tn">Complete '+m.req.join(', ')+' first.</div>')

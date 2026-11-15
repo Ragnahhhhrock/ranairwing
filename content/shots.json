@@ -602,6 +602,12 @@
   "hideHint": true,
   "hidePanels": true,
   "js": "if(!S.ac.hook)S.pressKey('h');const mv=700;S.ac.pos.x+=-12.5/130.6*mv;S.ac.pos.z+=-130/130.6*mv;S.ac.pos.y-=Math.tan(3.5*Math.PI/180)*mv-0.4;S.advance(5.6);"
-
+ },
+ "s50-campaign-shadow": {
+  "cam": "chase",
+  "mission": "C2",
+  "uiOff": true,
+  "js": "S.advance(1/60);const t=S.tg.filter(x=>x.surface)[0];S.ac.pos.set(t.pos.x-700,380,t.pos.z+1500);S.ac.vel.set(0,0,-95);S.ac.msgT=0;",
+  "advance": 0.05
  }
 }
