@@ -1,0 +1,51 @@
+html,body{margin:0;background:#0b1622;color:#e8eef2;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:14px;line-height:1.6;letter-spacing:.03em}
+a{color:#e8c547}
+.skip{position:absolute;left:-999px}.skip:focus{left:8px;top:8px;background:#e8c547;color:#10202c;padding:6px 10px;z-index:9}
+nav{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding:14px 20px;background:rgba(8,18,28,.62);border-bottom:1px solid rgba(200,220,235,.18);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+nav .brand{font-weight:600;margin-right:auto;color:#e8eef2;text-decoration:none}
+nav a{color:#9fb4c2;text-decoration:none;border-bottom:1px solid transparent}
+nav a:hover,nav a[aria-current]{color:#e8c547;border-bottom-color:#e8c547}
+main{max-width:1000px;margin:0 auto;padding:32px 20px 48px}
+.crumb{margin:0;color:#8fa6b5;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+h1{font-size:24px;letter-spacing:.12em;margin:6px 0 8px;text-transform:uppercase}
+.lede{color:#c4d2dc;margin:0 0 20px;max-width:640px}
+.meta{color:#8fa6b5;font-size:11px;letter-spacing:.14em;margin:0 0 12px}
+.banner{border-left:3px solid #ff9a8c;background:rgba(255,154,140,.08);padding:8px 12px;margin:0 0 14px;color:#ffd0c8}
+.empty{color:#9fb4c2}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:rgba(8,18,28,.62);border:1px solid rgba(200,220,235,.18);border-radius:3px;padding:14px}
+.kpi.hero{grid-column:1/-1;padding:18px 16px;border-color:rgba(232,197,71,.5)}
+.kpi .l{margin:0;color:#8fa6b5;font-size:11px;letter-spacing:.16em;text-transform:uppercase}
+.kpi .v{margin:4px 0 0;font-size:34px;line-height:1.1;font-weight:700;color:#e8c547;font-variant-numeric:tabular-nums}
+.kpi.hero .v{font-size:56px}
+.kpi .s{margin:4px 0 0;color:#9fb4c2;font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.grid{grid-template-columns:1fr}.kpi.hero .v{font-size:40px}}
+.card{background:rgba(8,18,28,.62);border:1px solid rgba(200,220,235,.18);border-radius:3px;padding:16px;min-width:0}
+.card.wide{grid-column:1/-1}
+.card h2{margin:0;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#e8c547}
+.card .sub{margin:4px 0 12px;color:#9fb4c2;font-size:12px}
+.rows{list-style:none;margin:0;padding:0}
+.row{display:grid;grid-template-columns:minmax(90px,190px) 1fr auto;gap:10px;align-items:center;padding:5px 0}
+.row .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e8eef2}
+.row .t{display:block;height:10px;background:rgba(200,220,235,.1);border-radius:0 4px 4px 0}
+.row .b{display:block;height:10px;background:#e8c547;border-radius:0 4px 4px 0}
+.row .c{text-align:right;font-variant-numeric:tabular-nums;color:#e8eef2}
+.row .c small{color:#8fa6b5;margin-left:6px}
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{fill:#8fa6b5;font:10px ui-monospace,Menlo,Consolas,monospace}
+.chart .grid line{stroke:rgba(200,220,235,.14)}
+.chart rect.hit{fill:transparent;cursor:default}
+.chart rect.hit:hover,.chart rect.hit:focus{fill:rgba(232,197,71,.1);outline:none}
+.tip{position:absolute;display:none;transform:translateX(-50%);pointer-events:none;background:#0b1622;border:1px solid rgba(200,220,235,.35);border-radius:3px;padding:6px 10px;font-size:12px;line-height:1.5;white-space:nowrap;z-index:2}
+.tip.on{display:block}
+details.tbl{margin-top:10px}details.tbl summary{cursor:pointer;color:#9fb4c2;font-size:12px}
+table.dt{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.dt th,.dt td{text-align:right;padding:7px 8px;border-bottom:1px solid rgba(200,220,235,.12)}
+.dt th:first-child,.dt td:first-child{text-align:left}
+.dt th{color:#8fa6b5;font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:400}
+.tblwrap{overflow-x:auto}
+.note{margin:18px 0 0;color:#8fa6b5;font-size:12px;max-width:760px}
+footer{padding:20px;border-top:1px solid rgba(200,220,235,.18);color:#8fa6b5;font-size:12px;text-align:center}
+:focus-visible{outline:3px solid #5dff8f;outline-offset:2px}

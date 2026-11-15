@@ -559,5 +559,17 @@
    "cEl": -0.1,
    "cD": 10
   }
+ },
+ "s-public-stats": {
+  "cam": "orbit",
+  "hour": 15,
+  "sea": 3,
+  "speed": 20,
+  "view": {
+   "az": -0.9,
+   "el": 0.12,
+   "dist": 300
+  },
+  "advance": 4
  }
 }

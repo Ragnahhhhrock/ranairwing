@@ -64,6 +64,14 @@ gtag('config','G-H0ZE9XML6B');
   #title .menu a:hover{background:rgba(232,197,71,.3)}
   #title a.coffee{display:block;text-align:center;margin-top:2px;padding:12px 10px;font-size:16px;border:2px solid #e8c547;border-radius:3px;background:#e8c547;color:#10202c;font-weight:600}
   #title a.coffee:hover{background:#f3d86b}
+  #proof{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(200,220,235,.18)}
+  #proof .pl{margin:0 0 6px;color:#8fa6b5;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+  #proof .pg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #proof .pt{padding:8px 10px;border:1px solid rgba(200,220,235,.18);border-radius:3px;background:rgba(255,255,255,.04)}
+  #proof .pv{display:block;font-size:30px;line-height:1.05;font-weight:700;letter-spacing:.02em;color:#e8c547;font-variant-numeric:tabular-nums}
+  #proof .pk{display:block;margin-top:3px;color:#c5d5df;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+  #proof .pm{margin:8px 0 0;font-size:11px}
+  @media (max-width:640px){#proof .pg{grid-template-columns:repeat(4,1fr);gap:5px}#proof .pt{padding:6px 5px}#proof .pv{font-size:17px}#proof .pk{font-size:8px;letter-spacing:.06em}}
   #read{bottom:12px;left:12px;display:grid;grid-template-columns:auto auto;gap:3px 14px;min-width:150px}
   #read span:nth-child(odd){color:#8fa6b5}
   #read span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
@@ -85,7 +93,7 @@ gtag('config','G-H0ZE9XML6B');
   input[type=range]{width:100%;accent-color:#e8c547;margin:0;height:28px;cursor:pointer}
   #hint{position:fixed;top:14px;right:14px;color:rgba(240,245,248,.9);text-shadow:0 1px 3px rgba(0,0,0,.8);font-size:11px;text-align:right;pointer-events:none}
   #err{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;text-align:center}
-  @media (max-width:640px){#hint{display:none}#title .latest img{display:none}#ctl{width:auto;left:12px;bottom:12px}#read{bottom:auto;top:236px}#title{max-width:calc(100vw - 92px);box-sizing:border-box}#ctl{max-height:min(58vh,calc(100vh - 250px))}}
+  @media (max-width:640px){#hint{display:none}#title .latest img{display:none}#ctl{width:auto;left:12px;bottom:12px}#read{bottom:auto;top:322px}#title{max-width:calc(100vw - 92px);box-sizing:border-box}#ctl{max-height:min(58vh,calc(100vh - 250px))}}
   #hud{position:fixed;inset:0;pointer-events:none}
   #fly{display:flex;gap:6px;margin-bottom:6px}
   #ctl #fly button{flex:1 1 0;padding:6px 4px;background:rgba(93,255,143,.14);border-color:#5dff8f}
@@ -131,7 +139,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><div class="keystats" id="ksBox" aria-label="Key stats"><div><b id="ksF">-</b><small>Launches</small></div><div class="ks-l"><b id="ksL">-</b><small>Traps</small></div><div class="ks-c"><b id="ksC">-</b><small>Crashes</small></div></div><p class="ks-live off" id="ksLive"><i></i><span>Loading stats</span></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a></p><!--latest-post--><a class="latest" href="blog/a-4g-ailerons-and-rudder/"><small>Latest post</small><img src="blog/img/ailerons-and-rudder.jpg" width="1280" height="720" alt=""><strong>The A-4G&#x27;s ailerons and rudder now move</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
+<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Arrested landings</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><div class="keystats" id="ksBox" aria-label="Key stats"><div><b id="ksF">-</b><small>Launches</small></div><div class="ks-l"><b id="ksL">-</b><small>Traps</small></div><div class="ks-c"><b id="ksC">-</b><small>Crashes</small></div></div><p class="ks-live off" id="ksLive"><i></i><span>Loading stats</span></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a></p><!--latest-post--><a class="latest" href="blog/public-stats-page/"><small>Latest post</small><img src="blog/img/s-public-stats.jpg" width="1280" height="720" alt=""><strong>Flight hours, missions and aircraft choices, in public</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="mis" class="panel"></div>
 <div id="msn" class="panel"></div>
@@ -176,6 +184,7 @@ gtag('config','G-H0ZE9XML6B');
 <button id="bMenu" type="button" aria-label="Show or hide menu and readouts (P)" aria-pressed="false">&#9776; Menu</button>
 <div id="err">This sim needs WebGL, which isn't available in this browser.</div>
 
+<script src="assets/api.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
@@ -1668,7 +1677,44 @@ const stats={traps:0,lost:0,killed:0};
 const sess={launches:0,traps:0,bolters:0,crashes:0,ejections:0};
 function track(name,params){
   try{if(typeof gtag==='function')gtag('event',name,Object.assign({tutorial:tut.active,sea_state:state.sea,ship_speed_kn:state.speedKn},params||{}));}catch(e){}
+  try{recEvent(name,params||{});}catch(e){}
 }
+/* ---------- public stats feed: anonymous counters sent to the Worker in server/ (docs/stats.md) ---------- */
+const REC_OK=!!window.RAW_API&&/^(www\.)?ranairwing\.com$/.test(location.hostname)&&navigator.doNotTrack!=='1';
+const REC_MAP={flight_start:'flight_start',aircraft_select:'aircraft_select',successful_recovery:'trap',bolter:'bolter',aircraft_crash:'crash',pilot_eject:'eject',mission_start:'mission_start',mission_complete:'mission_complete',mission_fail:'mission_fail'};
+function recPost(body,beacon){
+  if(!REC_OK)return;const data=JSON.stringify(body),url=window.RAW_API+'/e';
+  try{if(beacon&&navigator.sendBeacon&&navigator.sendBeacon(url,new Blob([data],{type:'text/plain'})))return;
+    fetch(url,{method:'POST',body:data,headers:{'Content-Type':'text/plain'},keepalive:true}).catch(()=>{});}catch(e){}
+}
+function recEvent(name,p){
+  const k=REC_MAP[name];if(!k)return;const ms=p.mission||'';
+  recPost({k,ac:AC.type,ms});
+  if(k==='mission_start')recPost({k:'flight_start',ac:AC.type,ms});     // a mission is also a flight
+}
+const airClock={a4:0,s2:0};
+function flightClock(dt){                                              // airborne seconds with the player in the cockpit or chase view
+  if(ac.mode!=='air'||ac.crashed||ac.wrecked||!FLY[state.cam])return;
+  airClock[AC.type]+=dt;if(airClock[AC.type]>=30)flushAir(false);
+}
+function flushAir(beacon){
+  for(const t of ['a4','s2']){const s=Math.round(airClock[t]);if(s>=1){recPost({k:'flight_secs',ac:t,secs:Math.min(s,120)},beacon);airClock[t]=0;}}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushAir(true);});
+addEventListener('pagehide',()=>flushAir(true));
+/* home page stats block: shown only once the feed answers */
+(function(){
+  if(!window.RAW_API)return;
+  const nf=new Intl.NumberFormat('en-AU'),big=n=>n>=1e6?(n/1e6).toFixed(1)+'M':nf.format(n);
+  const hrs=s=>{const h=s/3600;return h>=100?nf.format(Math.round(h)):h>=1?h.toFixed(1):h.toFixed(2);};
+  fetch(window.RAW_API+'/stats').then(r=>r.ok?r.json():Promise.reject()).then(d=>{
+    const t={},secs={};for(const r of d.kinds||[]){t[r.k]=r.n||0;secs[r.k]=r.secs||0;}
+    if(!(t.flight_start>0))return;
+    $('pHrs').textContent=hrs(secs.flight_secs||0);$('pMis').textContent=big(t.mission_start||0);
+    $('pFl').textContent=big(t.flight_start||0);$('pTr').textContent=big(t.trap||0);
+    $('proof').style.display='block';for(const id of ['ksBox','ksLive']){const e=$(id);if(e)e.style.display='none';}
+  }).catch(()=>{});
+})();
 const clean=s=>String(s).replace(/,.*$/,'').toLowerCase();
 const ej={active:false,pos:new V3(),vel:new V3(),q:new THREE.Quaternion(),t:0,chute:0,sepd:false,popped:false,done:false,doneT:0,armT:0,
   camDir:new V3(0,0,1),prevCam:'chase',msg:'',local:null,w:0,air:0,rest:0,vestK:1,lieQ:new THREE.Quaternion()};
@@ -2834,7 +2880,7 @@ let last=performance.now(),hudT=0;
 function frame(now){
   const dt=Math.min((now-last)/1000,.05);last=now;state.t+=dt;
   seaH+=(SEA_H[state.sea]-seaH)*Math.min(1,dt*1.2);setWaveAmps();
-  if(!paused()){updateShip(dt);ship.updateMatrixWorld(true);updateEscorts(dt);life.update(dt);stepAircraft(dt);updateTut(dt);}
+  if(!paused()){updateShip(dt);ship.updateMatrixWorld(true);updateEscorts(dt);life.update(dt);stepAircraft(dt);flightClock(dt);updateTut(dt);}
   updateAudio();
   updateEject(dt);updateFx(dt);animatePilot(dt);
   plane.visible=!ac.wrecked&&state.cam!=='cockpit';updateCamera(dt);

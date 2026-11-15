@@ -103,12 +103,12 @@ def page(title, desc, path, body, og_img=None, og_type="website", extra_head="")
 <body>
 <header class="top"><div class="wrap">
 <a class="brand" href="/blog/">RAN Air Wing<small>HMAS Melbourne (R21) flight sim · dev blog</small></a>
-<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
+<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/stats/">Stats</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
 </div></header>
 <main><div class="wrap">
 {body}
 </div></main>
-<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/stats/">Stats</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
 <script src="/blog/share.js" defer></script>
 </body></html>"""
 
@@ -223,7 +223,7 @@ def main():
     counts = {c["slug"]: sum(c["slug"] in p["categories"] for p in P) for c in CATS}
     intro = f'<h1>RAN Air Wing dev blog</h1><p class="lede">The history of HMAS Melbourne (R21) and her air wing, and the making of a browser flight sim set in 1977&ndash;1982. A new post most days.</p>'
     pages = listing(P, "/blog/", "HMAS Melbourne flight sim dev blog", intro, "History of HMAS Melbourne and her air wing, carrier operations explained, and the dev diary of a browser flight sim.", counts)
-    urls = [("/", None), ("/about.html", None), ("/blog/", P[0]["dt"] if P else None)] + [(f"/blog/page/{n}/", None) for n in range(2, pages + 1)]
+    urls = [("/", None), ("/about.html", None), ("/stats/", None), ("/blog/", P[0]["dt"] if P else None)] + [(f"/blog/page/{n}/", None) for n in range(2, pages + 1)]
     for c in CATS:
         cp = [p for p in P if c["slug"] in p["categories"]]
         if not cp: continue
