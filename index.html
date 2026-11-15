@@ -602,45 +602,129 @@ const life=(function(){
   const sides=(g,m,w,h,x,y,z)=>{for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);d.rotation.y=sd*Math.PI/2;d.position.set(sd*x,y,z);g.add(d);}};
   const wheel=(g,x,y,z,r,w)=>{const c=cyl(r,r,w,x,y,z,mBk,12,g);c.rotation.z=Math.PI/2;return c;};
 
-  /* S-2 Tracker (axis height above the deck on its wheels: 1.78 m) with the outer wings folded up and back */
+  const S2Blade=(()=>{const sh=new THREE.Shape();[[-.1,.3],[.1,.3],[.14,1],[.12,1.7],[.09,1.96],[-.09,1.96],[-.13,1.6],[-.13,.9]].forEach(([x,y],i)=>i?sh.lineTo(x,y):sh.moveTo(x,y));sh.closePath();
+    const q=new THREE.ExtrudeGeometry(sh,{depth:.03,bevelEnabled:false});q.translate(0,0,-.015);return q;})();
+  /* S-2 Tracker (axis height above the deck on its wheels: 1.78 m) with the outer wings folded up and back.
+     Built from the reference photographs: lofted oval fuselage with a dark nose cap and raised glazed cockpit, tapered airfoil wings
+     (grey over white, thin red line along the upper surface), round radial-engine nacelles with cowl rings and exhausts,
+     red-tipped three-blade propellers, kangaroo roundels, NAVY, fin badge and side number. */
+  const S2_GREY=[.40,.44,.47],S2_WHITE=[.90,.90,.88],S2_DARK=[.2,.22,.24],S2_RED=[.70,.15,.12];
+  const S2_ST=[[-6.05,.12,-.05,-.28],[-5.9,.42,.30,-.62],[-5.5,.72,.62,-.86],[-4.9,.95,.88,-1.0],[-4.3,1.06,1.0,-1.06],[-3.4,1.12,1.02,-1.1],
+    [-2.4,1.16,1.08,-1.18],[-1.4,1.18,1.18,-1.26],[-.2,1.18,1.22,-1.3],[1.2,1.16,1.18,-1.26],[2.6,1.08,1.08,-1.12],[4,.9,.98,-.92],
+    [5.3,.66,.8,-.66],[6.4,.42,.56,-.4],[7,.2,.34,-.2],[7.25,.06,.2,-.1]];                     // fuselage stations: z, half-width, top, bottom
+  const crm=(a,b,c,d,t)=>.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t);
+  const s2St=(z,k)=>{const n=S2_ST.length;let i=0;while(i<n-2&&z>S2_ST[i+1][0])i++;
+    const t=Math.min(1,Math.max(0,(z-S2_ST[i][0])/(S2_ST[i+1][0]-S2_ST[i][0])));
+    return crm(S2_ST[Math.max(0,i-1)][k],S2_ST[i][k],S2_ST[i+1][k],S2_ST[Math.min(n-1,i+2)][k],t);};
+  const s2Hw=z=>s2St(z,1),s2Slope=z=>(s2Hw(z+.05)-s2Hw(z-.05))/.1;
+  const s2sp=(c,n)=>Math.sign(c)*Math.pow(Math.abs(c),2/n);
+  function s2Fuselage(){                                   // lofted skin, grey over white, dark nose cap
+    const NZ=96,NR=48,pos=[],col=[],idx=[];
+    for(let i=0;i<NZ;i++){const z=-6.05+13.3*i/(NZ-1),hw=s2St(z,1),top=s2St(z,2),bot=s2St(z,3),cy=(top+bot)/2,hh=(top-bot)/2,n=2.1+.5*Math.max(0,1-Math.abs(z+.5)/5.5);
+      for(let j=0;j<NR;j++){const a=j/NR*Math.PI*2,x=hw*s2sp(Math.cos(a),n),y=cy+hh*s2sp(Math.sin(a),n);pos.push(x,y,z);
+        const c=z<-5.4?S2_DARK:(y>-.42?S2_GREY:S2_WHITE);col.push(c[0],c[1],c[2]);}}
+    for(let i=0;i<NZ-1;i++)for(let j=0;j<NR;j++){const a=i*NR+j,b=i*NR+(j+1)%NR,c=a+NR,d=b+NR;idx.push(a,b,c,b,d,c);}
+    for(const [i,c0] of [[0,S2_DARK],[NZ-1,S2_GREY]]){const o=pos.length/3;let cx=0,cy=0;for(let j=0;j<NR;j++){cx+=pos[(i*NR+j)*3];cy+=pos[(i*NR+j)*3+1];}
+      pos.push(cx/NR,cy/NR,pos[i*NR*3+2]);col.push(c0[0],c0[1],c0[2]);for(let j=0;j<NR;j++)idx.push(o,i*NR+j,i*NR+(j+1)%NR);}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    g.setIndex(idx);g.computeVertexNormals();return g;}
+  const s2Af=u=>(.2969*Math.sqrt(u)-.126*u-.3516*u*u+.2843*u*u*u-.1015*u*u*u*u)/.098;     // NACA-style thickness distribution, peak 1
+  function s2Wing(st,stripe){                              // st: [x,zLE,zTE,thickness] stations; one skin with red line on top, caps at both ends
+    const us=[];for(let k=0;k<=22;k++)us.push(.5-.5*Math.cos(Math.PI*k/22));
+    if(stripe)for(const u of [.604,.606,.624,.626])us.push(u);us.sort((a,b)=>a-b);
+    const K=us.length-1,NR=2*K,NS=st.length,pos=[],col=[],idx=[];
+    st.forEach(([x,zl,zt,th])=>{for(let j=0;j<NR;j++){const up=j<=K,u=up?us[j]:us[2*K-j],f=s2Af(u),z=zl+u*(zt-zl),y=up?.55*th*f:-.45*th*f;pos.push(x,y,z);
+      const c=!up?S2_WHITE:(stripe&&u>.605&&u<.625?S2_RED:S2_GREY);col.push(c[0],c[1],c[2]);}});
+    for(let i=0;i<NS-1;i++)for(let j=0;j<NR;j++){const a=i*NR+j,b=i*NR+(j+1)%NR,c=a+NR,d=b+NR;idx.push(a,b,c,b,d,c);}
+    for(const i of [0,NS-1]){const o=pos.length/3;let cx=0,cy=0,cz=0;for(let j=0;j<NR;j++){cx+=pos[(i*NR+j)*3];cy+=pos[(i*NR+j)*3+1];cz+=pos[(i*NR+j)*3+2];}
+      pos.push(cx/NR,cy/NR,cz/NR);col.push(.9,.9,.9);for(let j=0;j<NR;j++)idx.push(o,i*NR+j,i*NR+(j+1)%NR);}
+    const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('color',new THREE.Float32BufferAttribute(col,3));
+    g.setIndex(idx);g.computeVertexNormals();return g;}
+  const mkS2Skin=()=>new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.05,side:THREE.DoubleSide});
+  const roundelK=c=>{c.fillStyle='#14246b';c.beginPath();c.arc(32,32,31,0,7);c.fill();c.fillStyle='#f2f0ea';c.beginPath();c.arc(32,32,22,0,7);c.fill();   // blue ring, white disc, red kangaroo
+    c.fillStyle='#b3261e';c.beginPath();[[44,15],[41,10],[40,4],[37,10],[33,14],[33,21],[35,27],[37,33],[43,35],[41,37],[35,39],[33,44],[41,49],[41,52],[29,52],[26,47],[20,49],[12,54],[10,50],[20,42],[25,33],[28,23],[31,17],[39,17]].forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.fill();};
+  const finBadge=c=>{c.fillStyle='#5a3b12';c.beginPath();c.arc(32,32,30,0,7);c.fill();c.fillStyle='#d9a82b';c.beginPath();c.arc(32,32,26,0,7);c.fill();   // gold roundel with a striped cat's head
+    c.fillStyle='#d9731b';c.beginPath();c.ellipse(32,35,15,16,0,0,7);c.fill();c.fillStyle='#d9731b';c.beginPath();c.arc(20,21,6,0,7);c.arc(44,21,6,0,7);c.fill();
+    c.fillStyle='#1b1410';for(const [x1,x2] of [[22,27],[37,42],[30,34]]){c.beginPath();c.moveTo(x1,16);c.lineTo(x2,16);c.lineTo((x1+x2)/2,26);c.fill();}
+    c.beginPath();c.arc(25,33,2.6,0,7);c.arc(39,33,2.6,0,7);c.fill();c.fillStyle='#f0e8d4';c.beginPath();c.ellipse(32,43,8,5,0,0,7);c.fill();
+    c.fillStyle='#1b1410';c.beginPath();c.moveTo(29,38);c.lineTo(35,38);c.lineTo(32,42);c.fill();};
+  const rails=(g,m,w,h,x,y,z,slope)=>{for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(w,h),m);d.rotation.y=sd*(Math.PI/2+Math.atan(slope||0));d.position.set(sd*x,y,z);g.add(d);}};
+  const S2Mats=(()=>{const cm=c=>M(c,{roughness:.5,metalness:.3});return {dk:cm(0x2d3033),red:M(0xb3261e,{roughness:.6}),wh:mW,nose:M(0x30353a,{roughness:.4}),
+    port:new THREE.MeshBasicMaterial({color:0xff2a1c}),stbd:new THREE.MeshBasicMaterial({color:0x2dff6a})};})();
+
   function makeS2(fly){                    // fly=true: wings out, gear/flaps/hook/props animated (flyable); otherwise folded and static
     const g=new THREE.Group(),P={legs:[],flaps:[],brakes:[],crew:[],canopy:null,props:[],discs:[]},GG=fly?new THREE.Group():g;
     if(fly){g.add(GG);P.gearG=GG;}
-    const fg=lathe([[.02,-6],[.4,-5.7],[.75,-5],[1,-4],[1.12,-2.8],[1.15,-1],[1.15,1.5],[1,3.2],[.7,4.8],[.45,6],[.22,7]]);fg.scale(1,1.1,1);
-    const p=fg.attributes.position,col=new Float32Array(p.count*3);
-    for(let i=0;i<p.count;i++){const top=p.getY(i)>-.25;col[i*3]=top?.74:.94;col[i*3+1]=top?.76:.94;col[i*3+2]=top?.77:.92;}   // grey over white
-    fg.setAttribute('color',new THREE.BufferAttribute(col,3));fg.computeVertexNormals();
-    add(new THREE.Mesh(fg,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.55,metalness:.05,side:THREE.DoubleSide})),0,0,0,g);
+    const mD=S2Mats.dk,mR=S2Mats.red;
+    add(new THREE.Mesh(s2Fuselage(),mkS2Skin()),0,0,0,g);
+    /* raised glazed cockpit: windscreen panes, side windows, roof and rear fairing */
     const cm=fly?new THREE.MeshStandardMaterial({color:0x7fa6bd,roughness:.1,metalness:.3,transparent:true,opacity:.42,depthWrite:false}):mGl;
-    const can=add(new THREE.Mesh(new THREE.SphereGeometry(1,16,12),cm),0,.95,-3.3,g);can.scale.set(.62,.5,1.5);P.canopy=can;     // cockpit
+    const can=new THREE.Group();g.add(can);P.canopy=can;
+    const pane=(w,h,d,x,y,z,rx,ry,rz,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m||cm);o.position.set(x,y,z);o.rotation.set(rx||0,ry||0,rz||0);can.add(o);return o;};
+    pane(.82,.8,.03,0,1.34,-4.28,.69,0,0);                                                                   // windscreen centre
+    for(const sd of [1,-1]){pane(.55,.8,.03,sd*.62,1.32,-4.12,.69,-sd*.55,0);                                // windscreen quarter panes
+      pane(.03,.66,.82,sd*.76,1.3,-3.68,0,0,sd*.14);pane(.03,.66,.8,sd*.78,1.3,-2.8,0,0,sd*.14);               // side windows
+      pane(.05,.76,.07,sd*.5,1.3,-4.55,.69,-sd*.25,0,mG);}
+    pane(.06,.8,.05,0,1.34,-4.27,.69,0,0,mG);pane(.04,.7,.1,.76,1.3,-3.27,0,0,.14,mG);pane(.04,.7,.1,-.76,1.3,-3.27,0,0,-.14,mG);   // centre bar, side pillars
+    pane(1.18,.05,1.9,0,1.65,-3.25,0,0,0,mG);                                                                // roof
+    pane(1,.05,.9,0,1.42,-1.95,.52,0,0,mG);                                                                  // rear fairing
+    for(const sd of [1,-1])pane(.05,.72,.8,sd*.72,1.28,-2.0,0,0,sd*.12,mG);                                  // rear cheek panels
+    box(.9,.03,.7,0,1.02,-4.62,mBk,g).rotation.x=-.1;                                                         // glare shield
     if(fly){const cg=new THREE.Group();cg.position.set(0,.62,-3.25);g.add(cg);buildSeat(cg,false);P.crewRig=buildPilot(cg);setPose(P.crewRig,POSES.seat);P.crew=[cg];P.ejectAt=[0,.62,-3.25];}   // pilot and seat, hips at the origin
-    add(new THREE.Mesh(new THREE.SphereGeometry(1,12,8),mW),0,-1.15,.9,g).scale.set(.75,.45,1.2);           // retracted radome
-    const wing=[[-5.6,-1],[-1.2,-1.7],[1.2,-1.7],[5.6,-1],[5.6,1.3],[1.2,1.6],[-1.2,1.6],[-5.6,1.3]];      // high wing, inner panels
-    add(slab(wing,.25,mG),0,.85,0,g);add(slab(wing,.03,mW),0,.82,0,g);
-    for(const sd of [1,-1]){                                                                                 // outer panels folded
-      const h=new THREE.Group();h.position.set(sd*5.6,.85,0);
+    add(new THREE.Mesh(new THREE.SphereGeometry(1,14,10),mW),0,-1.2,.9,g).scale.set(.7,.38,1.1);            // retracted search radome
+    cyl(.025,.025,.5,0,1.36,-.55,mBk,6,g).rotation.x=.35;box(.03,.34,.24,0,1.4,-1.0,mBk,g).rotation.x=-.2;   // whip and blade aerials
+    strut(0,-1.3,2.6,0,-1.72,2.8,.012,mBk,g);strut(0,-1.28,-.9,.0,-1.62,-.8,.012,mBk,g);
+    strut(.45,-.12,-5.5,.7,-.42,-5.8,.02,mMt,g);                                                              // pitot
+    /* wings: tapered airfoil panels, flaps inboard, outer panels fold up and back */
+    const half=[[0,-1.85,.95,.52],[1.6,-1.8,.95,.5],[3.1,-1.55,.95,.42],[5,-1.15,.95,.34],[5.02,-1.1,1.3,.33],[5.6,-1,1.3,.31]];
+    const full=half.slice(1).reverse().map(([x,a,b,c])=>[-x,a,b,c]).concat(half);
+    add(new THREE.Mesh(s2Wing(full,true),mkS2Skin()),0,.82,0,g);
+    for(const sd of [1,-1]){
+      const h=new THREE.Group();h.position.set(sd*5.6,.82,0);
       if(!fly)h.quaternion.setFromAxisAngle(XA,.3).multiply(new THREE.Quaternion().setFromAxisAngle(ZA,sd*1.45));g.add(h);
-      const op=[[0,-1],[sd*5.4,-.7],[sd*5.4,.6],[0,1.3]];add(slab(op,.2,mG),0,0,0,h);add(slab(op,.03,mW),0,-.03,0,h);
-      add(new THREE.Mesh(lathe([[.2,-3.2],[.55,-3],[.72,-2.5],[.75,-1.2],[.7,.8],[.55,2],[.22,3]]),mGD),sd*3.1,.3,0,g);   // engine nacelle
-      cyl(.3,.04,.6,sd*3.1,.3,-3.5,mBk,10,g).rotation.x=Math.PI/2;                                           // spinner
-      const hub=new THREE.Group();hub.position.set(sd*3.1,.3,-3.65);hub.rotation.z=sd*.5;g.add(hub);         // three-blade propeller
-      for(let k=0;k<3;k++){const b=new THREE.Group();b.rotation.z=k*2.094;hub.add(b);box(.2,1.8,.04,0,.95,0,mBk,b);box(.2,.3,.045,0,1.8,0,mYel,b);}
+      const outer=[[0,-1,1.3,.31],[2.6,-.82,.98,.24],[5.4,-.62,.62,.15]].map(([x,a,b,c])=>[sd*x,a,b,c]);
+      add(new THREE.Mesh(s2Wing(outer,true),mkS2Skin()),0,0,0,h);
+      const rd=new THREE.Mesh(new THREE.PlaneGeometry(1.15,1.15),decal(64,64,roundelK));rd.rotation.x=-Math.PI/2;rd.position.set(sd*3.1,.15,.04);h.add(rd);   // upper-wing roundel
+      box(.12,.07,.22,sd*5.35,0,.0,sd>0?S2Mats.stbd:S2Mats.port,h).castShadow=false;                           // tip navigation light
+      for(const px of [2.0,3.8]){box(.09,.22,.8,sd*px,-.18,.1,mMt,h);}                                           // underwing pylons
+      const NZ0=-3.15;                                                                                           // engine nacelle
+      const nac=lathe([[.5,NZ0],[.74,NZ0+.03],[.78,-2.85],[.77,-2.3],[.73,-1.4],[.67,-.2],[.58,1],[.45,2],[.28,2.9],[.1,3.4]]);
+      {const p=nac.attributes.position,cl=new Float32Array(p.count*3);for(let i=0;i<p.count;i++){const c=p.getY(i)>-.12?S2_GREY:S2_WHITE;cl[i*3]=c[0];cl[i*3+1]=c[1];cl[i*3+2]=c[2];}nac.setAttribute('color',new THREE.BufferAttribute(cl,3));}
+      add(new THREE.Mesh(nac,mkS2Skin()),sd*3.1,.3,0,g);
+      cyl(.5,.5,.16,sd*3.1,.3,NZ0+.04,mD,16,g).rotation.x=Math.PI/2;                                           // engine face behind the spinner
+      cyl(.8,.8,.07,sd*3.1,.3,-2.45,mD,20,g).rotation.x=Math.PI/2;                                             // cowl flap ring
+      for(const dx of [-.74,.74])for(const dz of [-1.9,-1.55,-1.2])cyl(.055,.055,.34,sd*3.1+dx,.08,dz,mD,6,g).rotation.x=Math.PI/2+.1;   // exhaust stacks
+      box(.5,.2,.8,sd*3.1,-.52,-1.7,mW,g);                                                                       // oil cooler scoop
+      add(new THREE.Mesh(lathe([[0,-.4],[.09,-.34],[.2,-.16],[.28,.04],[.3,.2],[.3,.3]]),mW),sd*3.1,.3,-3.62,g);   // spinner
+      const hub=new THREE.Group();hub.position.set(sd*3.1,.3,-3.62);hub.rotation.z=sd*.5;g.add(hub);          // three-blade propeller, red and white tips
+      for(let k=0;k<3;k++){const b=new THREE.Group();b.rotation.z=k*2.094;hub.add(b);const bl=new THREE.Mesh(S2Blade,mBk);bl.rotation.y=.45;b.add(bl);
+        const tw=box(.2,.14,.05,0,1.56,0,mW,bl);tw.castShadow=false;box(.17,.26,.05,0,1.83,0,mR,bl).castShadow=false;}
       if(fly){P.props.push(hub);const dm=new THREE.Mesh(new THREE.CircleGeometry(1.95,28),P.discMat||(P.discMat=new THREE.MeshBasicMaterial({color:0x20262b,transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide})));
         dm.position.set(sd*3.1,.3,-3.68);g.add(dm);
-        const fl=new THREE.Group();fl.position.set(sd*3.4,.8,1.55);g.add(fl);box(3.6,.04,.7,0,0,.35,mW,fl);P.flaps.push(fl);}   // flaps
+        const fl=new THREE.Group();fl.position.set(sd*3.3,.8,.95);g.add(fl);box(3.4,.1,.7,0,0,.35,mG,fl);box(3.4,.03,.68,0,-.06,.35,mW,fl);P.flaps.push(fl);}   // flaps
+      else{box(3.4,.1,.7,sd*3.3,.8,1.3,mG,g);box(3.4,.03,.68,sd*3.3,.74,1.3,mW,g);}                            // static: flaps up
       const lg=new THREE.Group();lg.position.set(sd*3.1,-.3,-.4);lg.userData.dir=-1;GG.add(lg);P.legs.push(lg);                    // main gear
-      strut(0,0,0,0,-1,0,.09,mMt,lg);wheel(lg,0,-1,0,.48,.4);
+      strut(0,0,0,0,-.6,0,.11,mMt,lg);strut(0,-.55,0,0,-1,0,.07,mMt,lg);strut(0,-.2,0,0,-.75,.5,.03,mMt,lg);   // oleo, piston, drag brace
+      wheel(lg,0,-1,0,.48,.4);cyl(.24,.24,.46,0,-1,0,mMt,10,lg).rotation.z=Math.PI/2;
     }
-    add(slab([[0,5.1],[3.4,6],[3.4,6.8],[-3.4,6.8],[-3.4,6]],.1,mG),0,.55,0,g);                              // tailplane
-    const fs=new THREE.Shape();[[4.4,.9],[6,3.2],[6.9,3.2],[7.1,.6]].forEach(([z,y],i)=>i?fs.lineTo(z,y):fs.moveTo(z,y));fs.closePath();
+    /* tail: airfoil tailplane, fin with dorsal fillet, MAD stinger, hook */
+    const th=[[0,5.1,6.85,.2],[1.2,5.5,6.85,.17],[3.4,6.05,6.8,.09]];
+    add(new THREE.Mesh(s2Wing(th.slice(1).reverse().map(([x,a,b,c])=>[-x,a,b,c]).concat(th),false),mkS2Skin()),0,.55,0,g);
+    const fs=new THREE.Shape();[[3.8,1],[4.8,1.55],[5.85,3.25],[6.9,3.25],[7.15,.55],[5.5,.55],[4.2,.85]].forEach(([z,y],i)=>i?fs.lineTo(z,y):fs.moveTo(z,y));fs.closePath();
     const fgm=new THREE.ExtrudeGeometry(fs,{depth:.12,bevelEnabled:false});fgm.translate(0,0,-.06);fgm.rotateY(-Math.PI/2);
     add(new THREE.Mesh(fgm,mG),0,0,0,g);                                                                     // fin
-    strut(0,.25,7,0,.4,8.7,.05,mMt,g);                                                                       // MAD boom
-    const hg=new THREE.Group();hg.position.set(0,-.6,5.6);g.add(hg);strut(0,0,0,0,-.4,1.3,.04,mMt,hg);P.hookG=hg;       // arrestor hook
+    box(.05,.9,.04,0,2.2,6.62,mD,g).rotation.x=0;                                                            // rudder hinge line
+    strut(0,.22,6.9,0,.4,8.6,.06,mMt,g);add(new THREE.Mesh(new THREE.SphereGeometry(.09,8,6),mMt),0,.4,8.62,g);   // MAD stinger
+    const hg=new THREE.Group();hg.position.set(0,-.6,5.6);g.add(hg);strut(0,0,0,0,-.4,1.3,.04,mMt,hg);box(.08,.06,.28,0,-.42,1.4,mMt,hg);P.hookG=hg;       // arrestor hook
     const ng=new THREE.Group();ng.position.set(0,-.7,-3.6);ng.userData.dir=-1;GG.add(ng);P.legs.push(ng);                // nose gear
-    strut(0,0,0,0,-.75,0,.06,mMt,ng);wheel(ng,-.2,-.75,0,.3,.16);wheel(ng,.2,-.75,0,.3,.16);
-    sides(g,decal(64,64,roundel),.8,.8,1.06,.25,2.4);sides(g,decal(256,64,label('NAVY',58)),1.9,.48,.73,.3,4.7);
-    sides(g,decal(128,64,label('851',54)),.8,.4,1.03,.25,-3.4);
+    strut(0,0,0,0,-.75,0,.07,mMt,ng);strut(0,-.15,.05,0,-.7,.55,.03,mMt,ng);wheel(ng,-.2,-.75,0,.3,.16);wheel(ng,.2,-.75,0,.3,.16);
+    cyl(.14,.14,.5,0,-.75,0,mMt,8,ng).rotation.z=Math.PI/2;
+    /* markings */
+    rails(g,decal(64,64,roundelK),.85,.85,s2Hw(2.4)+.012,.12,2.4,s2Slope(2.4));                              // fuselage roundel
+    rails(g,decal(256,64,label('NAVY',58)),1.9,.48,s2Hw(4.75)+.01,.3,4.75,s2Slope(4.75));
+    rails(g,decal(128,64,label('851',54)),1.1,.55,s2Hw(-4.85)+.012,.12,-4.85,s2Slope(-4.85));
+    rails(g,decal(64,64,c=>{c.fillStyle='#b3261e';c.fillRect(0,0,64,64);}),.14,1.15,s2Hw(-2.2)+.012,.35,-2.2,s2Slope(-2.2));   // red band behind the cockpit
+    rails(g,decal(64,64,finBadge),.78,.78,.075,2.35,5.95,0);rails(g,decal(64,32,label('51',30)),.34,.17,.075,1.0,6.3,0);   // fin badge and tail number
     g.userData.P=P;
     return g;
   }

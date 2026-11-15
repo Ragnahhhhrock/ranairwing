@@ -387,5 +387,21 @@
   "sea": 3,
   "speed": 20,
   "uiOff": true
+ },
+ "s36-s2-detail": {
+  "cam": "chase",
+  "hour": 15,
+  "sea": 2,
+  "speed": 20,
+  "type": "s2",
+  "start": "cat",
+  "view": {
+   "cAz": 0.7,
+   "cEl": 0.22,
+   "cD": 15
+  },
+  "advance": 0.3,
+  "hideHint": true,
+  "hidePanels": true
  }
 }
