@@ -1,23 +1,22 @@
 ---
-title: "Time skip: run the sun forwards or backwards"
+title: "Time skip: fast-forward the dull parts"
 date: 2026-11-15T21:30+08:00
 categories: [dev-diary]
-summary: "A new Time skip control in the menu runs the time of day forwards or backwards at 2x, 4x or 8x."
+summary: "A Time skip control in the menu speeds the whole sim up 2x, 4x or 8x, for transits and waiting."
 shot: s-time-skip
-hero_alt: "The sim menu scrolled to the Time skip row, with the Back toggle and the 4x button highlighted, and the Time slider reading 08:53."
+hero_alt: "The sim menu scrolled to the Time skip row with the 4x button highlighted."
 ---
-The menu now has a **Time skip** row under the Time slider. It moves the sun and sky through the day on its own, so you can watch the light change on the deck without dragging the slider.
+Some parts of a sortie are slow: the transit out, orbiting a tanker's leg, waiting for the next pass. The menu now has a **Time skip** row that speeds the whole sim up so you can get through them.
 
 ## How to try it
 
-- Open the menu and scroll to **Time skip**.
-- Press **2x**, **4x** or **8x** to start. Press the same button again to stop.
-- The **Fwd / Back** button sets the direction. You can flip it while skipping.
-- The Time slider and its readout follow along.
+- Open the menu and scroll to **Time skip (game speed)**.
+- Press **2x**, **4x** or **8x**. Press the same button again to return to normal speed.
 
 ## What it does and does not do
 
-- It changes the time of day only: sun position, sky colour, light and fog. Ship, aircraft and mission clocks run at normal speed.
-- 1x is set at 5 game minutes per real second, so 2x, 4x and 8x are 10, 20 and 40 minutes per second. These rates are a game choice.
-- The clock wraps within the slider's range, 05:30 to 18:30. Night flying is not built yet.
-- It pauses while the Missions or Loadout screens are open.
+- Everything runs faster together: your aircraft, the ship, escorts, waves, fuel burn and the mission clock. Each extra step is a full-size physics step, so the flying itself stays stable.
+- It is meant for cruising. Drop back to 1x before the approach or an attack: at 8x there is very little time to react.
+- It does not run backwards. Rewinding is not built.
+- The Time slider is unchanged and still sets the time of day.
+- Missions and Loadout screens pause the sim as before.
