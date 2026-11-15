@@ -1280,11 +1280,7 @@ let crewRig=null;                                  // the pilot sitting in the A
     for(const sd of [1,-1]){const d=new THREE.Mesh(new THREE.PlaneGeometry(1,1),m);d.rotation.x=-Math.PI/2;d.position.set(sd*2.7,-.392,1.75);plane.add(d);}
   })();
   strut(.55,-.1,-3.2,.62,-.05,-6.7,.05,mMetal,plane);                              // refuelling probe
-  for(const s of [1,-1]){                                                          // drop tanks
-    add(new THREE.Mesh(lathe([[0.01,-2.3],[.26,-1.6],[.36,-.3],[.34,.9],[.2,1.9],[0.01,2.3]]),
-      new THREE.MeshStandardMaterial({color:0xf0f0ea,roughness:.5,side:THREE.DoubleSide})),s*1.95,-1.02,.7,plane);
-    box(.1,.3,1.6,s*1.95,-.62,.9,mWht,plane);
-  }
+  // drop tanks and other stores are drawn from the loadout (see the store models after STORE)
   for(const sd of [1,-1]){                                                          // wing-root cannon, tip lights, gear fairings
     const cn=cyl(.045,.045,1.1,sd*.98,-.32,-1.9,mBlk,6,plane);cn.rotation.x=Math.PI/2;
     box(.34,.26,2.3,sd*1.15,-.66,-.1,mTop,plane);
@@ -1975,7 +1971,7 @@ const STORE={ // kg all-up; ok = stations that take it (0 L outer, 1 L inner, 2 
   lau10:{n:'5 in rocket pod',kg:240,ok:[1,3],w:'rkt',rounds:4},
   mk81:{n:'250 lb bomb',kg:113,ok:[0,1,2,3,4],w:'bomb',lethal:18,dmg:60},
   mk82:{n:'500 lb bomb',kg:227,ok:[1,2,3],w:'bomb',lethal:25,dmg:100},
-  t300:{n:'300 gal tank',kg:210,fuel:1090,ok:[2],feed:1},
+  t300:{n:'300 gal tank',kg:210,fuel:1090,ok:[1,2,3],feed:1},
   t150:{n:'150 gal tank',kg:130,fuel:545,ok:[1,3],feed:1},
   pod:{n:'D-704 buddy pod',kg:220,fuel:1000,ok:[2]}
 };
@@ -1987,7 +1983,83 @@ const PRESETS={
   buddy:{n:'Buddy tanker',s:[null,null,'pod',null,null]},
   ferry:{n:'Ferry',s:[null,'t150','t300','t150',null]}
 };
-const STN=['L OUT','L IN','CTR','R IN','R OUT'],STX=[-3.3,-1.7,0,1.7,3.3];
+const STN=['L OUT','L IN','CTR','R IN','R OUT'],STX=[-3.3,-1.95,0,1.95,3.3];
+for(const k in STORE)STORE[k].id=k;
+
+/* ---- store models: each station draws the store in the loadout; released stores keep the same shape ----
+   Metres, nose toward -z. Only (S) was checked against a source (Wikipedia, Mk 81 bomb); (P) is derived from fuel volume and the
+   reference photographs; (E) is recalled from standard data or estimated, not yet checked, and may be a few percent out. */
+const STDIM={
+  aim9:{len:2.83,dia:.127,span:.56,src:'E'},          // AIM-9B
+  mk81:{len:1.88,dia:.229,src:'S'},                      // 250 lb
+  mk82:{len:2.2,dia:.273,src:'E'},                       // 500 lb
+  t300:{len:4.2,dia:.72,src:'P'},                        // 300 imp gal: volume and photo 884 (1977 deck shot)
+  t150:{len:3.2,dia:.58,src:'P'},
+  pod:{len:4.2,dia:.72,src:'P'},                         // D-704 buddy pod, built on the 300 gal shell
+  lau10:{len:2.9,dia:.32,src:'E'},                       // 4 x 5 in rockets
+  lau3:{len:2.0,dia:.42,src:'E'}                         // 19 x 2.75 in rockets
+};
+const stMat={tank:M(0xe9ebe6,{roughness:.45,side:THREE.DoubleSide}),bomb:M(0x6b705c,{roughness:.6}),yel:M(0xd6b52a,{roughness:.6}),
+  msl:M(0xeeece4,{roughness:.4}),org:M(0xe8832a,{roughness:.5}),dk:M(0x23282c,{roughness:.5}),pod:M(0x8e959b,{roughness:.55,side:THREE.DoubleSide}),
+  pyl:M(0x7b8288,{roughness:.6}),red:M(0xb3261e,{roughness:.6})};
+const stLat=pts=>{const q=new THREE.LatheGeometry(pts.map(([r,z])=>new THREE.Vector2(r,z)),20);q.rotateX(Math.PI/2);return q;};
+function stFins(parent,n,r0,span,chord,thick,z,m,rot0){ // n radial fins around the z axis
+  for(let k=0;k<n;k++){const g=new THREE.Group();g.rotation.z=(rot0||0)+k*Math.PI*2/n;box(thick,span,chord,0,r0+span/2,z,m,g);parent.add(g);}
+}
+const stCache={};
+function storeMesh(k){ // returns a fresh group; userData.top is the radius above the axis for the pylon
+  const d=STDIM[k],g=new THREE.Group(),L=d.len,R=d.dia/2;g.userData.top=R;
+  const body=(m,pts)=>add(new THREE.Mesh(stLat(pts),m),0,0,0,g);
+  if(k==='t300'||k==='t150'||k==='pod'){
+    body(stMat.tank,[[.01,-.5*L],[.45*R,-.46*L],[.8*R,-.39*L],[.97*R,-.31*L],[R,-.2*L],[R,.14*L],[.9*R,.28*L],[.6*R,.4*L],[.28*R,.49*L],[.05,.5*L]]);
+    stFins(g,4,R*.5,R*.55,.5,.03,.4*L,stMat.tank,Math.PI/4);
+    if(k==='pod'){ // ram-air turbine on the nose, hose drum and basket stowed aft
+      add(new THREE.Mesh(stLat([[.05,-.5*L-.18],[.07,-.5*L-.1],[.07,-.5*L]]),stMat.dk),0,0,0,g);
+      stFins(g,4,.05,.24,.07,.015,-.5*L-.14,stMat.dk,0);
+      const dro=add(new THREE.Mesh(stLat([[.05,.5*L],[.24,.5*L+.35],[.3,.5*L+.5]]),stMat.msl),0,0,0,g);
+      cyl(.31,.31,.05,0,0,0,stMat.org,12,dro).rotation.x=Math.PI/2;dro.children[0].position.z=.5*L+.5;
+      add(new THREE.Mesh(new THREE.BoxGeometry(.01,R*.8,.7),stMat.red),R*.9,0,-.1*L,g);   // band
+    }
+  }else if(k==='mk81'||k==='mk82'){
+    body(stMat.bomb,[[.01,-.5*L],[.3*R,-.48*L],[.7*R,-.4*L],[.95*R,-.3*L],[R,-.2*L],[R,.12*L],[.85*R,.26*L],[.6*R,.34*L],[.55*R,.5*L]]);
+    cyl(R*1.02,R*1.02,.06,0,0,-.1*L,stMat.yel,16,g).rotation.x=Math.PI/2;            // yellow band (HE)
+    cyl(R*1.02,R*1.02,.06,0,0,.03*L,stMat.yel,16,g).rotation.x=Math.PI/2;
+    add(new THREE.Mesh(stLat([[.01,-.5*L-.1],[.03,-.5*L-.05],[.03,-.5*L]]),stMat.dk),0,0,0,g);   // nose fuze
+    stFins(g,4,.5*R,R*1.1,.42,.025,.42*L,stMat.bomb,Math.PI/4);
+    const ring=add(new THREE.Mesh(new THREE.TorusGeometry(R*1.5,.012,4,16),stMat.bomb),0,0,.5*L-.1,g);   // box-fin shroud
+  }else if(k==='aim9'){
+    body(stMat.msl,[[.01,-.5*L],[.55*R,-.488*L],[.9*R,-.47*L],[R,-.45*L],[R,.5*L]]);
+    add(new THREE.Mesh(stLat([[.01,-.5*L],[.55*R,-.488*L],[.9*R,-.47*L],[R*.98,-.455*L]]),stMat.dk),0,0,0,g);   // seeker dome
+    cyl(R*1.03,R*1.03,.1,0,0,.1*L,stMat.org,14,g).rotation.x=Math.PI/2;                // orange band, as photographed on 886
+    stFins(g,4,R*.9,.12,.15,.012,-.31*L,stMat.msl,Math.PI/4);                          // canards
+    stFins(g,4,R*.9,d.span/2-R,.34,.015,.36*L,stMat.msl,Math.PI/4);                    // rear fins span .56 m tip to tip
+    g.userData.rail=true;
+  }else if(k==='lau10'||k==='lau3'){
+    const big=k==='lau10',tr=big?.08:.04,pts=[];
+    if(big){for(const x of [-.085,.085])for(const y of [-.085,.085])pts.push([x,y]);}
+    else{pts.push([0,0]);for(let i=0;i<6;i++)pts.push([Math.cos(i*1.047)*.09,Math.sin(i*1.047)*.09]);for(let i=0;i<12;i++)pts.push([Math.cos(i*.5236)*.18,Math.sin(i*.5236)*.18]);}
+    const tl=L-.7;for(const [x,y] of pts){const t=cyl(tr,tr,tl,x,y,.05,stMat.pod,10,g);t.rotation.x=Math.PI/2;}
+    add(new THREE.Mesh(stLat([[.01,-.5*L],[R*.55,-.5*L+.12],[R*.95,-.5*L+.5],[R*.95,-.5*L+.62]]),stMat.pod),0,0,0,g);                  // frangible nose fairing
+    add(new THREE.Mesh(stLat([[R*.95,.5*L-.4],[R*.8,.5*L-.15],[R*.35,.5*L]]),stMat.pod),0,0,0,g);                                    // tail fairing
+    g.userData.top=R*.95;
+  }
+  return g;
+}
+const STP={x:[-3.3,-1.95,0,1.95,3.3],att:[-.5,-.56,-.78,-.56,-.5],drop:[.2,.22,.16,.22,.2],z:[.9,.7,.7,.7,.9]};
+const stG=new THREE.Group();a4G.add(stG);const stSlot=[null,null,null,null,null];
+function syncStores(){
+  for(let i=0;i<5;i++){const k=wp.s[i]||null,sl=stSlot[i];
+    if(sl&&sl.k===k)continue;
+    if(sl)stG.remove(sl.g);
+    if(!k){stSlot[i]=null;continue;}
+    const g=new THREE.Group(),m=storeMesh(k),top=m.userData.top;
+    m.position.set(0,STP.att[i]-STP.drop[i]-top,STP.z[i]);g.add(m);
+    const ph=STP.drop[i]+top*.3;box(.1,ph,.9,0,STP.att[i]-ph/2+.02,STP.z[i],stMat.pyl,g);              // pylon
+    if(m.userData.rail)box(.1,.12,2.2,0,STP.att[i]-STP.drop[i]-top*.1,STP.z[i],stMat.dk,g);            // launch rail
+    g.position.x=STP.x[i];stG.add(g);stSlot[i]={k,g};
+  }
+}
+
 const wp={s:[null,null,null,null,null],ext:[0,0,0,0,0],rk:[0,0,0,0,0],plan:PRESETS.clean.s.slice(),ammo:200,sel:0,gunT:0,rktT:0,rktI:0,bombI:0,gunN:0,lock:null,locked:false,lockPrev:null};
 const prj=[],tg=[];
 const ms={on:false,m:null,state:'idle',t:0,launched:false,maxAlt:0,maxIas:0,hits:0,rktHits:0,bombHits:0,kills:0,refuel:0,traps0:0,bolt0:0,score:0,wire:0,bonus:0,airT:0,sel:'T1'};
@@ -2003,6 +2075,7 @@ function loadStores(arr,fuel){
   for(let i=0;i<5;i++){const k=arr[i]||null;wp.s[i]=k;wp.ext[i]=k&&STORE[k].fuel||0;wp.rk[i]=k&&STORE[k].rounds||0;}
   ac.fuel=fuel===undefined?FUEL.full:fuel;ac.flameout=false;wp.ammo=200;wp.sel=0;wp.lock=null;wp.rktI=wp.bombI=0;
   if(AC.type==='a4')AC.m=AC.m0+ac.fuel+storeKg();
+  syncStores();
 }
 function burnFuel(kg){
   for(let i=0;i<5&&kg>0;i++){const k=wp.s[i];if(k&&STORE[k].feed&&wp.ext[i]>0){const d=Math.min(kg,wp.ext[i]);wp.ext[i]-=d;kg-=d;}}
@@ -2010,6 +2083,7 @@ function burnFuel(kg){
   if(engineFuel()<=0&&!ac.flameout&&AC.type==='a4'){ac.flameout=true;say('FLAMEOUT',6);}
 }
 function updateMass(dt){
+  syncStores();
   if(AC.type!=='a4')return;
   if(ac.pilot&&!ac.crashed)burnFuel((FUEL.idle+FUEL.max*ac.rpm)*(ms.on?FUEL.scale:1)*dt);
   AC.m=AC.m0+ac.fuel+storeKg();
@@ -2054,14 +2128,16 @@ function fireRocket(){
 function dropBomb(jet){
   for(let n=0;n<5;n++){const i=(wp.bombI+n)%5,k=wp.s[i];
     if(k&&(jet||STORE[k].w==='bomb')){wp.bombI=i+1;const st=STORE[k];wp.s[i]=null;wp.ext[i]=0;wp.rk[i]=0;
-      addPrj(jet?'j':'b',ac.pos.clone().add(offs(STX[i],-1.6,0)),ac.vel.clone(),60,{st,jet:!!jet});
+      const o=addPrj(jet?'j':'b',ac.pos.clone().add(offs(STX[i],-1.6,0)),ac.vel.clone(),60,{st,jet:!!jet});
+      o.mesh=storeMesh(k);o.mesh.quaternion.copy(ac.q);scene.add(o.mesh);
       return true;}}
   return false;
 }
 function fireAim(){
   for(let i=0;i<5;i++)if(wp.s[i]==='aim9'){wp.s[i]=null;
     const f=aimVec().clone();
-    addPrj('m',ac.pos.clone().add(offs(STX[i],-.7,-1)),ac.vel.clone().addScaledVector(f,40),14,{tgt:wp.lock});sfx.rocket();return true;}
+    const o=addPrj('m',ac.pos.clone().add(offs(STX[i],-.7,-1)),ac.vel.clone().addScaledVector(f,40),14,{tgt:wp.lock});
+    o.mesh=storeMesh('aim9');o.mesh.quaternion.copy(ac.q);scene.add(o.mesh);sfx.rocket();return true;}
   return false;
 }
 function seek(p,v,cone,range){ // AIM-9B seeker: narrow cone, rear hemisphere of the target only
@@ -2119,7 +2195,7 @@ function updatePrj(dt){
           if(o.k!=='g'){spawnFx(o.p,'fire');}o.life=0;break;}}
     }
     if(o.life>0&&o.p.y<=waveHeight(o.p.x,o.p.z,state.t)+.2){if(o.k==='m'||o.jet){o.life=0;}else impact(o);}
-    if(o.life<=0)prj.splice(i,1);
+    if(o.life<=0){if(o.mesh)scene.remove(o.mesh);prj.splice(i,1);}
   }
 }
 /* projectile drawing: tracers, rocket and missile trails as line segments; bombs as small meshes */
@@ -2132,7 +2208,8 @@ for(let i=0;i<12;i++){const m=new THREE.Mesh(bombGeo,bombMat);m.visible=false;sc
 function drawPrj(){
   let n=0,b=0;
   for(const o of prj){
-    if(o.k==='b'||o.k==='j'){if(b<bombPool.length){const m=bombPool[b++];m.visible=true;m.position.copy(o.p);
+    if(o.mesh){o.mesh.position.copy(o.p);if(o.v.lengthSq()>1)o.mesh.quaternion.setFromUnitVectors(_pp.set(0,0,-1),_pq.copy(o.v).normalize());}
+    if(o.k==='b'||o.k==='j'){if(!o.mesh&&b<bombPool.length){const m=bombPool[b++];m.visible=true;m.position.copy(o.p);
       m.quaternion.setFromUnitVectors(_pp.set(0,0,-1),_pq.copy(o.v).normalize());}continue;}
     if(n>=MAXSEG)continue;
     const len=o.k==='g'?.04:o.k==='r'?.05:.06,c=o.k==='g'?[1,.85,.3]:o.k==='r'?[1,.65,.3]:[1,1,1],
@@ -2174,7 +2251,7 @@ function addTarget(o){
   if(t.mesh){t.mesh.traverse(m=>{m.castShadow=false;});scene.add(t.mesh);}
   tg.push(t);return t;
 }
-function clearTargets(){for(const t of tg)if(t.mesh&&!t.keep)scene.remove(t.mesh);tg.length=0;prj.length=0;wp.lock=null;tank.on=false;tank.g.visible=false;}
+function clearTargets(){for(const t of tg)if(t.mesh&&!t.keep)scene.remove(t.mesh);tg.length=0;for(const o of prj)if(o.mesh)scene.remove(o.mesh);prj.length=0;wp.lock=null;tank.on=false;tank.g.visible=false;}
 const shipRel=(x,z)=>({x:ship.position.x+x,z:ship.position.z+z});
 function orbiter(R,alt,spd,ph,cx,cz){ // ship-relative circuit; (cx,cz) is the centre offset from the ship
   let th=ph;
@@ -2202,7 +2279,8 @@ function buildTanker(){
   if(tank.built)return;tank.built=true;
   const sg=ac.gear,sf=ac.flap,sh=ac.hook;ac.gear=false;ac.flap=0;ac.hook=false;animateParts(0,true);
   for(const m of parts.crew)m.visible=false;
-  const body=plane.clone(true);for(const m of parts.crew)m.visible=true;
+  const sv=stG.visible;stG.visible=false;const body=plane.clone(true);stG.visible=sv;for(const m of parts.crew)m.visible=true;
+  for(const sd of [1,-1]){const t=storeMesh('t300');t.position.set(sd*STP.x[3],STP.att[3]-STP.drop[3]-t.userData.top,STP.z[3]);body.add(t);}
   ac.gear=sg;ac.flap=sf;ac.hook=sh;animateParts(0,true);
   body.position.set(0,0,0);body.quaternion.identity();body.scale.set(1,1,1);
   const pod=new THREE.Mesh(new THREE.CylinderGeometry(.42,.34,4.4,10).rotateX(Math.PI/2),M(0xd9dde0,{roughness:.5}));pod.position.set(0,-1.3,.4);

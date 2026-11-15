@@ -31,7 +31,7 @@ The A-4G could not launch the guided air-to-ground weapons that the US Navy's A-
 
 ## Stations and presets
 
-Five stations: left outer, left inner, centreline, right inner, right outer. Each takes only some stores (5 in pods go on the inner stations, 500 lb bombs on the inner and centre stations; the centreline also takes a 300 gallon tank or the buddy pod).
+Five stations: left outer, left inner, centreline, right inner, right outer. Each takes only some stores (5 in pods go on the inner stations, 500 lb bombs on the inner and centre stations; a 300 gallon tank goes on the centreline or an inner station, and the centreline also takes the buddy pod).
 
 | Preset | Stores |
 |---|---|

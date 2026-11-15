@@ -452,5 +452,53 @@
   "uiOff": true,
   "hideHint": true,
   "hidePanels": true
+ },
+ "s41-stores-fad": {
+  "cam": "chase",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "start": "cat",
+  "hideHint": true,
+  "hidePanels": true,
+  "advance": 0.3,
+  "js": "S.wp.plan=S.PRESETS.fad.s.slice();S.resetAircraft('cat');S.advance(0.2);",
+  "view": {
+   "cAz": 1.45,
+   "cEl": -0.12,
+   "cD": 9
+  }
+ },
+ "s42-stores-strike": {
+  "cam": "chase",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "start": "cat",
+  "hideHint": true,
+  "hidePanels": true,
+  "advance": 0.3,
+  "js": "S.wp.plan=S.PRESETS.strike.s.slice();S.resetAircraft('cat');S.advance(0.2);",
+  "view": {
+   "cAz": 1.35,
+   "cEl": -0.1,
+   "cD": 10
+  }
+ },
+ "s43-stores-rocket": {
+  "cam": "chase",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "start": "cat",
+  "hideHint": true,
+  "hidePanels": true,
+  "advance": 0.3,
+  "js": "S.wp.plan=S.PRESETS.rocket.s.slice();S.resetAircraft('cat');S.advance(0.2);",
+  "view": {
+   "cAz": 1.5,
+   "cEl": -0.1,
+   "cD": 9
+  }
  }
 }
