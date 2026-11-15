@@ -131,7 +131,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><div class="keystats" id="ksBox" aria-label="Key stats"><div><b id="ksF">-</b><small>Launches</small></div><div class="ks-l"><b id="ksL">-</b><small>Traps</small></div><div class="ks-c"><b id="ksC">-</b><small>Crashes</small></div></div><p class="ks-live off" id="ksLive"><i></i><span>Loading stats</span></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a></p><!--latest-post--><a class="latest" href="blog/key-stats-on-the-homepage/"><small>Latest post</small><img src="blog/img/s44-key-stats.jpg" width="1280" height="720" alt=""><strong>Launches, traps and crashes on the homepage</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
+<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><div class="keystats" id="ksBox" aria-label="Key stats"><div><b id="ksF">-</b><small>Launches</small></div><div class="ks-l"><b id="ksL">-</b><small>Traps</small></div><div class="ks-c"><b id="ksC">-</b><small>Crashes</small></div></div><p class="ks-live off" id="ksLive"><i></i><span>Loading stats</span></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a></p><!--latest-post--><a class="latest" href="blog/a-4g-ailerons-and-rudder/"><small>Latest post</small><img src="blog/img/ailerons-and-rudder.jpg" width="1280" height="720" alt=""><strong>The A-4G&#x27;s ailerons and rudder now move</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="mis" class="panel"></div>
 <div id="msn" class="panel"></div>
@@ -1357,6 +1357,7 @@ const _loc=new V3(),chaseDir=new V3(0,0,-1),X_AX=new V3(1,0,0),Y_AX=new V3(0,1,0
 
 function resetAircraft(kind){
   if(AC.type==='a4'&&!ms.on)loadStores(kind==='cat'?wp.plan:PRESETS.clean.s);
+  else if(AC.type==='s2'&&!ms.on)loadStores(kind==='cat'?wp.plan2:PRESETS2.clean.s);
   life.setForwardParkClear(kind==='cat'||AC.type==='s2');   // parked Sea King off the catapult line for every launch
   ac.start=kind;ac.crashed=null;ac.w.set(0,0,0);ac.stick.p=ac.stick.r=ac.stick.y=0;ac.snap=true;
   ac.launching=ac.trapped=ac.trapDone=ac.bolter=false;ac.brake=false;ac.gear=true;plane.visible=true;
@@ -2008,7 +2009,21 @@ const STORE={ // kg all-up; ok = stations that take it (0 L outer, 1 L inner, 2 
   mk82:{n:'500 lb bomb',kg:227,ok:[1,2,3],w:'bomb',lethal:25,dmg:100},
   t300:{n:'300 gal tank',kg:210,fuel:1090,ok:[1,2,3],feed:1},
   t150:{n:'150 gal tank',kg:130,fuel:545,ok:[1,3],feed:1},
-  pod:{n:'D-704 buddy pod',kg:220,fuel:1000,ok:[2]}
+  pod:{n:'D-704 buddy pod',kg:220,fuel:1000,ok:[2]},
+  pmbr:{n:'Practice bomb rack (6)',kg:25,unit:11,ok:[0,1,2,3,4],w:'bomb',multi:6,item:'prac',lethal:7,dmg:12,prac:1},          // skyhawk.org: practice bombs on 886, May 1974
+  // Tracker stores (stations 0-5 wing, 6-7 bay). Weights are estimates.
+  torp:{n:'Homing torpedo',kg:230,ok:[0,1,2,3,4,5,6,7],w:'torp',lethal:150,dmg:100,s2:1},
+  dbomb:{n:'Depth bomb',kg:160,ok:[6,7],w:'dc',lethal:25,dmg:100,s2:1},
+  dcpair:{n:'Depth charges (pair)',kg:20,unit:90,ok:[6,7],w:'dc',multi:2,item:'dcan',lethal:20,dmg:80,s2:1},
+  mk81s:{n:'250 lb bomb',kg:113,ok:[0,1,2,3,4,5],w:'bomb',lethal:18,dmg:60,s2:1,as:'mk81'},
+  lau10s:{n:'5 in rocket pod (Zuni)',kg:240,ok:[0,1,2,3,4,5],w:'rkt',rounds:4,s2:1,as:'lau10'}
+};
+const PRESETS2={
+  clean:{n:'Clean',s:[null,null,null,null,null,null,null,null]},
+  asw:{n:'ASW patrol',s:[null,null,null,null,null,null,'torp','torp']},
+  asw4:{n:'ASW, 4 torpedoes',s:[null,'torp',null,null,'torp',null,'torp','torp']},
+  depth:{n:'Depth charges',s:[null,null,null,null,null,null,'dcpair','dcpair']},
+  strike:{n:'Strike',s:['lau10s','mk81s',null,null,'mk81s','lau10s',null,null]}
 };
 const PRESETS={
   clean:{n:'Clean',s:[null,null,null,null,null]},
@@ -2016,10 +2031,13 @@ const PRESETS={
   strike:{n:'Strike',s:['mk81','mk82','t300','mk82','mk81']},
   rocket:{n:'Rocket attack',s:['lau3','lau10','t300','lau10','lau3']},
   buddy:{n:'Buddy tanker',s:[null,null,'pod',null,null]},
-  ferry:{n:'Ferry',s:[null,'t150','t300','t150',null]}
+  ferry:{n:'Ferry',s:[null,'t150','t300','t150',null]},
+  practice:{n:'Practice bombing',s:['pmbr','pmbr','t300','pmbr','pmbr']}
 };
-const STN=['L OUT','L IN','CTR','R IN','R OUT'],STX=[-3.3,-1.95,0,1.95,3.3];
+const STN=['L OUT','L IN','CTR','R IN','R OUT'],STX=[-3.3,-1.95,0,1.95,3.3],STN2=['L OUT','L MID','L IN','R IN','R MID','R OUT','BAY 1','BAY 2'],STX2=[-9.4,-7.6,-4.4,4.4,7.6,9.4,-.4,.4];
+const stX=i=>AC.type==='s2'?STX2[i]:STX[i];
 for(const k in STORE)STORE[k].id=k;
+const isS2=k=>!!STORE[k].s2;
 
 /* ---- store models: each station draws the store in the loadout; released stores keep the same shape ----
    Metres, nose toward -z. Only (S) was checked against a source (Wikipedia, Mk 81 bomb); (P) is derived from fuel volume and the
@@ -2032,9 +2050,16 @@ const STDIM={
   t150:{len:3.2,dia:.58,src:'P'},
   pod:{len:4.2,dia:.72,src:'P'},                         // D-704 buddy pod, built on the 300 gal shell
   lau10:{len:2.9,dia:.32,src:'E'},                       // 4 x 5 in rockets
-  lau3:{len:2.0,dia:.42,src:'E'}                         // 19 x 2.75 in rockets
+  lau3:{len:2.0,dia:.42,src:'E'},                        // 19 x 2.75 in rockets
+  prac:{len:.62,dia:.1,src:'E'},                         // practice bomb, Mk 76 size class
+  pmbr:{len:2.2,dia:.44,src:'E'},                        // practice multiple bomb rack
+  torp:{len:2.59,dia:.324,src:'E'},                      // Mk 44/46 class lightweight torpedo
+  dbomb:{len:1.5,dia:.38,src:'E'},                       // depth bomb
+  dcan:{len:.9,dia:.35,src:'E'},                         // depth charge
+  dcpair:{len:.9,dia:.7,src:'E'},
+  zuni:{len:2.7,dia:.127,src:'E'},hydra:{len:1.4,dia:.07,src:'E'}   // rockets in flight
 };
-const stMat={tank:M(0xe9ebe6,{roughness:.45,side:THREE.DoubleSide}),bomb:M(0x6b705c,{roughness:.6}),yel:M(0xd6b52a,{roughness:.6}),
+const stMat={blue:M(0x2f5fa8,{roughness:.5}),torp:M(0x5a6469,{roughness:.5}),tank:M(0xe9ebe6,{roughness:.45,side:THREE.DoubleSide}),bomb:M(0x6b705c,{roughness:.6}),yel:M(0xd6b52a,{roughness:.6}),
   msl:M(0xeeece4,{roughness:.4}),org:M(0xe8832a,{roughness:.5}),dk:M(0x23282c,{roughness:.5}),pod:M(0x8e959b,{roughness:.55,side:THREE.DoubleSide}),
   pyl:M(0x7b8288,{roughness:.6}),red:M(0xb3261e,{roughness:.6})};
 const stLat=pts=>{const q=new THREE.LatheGeometry(pts.map(([r,z])=>new THREE.Vector2(r,z)),20);q.rotateX(Math.PI/2);return q;};
@@ -2042,7 +2067,7 @@ function stFins(parent,n,r0,span,chord,thick,z,m,rot0){ // n radial fins around 
   for(let k=0;k<n;k++){const g=new THREE.Group();g.rotation.z=(rot0||0)+k*Math.PI*2/n;box(thick,span,chord,0,r0+span/2,z,m,g);parent.add(g);}
 }
 const stCache={};
-function storeMesh(k){ // returns a fresh group; userData.top is the radius above the axis for the pylon
+function storeMesh(k,n){ // returns a fresh group; userData.top is the radius above the axis for the pylon
   const d=STDIM[k],g=new THREE.Group(),L=d.len,R=d.dia/2;g.userData.top=R;
   const body=(m,pts)=>add(new THREE.Mesh(stLat(pts),m),0,0,0,g);
   if(k==='t300'||k==='t150'||k==='pod'){
@@ -2078,24 +2103,58 @@ function storeMesh(k){ // returns a fresh group; userData.top is the radius abov
     add(new THREE.Mesh(stLat([[R*.95,.5*L-.4],[R*.8,.5*L-.15],[R*.35,.5*L]]),stMat.pod),0,0,0,g);                                    // tail fairing
     g.userData.top=R*.95;
   }
+  else if(k==='prac'){
+    body(stMat.blue,[[.01,-.5*L],[.7*R,-.46*L],[R,-.35*L],[R,.3*L],[.6*R,.5*L]]);
+    stFins(g,4,.5*R,R*1.3,.14,.012,.42*L,stMat.blue,Math.PI/4);
+  }else if(k==='pmbr'){
+    const top=.22;g.userData.top=top;box(.3,.1,1.5,0,top-.05,0,stMat.dk,g);
+    const pos=[[-.11,-.75],[.11,-.75],[-.11,0],[.11,0],[-.11,.75],[.11,.75]];
+    for(let i=0;i<Math.min(n||6,6);i++){const b=storeMesh('prac');b.position.set(pos[i][0],top-.1-.05,pos[i][1]);g.add(b);}
+  }else if(k==='torp'){
+    body(stMat.torp,[[.01,-.5*L],[.5*R,-.485*L],[.85*R,-.46*L],[R,-.42*L],[R,.4*L],[.95*R,.5*L]]);
+    add(new THREE.Mesh(stLat([[.01,-.5*L],[.5*R,-.485*L],[.85*R,-.46*L],[R*.97,-.43*L]]),stMat.msl),0,0,0,g);   // nose cap
+    cyl(R*1.01,R*1.01,.07,0,0,-.1*L,stMat.yel,16,g).rotation.x=Math.PI/2;
+    add(new THREE.Mesh(new THREE.TorusGeometry(R*1.12,.03,5,18),stMat.torp),0,0,.5*L-.12,g);                 // tail shroud
+    stFins(g,4,R*.9,R*.28,.28,.02,.48*L,stMat.torp,Math.PI/4);
+  }else if(k==='dbomb'||k==='dcan'){
+    body(k==='dbomb'?stMat.bomb:stMat.dk,[[.01,-.5*L],[.55*R,-.47*L],[.95*R,-.4*L],[R,-.28*L],[R,.3*L],[.8*R,.45*L],[.5*R,.5*L]]);
+    cyl(R*1.02,R*1.02,.06,0,0,-.05*L,stMat.yel,16,g).rotation.x=Math.PI/2;
+    if(k==='dbomb')stFins(g,4,.4*R,R*.9,.3,.02,.42*L,stMat.bomb,Math.PI/4);
+  }else if(k==='dcpair'){
+    for(const sx of [-1,1]){const c=storeMesh('dcan');c.position.x=sx*.18;g.add(c);}g.userData.top=R*.5;
+  }
+  return g;
+}
+function rocketMesh(big){ // Zuni (5 in) or 2.75 in rocket in flight
+  const d=STDIM[big?'zuni':'hydra'],L=d.len,R=d.dia/2,g=new THREE.Group();
+  const b=new THREE.Mesh(stLat([[.01,-.5*L],[.6*R,-.46*L],[R,-.36*L],[R,.5*L]]),big?stMat.bomb:stMat.pod);b.castShadow=false;g.add(b);
+  stFins(g,4,R*.8,R*1.6,.2,.01,.42*L,stMat.pod,Math.PI/4);
   return g;
 }
 const STP={x:[-3.3,-1.95,0,1.95,3.3],att:[-.5,-.56,-.78,-.56,-.5],drop:[.2,.22,.16,.22,.2],z:[.9,.7,.7,.7,.9]};
-const stG=new THREE.Group();a4G.add(stG);const stSlot=[null,null,null,null,null];
+const STP2={x:STX2,att:.54,drop:0,z:.1};
+const stG=new THREE.Group();a4G.add(stG);const stG2=new THREE.Group();const stSlot={a4:[],s2:[]};
 function syncStores(){
-  for(let i=0;i<5;i++){const k=wp.s[i]||null,sl=stSlot[i];
-    if(sl&&sl.k===k)continue;
-    if(sl)stG.remove(sl.g);
-    if(!k){stSlot[i]=null;continue;}
-    const g=new THREE.Group(),m=storeMesh(k),top=m.userData.top;
-    m.position.set(0,STP.att[i]-STP.drop[i]-top,STP.z[i]);g.add(m);
-    const ph=STP.drop[i]+top*.3;box(.1,ph,.9,0,STP.att[i]-ph/2+.02,STP.z[i],stMat.pyl,g);              // pylon
-    if(m.userData.rail)box(.1,.12,2.2,0,STP.att[i]-STP.drop[i]-top*.1,STP.z[i],stMat.dk,g);            // launch rail
-    g.position.x=STP.x[i];stG.add(g);stSlot[i]={k,g};
+  for(const ty of ['a4','s2']){
+    const grp=ty==='a4'?stG:stG2,P=ty==='a4'?STP:STP2,n=ty==='a4'?5:6;
+    if(!grp.parent&&ty==='s2'&&typeof s2F!=='undefined')s2F.add(stG2);
+    for(let i=0;i<n;i++){
+      const k=AC.type===ty?wp.s[i]||null:null,rk=k&&STORE[k].multi?wp.rk[i]:0,key=k?k+':'+rk:null,sl=stSlot[ty][i];
+      if(sl&&sl.key===key)continue;
+      if(sl)grp.remove(sl.g);
+      if(!key){stSlot[ty][i]=null;continue;}
+      const g=new THREE.Group(),m=storeMesh(STORE[k].as||k,rk),top=m.userData.top;
+      const att=ty==='a4'?P.att[i]:P.att,drop=ty==='a4'?P.drop[i]:P.drop,z=ty==='a4'?P.z[i]:P.z;
+      m.position.set(0,att-drop-top,z);g.add(m);
+      if(ty==='a4'){const ph=drop+top*.3;box(.1,ph,.9,0,att-ph/2+.02,z,stMat.pyl,g);
+        if(m.userData.rail)box(.1,.12,2.2,0,att-drop-top*.1,z,stMat.dk,g);}
+      else if(i===2||i===3)box(.09,.22,.8,0,att+.1,z,stMat.pyl,g);          // inner Tracker pylon; the outer ones are part of the airframe
+      g.position.x=ty==='a4'?P.x[i]:P.x[i];grp.add(g);stSlot[ty][i]={key,g};
+    }
   }
 }
 
-const wp={s:[null,null,null,null,null],ext:[0,0,0,0,0],rk:[0,0,0,0,0],plan:PRESETS.clean.s.slice(),ammo:200,sel:0,gunT:0,rktT:0,rktI:0,bombI:0,gunN:0,lock:null,locked:false,lockPrev:null};
+const wp={s:[null,null,null,null,null,null,null,null],ext:[0,0,0,0,0,0,0,0],rk:[0,0,0,0,0,0,0,0],plan:PRESETS.clean.s.slice(),plan2:PRESETS2.clean.s.slice(),ammo:200,sel:0,gunT:0,rktT:0,rktI:0,bombI:0,gunN:0,lock:null,locked:false,lockPrev:null};
 const prj=[],tg=[];
 const ms={on:false,m:null,state:'idle',t:0,launched:false,maxAlt:0,maxIas:0,hits:0,rktHits:0,bombHits:0,kills:0,refuel:0,traps0:0,bolt0:0,score:0,wire:0,bonus:0,airT:0,sel:'T1'};
 const prog={done:{},open:false};
@@ -2104,30 +2163,34 @@ const saveProg=()=>{try{localStorage.setItem('ranair.prog',JSON.stringify(prog.d
 const ui={msn:false,lo:false};
 const paused=()=>ui.msn||ui.lo;
 
-const storeKg=()=>{let m=0;for(let i=0;i<5;i++)if(wp.s[i])m+=STORE[wp.s[i]].kg+wp.ext[i];return m;};
-const engineFuel=()=>{let f=ac.fuel||0;for(let i=0;i<5;i++){const k=wp.s[i];if(k&&STORE[k].feed)f+=wp.ext[i];}return f;};
+const stKg=(k,n,ext)=>STORE[k].kg+(STORE[k].multi?n*STORE[k].unit:0)+(ext||0);
+const storeKg=()=>{let m=0;for(let i=0;i<8;i++)if(wp.s[i])m+=stKg(wp.s[i],wp.rk[i],wp.ext[i]);return m;};
+const engineFuel=()=>{let f=ac.fuel||0;for(let i=0;i<8;i++){const k=wp.s[i];if(k&&STORE[k].feed)f+=wp.ext[i];}return f;};
 function loadStores(arr,fuel){
-  for(let i=0;i<5;i++){const k=arr[i]||null;wp.s[i]=k;wp.ext[i]=k&&STORE[k].fuel||0;wp.rk[i]=k&&STORE[k].rounds||0;}
+  for(let i=0;i<8;i++){const k=arr[i]||null;wp.s[i]=k;wp.ext[i]=k&&STORE[k].fuel||0;wp.rk[i]=k&&(STORE[k].multi||STORE[k].rounds)||0;}
   ac.fuel=fuel===undefined?FUEL.full:fuel;ac.flameout=false;wp.ammo=200;wp.sel=0;wp.lock=null;wp.rktI=wp.bombI=0;
-  if(AC.type==='a4')AC.m=AC.m0+ac.fuel+storeKg();
+  if(AC.type==='a4')AC.m=AC.m0+ac.fuel+storeKg();else if(AC.type==='s2')AC.m=TYPES.s2.m+storeKg();
   syncStores();
 }
 function burnFuel(kg){
-  for(let i=0;i<5&&kg>0;i++){const k=wp.s[i];if(k&&STORE[k].feed&&wp.ext[i]>0){const d=Math.min(kg,wp.ext[i]);wp.ext[i]-=d;kg-=d;}}
+  for(let i=0;i<8&&kg>0;i++){const k=wp.s[i];if(k&&STORE[k].feed&&wp.ext[i]>0){const d=Math.min(kg,wp.ext[i]);wp.ext[i]-=d;kg-=d;}}
   if(kg>0)ac.fuel=Math.max(0,ac.fuel-kg);
   if(engineFuel()<=0&&!ac.flameout&&AC.type==='a4'){ac.flameout=true;say('FLAMEOUT',6);}
 }
 function updateMass(dt){
   syncStores();
+  if(AC.type==='s2'){AC.m=TYPES.s2.m+storeKg();return;}
   if(AC.type!=='a4')return;
   if(ac.pilot&&!ac.crashed)burnFuel((FUEL.idle+FUEL.max*ac.rpm)*(ms.on?FUEL.scale:1)*dt);
   AC.m=AC.m0+ac.fuel+storeKg();
 }
-const wlist=()=>{const l=['gun'];let a=0,r=0,b=0;for(let i=0;i<5;i++){const k=wp.s[i];if(!k)continue;const w=STORE[k].w;if(w==='aim')a++;else if(w==='rkt'&&wp.rk[i]>0)r++;else if(w==='bomb')b++;}
-  if(a)l.push('aim');if(r)l.push('rkt');if(b)l.push('bomb');return l;};
+const cnt=i=>{const k=wp.s[i];if(!k)return 0;const t=STORE[k];return t.multi||t.w==='rkt'?wp.rk[i]:1;};
+const WCLS=['aim','rkt','bomb','torp','dc'];
+const wlist=()=>{const l=AC.type==='a4'?['gun']:[];for(const c of WCLS){let n=0;for(let i=0;i<8;i++){const k=wp.s[i];if(k&&STORE[k].w===c)n+=cnt(i);}if(n)l.push(c);}
+  if(!l.length)l.push('none');return l;};
 const wsel=()=>{const l=wlist();return l[wp.sel%l.length];};
-function wcount(k){let n=0;if(k==='gun')return wp.ammo;for(let i=0;i<5;i++){const s=wp.s[i];if(!s)continue;const w=STORE[s].w;
-  if(k==='aim'&&w==='aim')n++;else if(k==='rkt'&&w==='rkt')n+=wp.rk[i];else if(k==='bomb'&&w==='bomb')n++;}return n;}
+const WNAME={gun:'GUN',aim:'AIM-9B',rkt:'ROCKET',bomb:'BOMB',torp:'TORPEDO',dc:'DEPTH CHG',none:'NO STORES'};
+function wcount(k){if(k==='gun')return wp.ammo;let n=0;for(let i=0;i<8;i++){const s=wp.s[i];if(s&&STORE[s].w===k)n+=cnt(i);}return n;}
 
 /* sounds */
 Object.assign(sfx,{
@@ -2154,18 +2217,25 @@ function fireGun(){
   addPrj('g',p,v,1.8);if(wp.gunN%3===0)sfx.gun();
 }
 function fireRocket(){
-  for(let n=0;n<5;n++){const i=(wp.rktI+n)%5,k=wp.s[i];
+  for(let n=0;n<8;n++){const i=(wp.rktI+n)%8,k=wp.s[i];
     if(k&&STORE[k].w==='rkt'&&wp.rk[i]>0){wp.rktI=i+1;wp.rk[i]--;
-      const f=aimVec().clone(),p=ac.pos.clone().addScaledVector(f,3).add(offs(STX[i],-.6,0));
-      addPrj('r',p,ac.vel.clone().addScaledVector(f,450),20,{big:k==='lau10'});sfx.rocket();return true;}}
+      const f=aimVec().clone(),p=ac.pos.clone().addScaledVector(f,3).add(offs(stX(i),-.6,0));
+      const big=STORE[k].id==='lau10'||STORE[k].as==='lau10',o=addPrj('r',p,ac.vel.clone().addScaledVector(f,450),20,{big});
+      o.mesh=rocketMesh(big);o.mesh.quaternion.copy(ac.q);scene.add(o.mesh);sfx.rocket();return true;}}
   return false;
 }
-function dropBomb(jet){
-  for(let n=0;n<5;n++){const i=(wp.bombI+n)%5,k=wp.s[i];
-    if(k&&(jet||STORE[k].w==='bomb')){wp.bombI=i+1;const st=STORE[k];wp.s[i]=null;wp.ext[i]=0;wp.rk[i]=0;
-      const o=addPrj(jet?'j':'b',ac.pos.clone().add(offs(STX[i],-1.6,0)),ac.vel.clone(),60,{st,jet:!!jet});
-      o.mesh=storeMesh(k);o.mesh.quaternion.copy(ac.q);scene.add(o.mesh);
-      return true;}}
+function dropBomb(jet,cls){
+  cls=cls||'bomb';
+  for(let n=0;n<8;n++){const i=(wp.bombI+n)%8,k=wp.s[i];
+    if(!k)continue;const st=STORE[k];
+    if(!jet&&(st.w!==cls||cnt(i)<1))continue;
+    wp.bombI=i+1;
+    const single=!jet&&st.multi;                                      // one item from a rack, the rack stays
+    const mk=single?st.item:(st.as||k),had=wp.rk[i];
+    if(single)wp.rk[i]=had-1;else{wp.s[i]=null;wp.ext[i]=0;wp.rk[i]=0;}
+    const o=addPrj(jet?'j':'b',ac.pos.clone().add(offs(stX(i),-1.6,0)),ac.vel.clone(),60,{st:single?Object.assign({},st,{w:st.w,lethal:st.lethal,dmg:st.dmg}):st,jet:!!jet});
+    o.mesh=storeMesh(mk,had);o.mesh.quaternion.copy(ac.q);scene.add(o.mesh);
+    return true;}
   return false;
 }
 function fireAim(){
@@ -2199,7 +2269,7 @@ function impact(o){ // water or surface-target strike
     const d=Math.hypot(t.pos.x-o.p.x,t.pos.z-o.p.z);
     if(o.k==='g'){if(d<t.r){damage(t,1,'g');hit=true;}}
     else if(o.k==='r'){if(d<t.r){damage(t,20,'r');hit=true;}}
-    else if(o.k==='b'){const st=o.st;if(d<st.lethal){damage(t,st.dmg,'b');ms.bombHits++;hit=true;}}
+    else if(o.k==='b'){const st=o.st;if(st.w==='torp'&&!t.sub)continue;if(d<st.lethal){damage(t,st.dmg,'b');ms.bombHits++;hit=true;}}
   }
   if(o.k==='b'||o.k==='r'){spawnFx(o.p,hit?'fire':'splash');if(o.k==='b')sfx.bang();}
   o.life=0;
@@ -2300,6 +2370,19 @@ function orbiter(R,alt,spd,ph,cx,cz){ // ship-relative circuit; (cx,cz) is the c
 }
 function addDrone(R,alt,spd,ph,cx,cz,tag){return addTarget({kind:'drone',tag:tag||'BOGEY',mesh:droneMesh(),r:6,hp:8,heat:true,guide:true,upd:orbiter(R,alt,spd,ph,cx,cz)});}
 function addSleeve(R,alt,spd,ph,cx,cz){return addTarget({kind:'sleeve',tag:'SLEEVE',mesh:sleeveMesh(),r:7,hp:1e9,guide:true,upd:orbiter(R,alt,spd,ph,cx,cz)});}
+function subMesh(){ // snorkelling submarine: sail, periscope and wake mark; the hull is below the surface
+  const g=new THREE.Group(),m=MO(0x1b2127,{roughness:.5});
+  const sail=new THREE.Mesh(new THREE.BoxGeometry(2,2.6,8),m);sail.position.set(0,.9,0);
+  const per=new THREE.Mesh(new THREE.CylinderGeometry(.07,.07,2.2,5),MO(0x30363b));per.position.set(0,3.2,-1.5);
+  const wake=new THREE.Mesh(new THREE.BoxGeometry(5,.05,40),MO(0xe9f1f4,{transparent:true,opacity:.5}));wake.position.set(0,.05,24);
+  g.add(sail,per,wake);return g;
+}
+function addSub(x,z,hdg,kn){
+  const sp=(kn||5)*KN,h=hdg||0;
+  const t=addTarget({kind:'sub',tag:'SUB',mesh:subMesh(),r:30,hp:100,surface:true,sub:true,guide:true,
+    upd:(t,dt)=>{t.pos.x+=-Math.sin(h)*sp*dt;t.pos.z+=-Math.cos(h)*sp*dt;t.pos.y=waveHeight(t.pos.x,t.pos.z,state.t)-.4;t.mesh.position.copy(t.pos);t.mesh.rotation.y=h;}});
+  t.pos.set(x,0,z);return t;
+}
 function addRaft(x,z,big,hp,tag){
   const t=addTarget({kind:big?'ship':'raft',tag:tag||'BARGE',mesh:raftMesh(big),r:big?48:14,hp,surface:true,guide:true,
     upd:(t)=>{t.pos.y=waveHeight(t.pos.x,t.pos.z,state.t);t.mesh.position.copy(t.pos);t.mesh.rotation.z=Math.sin(state.t*.6)*.03;}});
@@ -2381,7 +2464,7 @@ function placeBehind(t,dist,dy,spd,thr){
 }
 function stepGame(dt){
   updateMass(dt);
-  if(AC.type==='a4'&&ac.pilot&&!ac.crashed){
+  if((AC.type==='a4'||AC.type==='s2')&&ac.pilot&&!ac.crashed){
     const sel=wsel();
     if(ac.mode==='air'){
       if(keys['k']){
@@ -2433,6 +2516,10 @@ const MISSIONS=[
   brief:'Engine failure just after the cat shot. There is no ship to go back to: press X twice and get out.',
   tick(dt){if(ms.launched&&ac.mode==='air'){ms.airT+=dt;if(ms.airT>2&&!ac.flameout){ac.flameout=true;ac.thr=0;say('ENGINE FAILURE: EJECT (X X)',6);}}},
   obj:[{t:'Eject and survive',p:70,f:()=>ej.done&&!ej.dead}]},
+ {id:'T10',g:'Training',n:'ASW: torpedo drop (Tracker)',req:['T1'],ac:'s2',env:{sea:2,speed:20,hour:14},start:'air',pre:'asw',
+  brief:'You are flying the S-2 Tracker. A submarine is snorkelling 9 km ahead. Press I until TORPEDO is selected, line up on the wake and press K to drop within about 150 m of it. Switch to a depth charge load in the loadout screen (V) outside the mission to try those: they kill within 20 to 25 m.',
+  setup(){const p=shipRel(-1200,-9500),t=addSub(p.x,p.z,.4,5);placeAir(t.pos.x+300,330,t.pos.z+7500,0,95,.6);},
+  obj:[{t:'Sink the submarine',p:70,f:()=>{const t=tg.find(x=>x.sub);return !!t&&!t.alive;}}]},
  {id:'S1',g:'Sorties',n:'Fleet air defence patrol',req:['T7','T2'],env:{sea:3,speed:22,hour:15.5},start:'cat',pre:'fad',land:1,
   brief:'Two unidentified aircraft are circling the task group. Launch with four AIM-9B and a centreline tank, splash both, and recover.',
   setup(){addDrone(7000,1800,150,0,0,0,'BOGEY 1');addDrone(8800,2300,140,3.14,0,0,'BOGEY 2');},
@@ -2452,15 +2539,15 @@ function startMission(id){
   Object.assign(ms,{on:true,m,state:'fly',t:0,launched:false,maxAlt:0,maxIas:0,hits:0,rktHits:0,bombHits:0,kills:0,refuel:0,score:0,wire:0,bonus:0,airT:0,
     traps0:stats.traps,bolt0:sess.bolters});
   for(const o of m.obj)o.ok=false;
-  setEnv(m.env);setType('a4');
+  setEnv(m.env);setType(m.ac||'a4');
   resetAircraft(m.start==='approach'?'approach':'cat');
-  loadStores(PRESETS[m.pre].s,m.fuel);wp.locked=true;
+  loadStores((m.ac==='s2'?PRESETS2:PRESETS)[m.pre].s,m.fuel);wp.locked=true;
   if(m.setup)m.setup();
   if(!FLY[state.cam])setCam('chase');
   track('mission_start',{mission:m.id});renderMis();
 }
 function endMissionFree(){
-  ms.on=false;ms.state='idle';wp.locked=false;clearTargets();loadStores(wp.plan);resetAircraft('cat');renderMis();
+  ms.on=false;ms.state='idle';wp.locked=false;clearTargets();loadStores(AC.type==='s2'?wp.plan2:wp.plan);resetAircraft('cat');renderMis();
 }
 function endMission(pass,why){
   if(ms.state!=='fly')return;
@@ -2518,7 +2605,7 @@ function renderMsn(){
     h+='<button data-id="'+m.id+'"'+(m.id===ms.sel?' class="on"':'')+(un?'':' disabled')+'>'+m.id+' &nbsp;'+m.n+(s!==undefined?' &nbsp;&#10004; '+s:'')+(un?'':' &nbsp;(locked)')+'</button>';}
   const m=MISSIONS.find(x=>x.id===ms.sel)||MISSIONS[0],un=unlocked(m);
   h+='</div><div class="det"><div class="tl">'+m.id+' &middot; '+m.g+'</div><div class="tt">'+m.n+'</div><div class="ts">'+m.brief+'</div>'
-    +'<div class="ts">Loadout: '+PRESETS[m.pre].n+' &middot; sea state '+m.env.sea+' &middot; ship '+m.env.speed+' kn</div>'
+    +'<div class="ts">Loadout: '+(m.ac==='s2'?PRESETS2:PRESETS)[m.pre].n+' &middot; sea state '+m.env.sea+' &middot; ship '+m.env.speed+' kn</div>'
     +'<div class="ts">'+m.obj.map(o=>'&bull; '+o.t).join('<br>')+'</div>'
     +(un?'<div class="bt"><button data-a="fly">Fly mission</button></div>':'<div class="tn">Complete '+m.req.join(', ')+' first.</div>')
     +'<div class="ts"><label class="chk"><input type="checkbox" id="cOpen"'+(prog.open?' checked':'')+'> unlock all missions</label></div></div></div>';
@@ -2529,25 +2616,27 @@ msnEl.addEventListener('click',e=>{const d=e.target.dataset||{};
   else if(e.target.id==='cOpen'){prog.open=e.target.checked;saveProg();renderMsn();}});
 /* loadout screen (free flight; missions fix their own) */
 function openLo(){closeUi();ui.lo=true;renderLo();loEl.style.display='block';}
-function loadoutMass(){let m=AC.m0+FUEL.full;for(let i=0;i<5;i++){const k=wp.plan[i];if(k)m+=STORE[k].kg+(STORE[k].fuel||0);}return m;}
+const LOC=()=>AC.type==='s2'?{n:8,stn:STN2,plan:wp.plan2,pre:PRESETS2,key:'plan2',base:TYPES.s2.m}:{n:5,stn:STN,plan:wp.plan,pre:PRESETS,key:'plan',base:AC.m0+FUEL.full};
+function loadoutMass(){const c=LOC();let m=c.base;for(let i=0;i<c.n;i++){const k=c.plan[i];if(k)m+=stKg(k,STORE[k].multi||0,STORE[k].fuel);}return m;}
 function renderLo(){
-  const mass=loadoutMass(),over=mass>FUEL.catMax;
-  let h='<div class="mh">LOADOUT<span class="x" data-a="close">&#10005;</span></div>';
+  const c=LOC(),s2=AC.type==='s2',mass=loadoutMass(),over=!s2&&mass>FUEL.catMax;
+  let h='<div class="mh">LOADOUT &middot; '+AC.name.toUpperCase()+'<span class="x" data-a="close">&#10005;</span></div>';
   if(ms.on)h+='<div class="tn">This mission fixes the loadout. Leave it (Esc) to change stores.</div>';
   h+='<div class="stn">';
-  for(let i=0;i<5;i++){const k=wp.plan[i];h+='<button data-s="'+i+'"'+(ms.on?' disabled':'')+'><span>'+STN[i]+'</span>'+(k?STORE[k].n:'empty')+'</button>';}
+  for(let i=0;i<c.n;i++){const k=c.plan[i];h+='<button data-s="'+i+'"'+(ms.on?' disabled':'')+'><span>'+c.stn[i]+'</span>'+(k?STORE[k].n:'empty')+'</button>';}
   h+='</div><div class="bt">';
-  for(const k in PRESETS)h+='<button data-p="'+k+'"'+(ms.on?' disabled':'')+'>'+PRESETS[k].n+'</button>';
-  h+='</div><div class="ts">All-up weight '+Math.round(mass)+' kg (catapult limit '+FUEL.catMax+' kg)'+(over?' &mdash; <b>OVERWEIGHT</b>':'')+'. Store weights are approximate.</div>'
-    +'<div class="ts">Not carried by the RAN A-4G: guided air-to-ground weapons (Bullpup, Maverick), torpedoes, mines.</div>'
+  for(const k in c.pre)h+='<button data-p="'+k+'"'+(ms.on?' disabled':'')+'>'+c.pre[k].n+'</button>';
+  h+='</div><div class="ts">All-up weight '+Math.round(mass)+' kg'+(s2?'':' (catapult limit '+FUEL.catMax+' kg)')+(over?' &mdash; <b>OVERWEIGHT</b>':'')+'. Store weights are approximate.</div>'
+    +(s2?'<div class="ts">Tracker: two torpedoes, two depth bombs or four depth charges in the bay; rocket pods, torpedoes or 250 lb bombs on six wing points. Bay doors are not modelled, so bay stores are not drawn until released. Mines: no source found.</div>'
+        :'<div class="ts">Not carried by the RAN A-4G: guided air-to-ground weapons (Bullpup, Maverick), torpedoes, mines.</div>')
     +'<div class="bt"><button data-a="apply"'+(ms.on||over?' disabled':'')+'>Apply and restart on the catapult</button></div>';
   loEl.innerHTML=h;
 }
 loEl.addEventListener('click',e=>{const d=e.target.closest('button');if(!d&&!e.target.dataset.a)return;const x=(d||e.target).dataset;
-  if(x.s!==undefined){const i=+x.s,opts=[null,...Object.keys(STORE).filter(k=>STORE[k].ok.includes(i))],c=opts.indexOf(wp.plan[i]);wp.plan[i]=opts[(c+1)%opts.length];renderLo();}
-  else if(x.p){wp.plan=PRESETS[x.p].s.slice();renderLo();}
+  if(x.s!==undefined){const L=LOC(),i=+x.s,opts=[null,...Object.keys(STORE).filter(k=>!!STORE[k].s2===(AC.type==='s2')&&STORE[k].ok.includes(i))],c=opts.indexOf(L.plan[i]);L.plan[i]=opts[(c+1)%opts.length];renderLo();}
+  else if(x.p){const L=LOC();wp[L.key]=L.pre[x.p].s.slice();renderLo();}
   else if(x.a==='close')closeUi();
-  else if(x.a==='apply'){closeUi();stopTut();setType('a4');resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Loaded: '+wp.plan.filter(Boolean).map(k=>STORE[k].n).join(', ')+'.',6);}});
+  else if(x.a==='apply'){closeUi();stopTut();setType(AC.type);resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Loaded: '+(LOC().plan.filter(Boolean).map(k=>STORE[k].n).join(', ')||'clean')+'.',6);}});
 /* flight keys for the new systems; returns true if it handled the key */
 function wpnKey(k){
   if(k==='y'){ui.msn?closeUi():openMsn();return true;}
@@ -2559,29 +2648,29 @@ function wpnKey(k){
     if('tun'.includes(k)&&k.length===1){say('Mission under way: R retry, Esc leave',2.5);return true;}
     if(k==='escape'){endMissionFree();return true;}
   }
-  if(AC.type!=='a4')return false;
-  if(k==='i'){wp.sel=(wp.sel+1)%wlist().length;say('Weapon: '+{gun:'GUN',aim:'AIM-9B',rkt:'ROCKET',bomb:'BOMB'}[wsel()],2);return true;}
+  if(AC.type!=='a4'&&AC.type!=='s2')return false;
+  if(k==='i'){wp.sel=(wp.sel+1)%wlist().length;say('Weapon: '+WNAME[wsel()],2);return true;}
   if(k==='j'){if(ac.pilot){let n=0;while(dropBomb(true))n++;say(n?'Stores jettisoned':'No stores',2.5);}return true;}
   if(k==='k'&&ac.mode==='air'&&ac.pilot){const s=wsel();
-    if(s==='bomb'){if(!dropBomb())say('No bombs',2);}
+    if(s==='bomb'||s==='torp'||s==='dc'){if(!dropBomb(false,s))say('Nothing to release',2);}
     else if(s==='aim'){if(!fireAim())say('No missiles',2);else if(!wp.lock)say('Fired without lock',2);}
     return true;}
   return false;
 }
 /* weapon, fuel and target symbology on the flight HUD */
 function drawWpnHud(hc,w,h,cx,cy,L,R,GRN){
-  if(AC.type!=='a4')return;
+  if(AC.type!=='a4'&&AC.type!=='s2')return;
   const scr=p=>{_a.copy(p).project(camera);return _a.z<1?[(_a.x+1)/2*w,(1-_a.y)/2*h]:null;};
-  const sel=wsel(),names={gun:'GUN',aim:'AIM-9B',rkt:'ROCKET',bomb:'BOMB'},ef=engineFuel(),bing=ef<FUEL.bingo,blink=Math.floor(state.t*3)%2;
+  const sel=wsel(),names=WNAME,a4=AC.type==='a4',ef=a4?engineFuel():9999,bing=a4&&ef<FUEL.bingo,blink=Math.floor(state.t*3)%2;
   hc.textAlign='center';let y=cy+128;
-  hc.fillStyle=bing&&blink?'#ff5a4d':GRN;hc.fillText('FUEL '+Math.round(ef)+' kg'+(bing?'  BINGO':''),L,y);hc.fillStyle=GRN;
+  if(a4){hc.fillStyle=bing&&blink?'#ff5a4d':GRN;hc.fillText('FUEL '+Math.round(ef)+' kg'+(bing?'  BINGO':''),L,y);hc.fillStyle=GRN;}
   hc.fillText(names[sel]+'  '+wcount(sel),L,y+20);hc.fillText('WT '+Math.round(AC.m)+' kg',L,y+40);
   if(ac.flameout){hc.fillStyle='#ff5a4d';hc.font='bold 18px ui-monospace,Menlo,Consolas,monospace';hc.fillText('FLAMEOUT',cx,cy-70);hc.font='13px ui-monospace,Menlo,Consolas,monospace';hc.fillStyle=GRN;}
   if(ac.mode==='air'&&ac.pilot&&!ac.crashed){
     const f=aimVec();
     if(sel==='gun'){const s=scr(_b.copy(ac.pos).addScaledVector(f,600));
       if(s){hc.beginPath();hc.arc(s[0],s[1],11,0,7);hc.moveTo(s[0]-18,s[1]);hc.lineTo(s[0]-11,s[1]);hc.moveTo(s[0]+11,s[1]);hc.lineTo(s[0]+18,s[1]);hc.moveTo(s[0],s[1]-18);hc.lineTo(s[0],s[1]-11);hc.stroke();}}
-    else if(sel==='rkt'||sel==='bomb'){
+    else if(sel==='rkt'||sel==='bomb'||sel==='torp'||sel==='dc'){
       const v0=_c.copy(ac.vel);if(sel==='rkt')v0.addScaledVector(f,450);
       if(ac.pos.y>5){const t=(v0.y+Math.sqrt(v0.y*v0.y+2*G*ac.pos.y))/G,ip=_b.set(ac.pos.x+v0.x*t,0,ac.pos.z+v0.z*t),s=scr(ip);
         if(s){hc.beginPath();hc.arc(s[0],s[1],9,0,7);hc.moveTo(s[0]-14,s[1]);hc.lineTo(s[0]+14,s[1]);hc.moveTo(s[0],s[1]-14);hc.lineTo(s[0],s[1]+14);hc.stroke();}}}
@@ -2790,7 +2879,7 @@ function setType(k){
 function nextAircraft(){stopTut();setType(AC.type==='a4'?'s2':'a4');track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
 document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
-window.__sim={keyStats,crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
+window.__sim={keyStats,crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,PRESETS2,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,
   advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);updateEscorts(1/60);life.update(1/60);stepAircraft(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
 requestAnimationFrame(frame);
 })();

@@ -2,7 +2,7 @@
 title: "Missions and training: the sim now has a structure"
 date: "2026-11-15T20:02+08:00"
 categories: [dev-diary, how-to-fly, carrier-ops]
-summary: "Eleven scored missions, from a catapult launch to a maritime strike, unlock in order and keep your best score."
+summary: "Twelve scored missions, from a catapult launch to a maritime strike, unlock in order and keep your best score."
 shot: s37-missions
 hero_alt: "The mission list open over the ocean, showing nine training missions and two sorties with the first mission's briefing on the right."
 sources:
