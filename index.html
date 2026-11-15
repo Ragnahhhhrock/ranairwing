@@ -1178,6 +1178,7 @@ const _a=new V3(),_b=new V3(),_c=new V3(),_fwd=new V3(),_up=new V3(),_right=new 
 const _loc=new V3(),chaseDir=new V3(0,0,-1),X_AX=new V3(1,0,0),Y_AX=new V3(0,1,0);
 
 function resetAircraft(kind){
+  life.setForwardParkClear(kind==='cat'||AC.type==='s2');   // parked Sea King off the catapult line for every launch
   ac.start=kind;ac.crashed=null;ac.w.set(0,0,0);ac.stick.p=ac.stick.r=ac.stick.y=0;ac.snap=true;
   ac.launching=ac.trapped=ac.trapDone=ac.bolter=false;ac.brake=false;ac.gear=true;plane.visible=true;
   ac.pilot=true;ac.wrecked=ac.lostCounted=false;ej.active=false;ejG.visible=false;parts.canopy.visible=true;for(const m of parts.crew)m.visible=true;
