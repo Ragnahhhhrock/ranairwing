@@ -403,5 +403,33 @@
   "advance": 0.3,
   "hideHint": true,
   "hidePanels": true
+ },
+ "s37-missions": {
+  "cam": "orbit",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "js": "S.prog.open=true;S.openMsn();"
+ },
+ "s38-loadout": {
+  "cam": "orbit",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "js": "S.wp.plan=S.PRESETS.strike.s.slice();S.openLo();"
+ },
+ "s39-weapons": {
+  "cam": "cockpit",
+  "mission": "T7",
+  "uiOff": true,
+  "js": "const dr=S.tg[0],V=THREE.Vector3,d=dr.vel.clone().setY(0).normalize();S.placeAir(dr.pos.x-d.x*1800,dr.pos.y,dr.pos.z-d.z*1800,Math.atan2(-d.x,-d.z),190,.6);S.ac.q.setFromAxisAngle(new V(0,1,0),Math.atan2(-d.x,-d.z));S.pressKey('i');",
+  "advance": 0.3
+ },
+ "s40-refuel": {
+  "cam": "chase",
+  "mission": "T8",
+  "uiOff": true,
+  "js": "S.advance(1/60);S.ac.mode='air';const V=THREE.Vector3;const tip=new V(.62,-.05,-6.7).applyQuaternion(S.ac.q);S.ac.pos.copy(S.tank.dr).add(new V(0,0,14)).sub(tip);S.ac.vel.copy(S.tank.vel);S.ac.msgT=0;S.view.cAz=.5;S.view.cEl=.2;S.view.cD=20;",
+  "advance": 0.05
  }
 }

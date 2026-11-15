@@ -13,7 +13,7 @@ Project: browser flight sim of HMAS Melbourne (R21) and her air wing, set 1977-1
 ## Feature posts
 When you add or change a player-visible feature:
 1. Write `content/posts/<slug>.md` (front matter: `title`, `date` as `YYYY-MM-DDTHH:MM+08:00`, `categories`, `summary`, `shot`, `hero_alt`; quote any value containing a colon). Use category `dev-diary` plus any others that fit. Date it now so it publishes at once; do not take a scheduled slot.
-2. Add a screenshot recipe to `content/shots.json` and capture it: `python3 tools/blog/shoot.py <shot-id>` (recipe fields: `cam`, `hour`, `sea`, `speed`, `start` of cat/approach/tutapp, `view`, `ac`, `keys`, `advance`, `lesson`). Look at the image before committing.
+2. Add a screenshot recipe to `content/shots.json` and capture it: `python3 tools/blog/shoot.py <shot-id>` (recipe fields: `cam`, `hour`, `sea`, `speed`, `start` of cat/approach/tutapp, `view`, `ac`, `keys`, `advance`, `lesson`, `mission` (a mission id such as T7), `js` (code run with `S` = `window.__sim` and `THREE`)). Look at the image before committing.
 3. Describe what it does, how to try it (keys), and what is still approximate. Check every claim against the code in `index.html`.
 4. `python3 tools/blog/build.py`, then commit `content/`, `blog/`, `sitemap.xml` together with the feature.
 

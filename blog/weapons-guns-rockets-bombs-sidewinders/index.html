@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Firing the guns, rockets, bombs and Sidewinders · RAN Air Wing</title>
+<meta name="description" content="Four weapons with different sights: a gun cross, a rocket and bomb pipper, and a Sidewinder seeker that only sees tailpipes.">
+<link rel="canonical" href="https://ranairwing.com/blog/weapons-guns-rockets-bombs-sidewinders/">
+<link rel="alternate" type="application/rss+xml" title="RAN Air Wing dev blog" href="/blog/feed.xml">
+<link rel="stylesheet" href="/blog/style.css">
+<meta property="og:site_name" content="RAN Air Wing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Firing the guns, rockets, bombs and Sidewinders">
+<meta property="og:description" content="Four weapons with different sights: a gun cross, a rocket and bomb pipper, and a Sidewinder seeker that only sees tailpipes.">
+<meta property="og:url" content="https://ranairwing.com/blog/weapons-guns-rockets-bombs-sidewinders/">
+<meta property="og:image" content="https://ranairwing.com/blog/img/s39-weapons.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Firing the guns, rockets, bombs and Sidewinders">
+<meta name="twitter:description" content="Four weapons with different sights: a gun cross, a rocket and bomb pipper, and a Sidewinder seeker that only sees tailpipes.">
+<meta name="twitter:image" content="https://ranairwing.com/blog/img/s39-weapons.jpg">
+<meta name="theme-color" content="#0b1622">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Firing the guns, rockets, bombs and Sidewinders", "description": "Four weapons with different sights: a gun cross, a rocket and bomb pipper, and a Sidewinder seeker that only sees tailpipes.", "datePublished": "2026-11-15T20:04+08:00", "dateModified": "2026-11-15T20:04+08:00", "image": "https://ranairwing.com/blog/img/s39-weapons.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/weapons-guns-rockets-bombs-sidewinders/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-15T20:04+08:00"><meta property="article:tag" content="Dev diary"><meta property="article:tag" content="How to fly"><meta property="article:tag" content="Aircraft">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H0ZE9XML6B"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H0ZE9XML6B');</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="/blog/">RAN Air Wing<small>HMAS Melbourne (R21) flight sim · dev blog</small></a>
+<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
+</div></header>
+<main><div class="wrap">
+<article class="post">
+<p class="chips"><a class="chip" href="/blog/category/dev-diary/">Dev diary</a><a class="chip" href="/blog/category/how-to-fly/">How to fly</a><a class="chip" href="/blog/category/aircraft/">Aircraft</a></p>
+<h1>Firing the guns, rockets, bombs and Sidewinders</h1>
+<div class="meta"><time datetime="2026-11-15T20:04+08:00">15 November 2026</time> · 2 min read</div>
+<p class="lede">Four weapons with different sights: a gun cross, a rocket and bomb pipper, and a Sidewinder seeker that only sees tailpipes.</p>
+<figure class="hero"><img src="/blog/img/s39-weapons.jpg" width="1280" height="720" alt="Cockpit view with the AIM-9B seeker circle, a LOCK cue and a bracket on a drone about 1.8 km ahead."><figcaption>Screenshot from the sim. Cockpit camera, 15:30, sea state 3, ship at 20 kn.</figcaption></figure>
+<p>Press <kbd>I</kbd> to cycle the weapon (GUN, AIM-9B, ROCKET, BOMB, depending on what you carry). The HUD shows the selected weapon and how many you have left.</p>
+<h2>Guns</h2>
+<p>Hold <kbd>K</kbd>. The gun cross marks where the two 20 mm cannon point. You have 200 rounds, and the shells drop under gravity, so aim a little high at range. Tracers show where they go.</p>
+<h2>Rockets</h2>
+<p>Hold <kbd>K</kbd> to ripple rockets from your pods. The pipper shows where a rocket fired now would land. 2.75 in pods hold 19 rockets and 5 in pods hold 4.</p>
+<h2>Bombs</h2>
+<p>Press <kbd>K</kbd> to release one bomb. The pipper shows where it would land if released now. Against a barge, a 500 lb bomb kills within about 25 m and a 250 lb bomb within about 18 m.</p>
+<h2>Sidewinders</h2>
+<p>The AIM-9B was an early missile, and the sim treats it that way. The seeker looks only in a 10 degree cone ahead, out to 4 km, and only sees a target pointing away from you. Get behind the drone, put it inside the circle, wait for the LOCK cue and tone, then press <kbd>K</kbd>. The missile flies up to 650 m/s, steers on the target, and gives up if the target leaves its field of view. A hit within about 15 m destroys the drone.</p>
+<p>The HUD draws a bracket and range on every target, with an arrow at the screen edge when one is off to the side.</p>
+<h2>Try it</h2>
+<p>Missions T4 to T7 teach each weapon in turn.</p>
+<h2>Still approximate</h2>
+<ul>
+<li>Muzzle and rocket speeds, the rate of fire, and the lethal radii are game values.</li>
+<li>Drones and barges are generic. Nothing models real damage, fuzes or the AIM-9B's real seeker limits.</li>
+<li>Rockets and bombs fall on a flat sea with no wind. The pipper ignores your own manoeuvring.</li>
+<li>Bombs and rockets cannot hit the ship, the escorts or the tanker.</li>
+</ul>
+<aside class="panel cta"><p>Launch from the catapult, fly the pattern and land on the angled deck, in your browser.</p><a class="btn" href="/">Fly the sim</a></aside>
+<section class="sources"><h3>Sources</h3><ul><li><a href="https://www.skyhawk.org/article-unit/ran-vf805" rel="noopener">RAN VF-805, skyhawk.org</a></li><li><a href="https://en.wikipedia.org/wiki/McDonnell_Douglas_A-4G_Skyhawk" rel="noopener">McDonnell Douglas A-4G Skyhawk, Wikipedia</a></li></ul></section>
+<div class="share" data-url="https://ranairwing.com/blog/weapons-guns-rockets-bombs-sidewinders/" data-title="Firing the guns, rockets, bombs and Sidewinders" data-slug="weapons-guns-rockets-bombs-sidewinders"><span class="label">Share</span><a data-method="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Franairwing.com%2Fblog%2Fweapons-guns-rockets-bombs-sidewinders%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a><a data-method="x" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Franairwing.com%2Fblog%2Fweapons-guns-rockets-bombs-sidewinders%2F&text=Firing%20the%20guns%2C%20rockets%2C%20bombs%20and%20Sidewinders" target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a><a data-method="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Franairwing.com%2Fblog%2Fweapons-guns-rockets-bombs-sidewinders%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">LinkedIn</a><a data-method="reddit" href="https://www.reddit.com/submit?url=https%3A%2F%2Franairwing.com%2Fblog%2Fweapons-guns-rockets-bombs-sidewinders%2F&title=Firing%20the%20guns%2C%20rockets%2C%20bombs%20and%20Sidewinders" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">Reddit</a><a data-method="email" href="mailto:?subject=Firing%20the%20guns%2C%20rockets%2C%20bombs%20and%20Sidewinders&body=https%3A%2F%2Franairwing.com%2Fblog%2Fweapons-guns-rockets-bombs-sidewinders%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Email">Email</a><button type="button" data-copy>Copy link</button><button type="button" data-native hidden>Share…</button></div>
+<p class="meta">Filed under <a href="/blog/category/dev-diary/">Dev diary</a>, <a href="/blog/category/how-to-fly/">How to fly</a>, <a href="/blog/category/aircraft/">Aircraft</a></p>
+<nav class="adj" aria-label="More posts"><a class="prev" href="/blog/weapons-and-loadouts/"><span class="label">&larr; Previous</span><span>Loadouts: what the Skyhawk carried, and what it did not</span></a><a class="next" href="/blog/buddy-refuelling/"><span class="label">Next &rarr;</span><span>Buddy refuelling: Skyhawks tanking Skyhawks</span></a></nav>
+<section class="related"><h3>More like this</h3><ul><li><a href="/blog/buddy-refuelling/">Buddy refuelling: Skyhawks tanking Skyhawks</a> <span class="meta">· 15 November 2026</span></li><li><a href="/blog/weapons-and-loadouts/">Loadouts: what the Skyhawk carried, and what it did not</a> <span class="meta">· 15 November 2026</span></li><li><a href="/blog/missions-and-training/">Missions and training: the sim now has a structure</a> <span class="meta">· 15 November 2026</span></li></ul></section>
+</article>
+</div></main>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<script src="/blog/share.js" defer></script>
+</body></html>

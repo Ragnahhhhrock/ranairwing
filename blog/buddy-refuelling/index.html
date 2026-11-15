@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Buddy refuelling: Skyhawks tanking Skyhawks · RAN Air Wing</title>
+<meta name="description" content="A tanker A-4G with a D-704 pod, a drogue to find with the probe, and a fuel state that makes you need it.">
+<link rel="canonical" href="https://ranairwing.com/blog/buddy-refuelling/">
+<link rel="alternate" type="application/rss+xml" title="RAN Air Wing dev blog" href="/blog/feed.xml">
+<link rel="stylesheet" href="/blog/style.css">
+<meta property="og:site_name" content="RAN Air Wing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Buddy refuelling: Skyhawks tanking Skyhawks">
+<meta property="og:description" content="A tanker A-4G with a D-704 pod, a drogue to find with the probe, and a fuel state that makes you need it.">
+<meta property="og:url" content="https://ranairwing.com/blog/buddy-refuelling/">
+<meta property="og:image" content="https://ranairwing.com/blog/img/s40-refuel.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Buddy refuelling: Skyhawks tanking Skyhawks">
+<meta name="twitter:description" content="A tanker A-4G with a D-704 pod, a drogue to find with the probe, and a fuel state that makes you need it.">
+<meta name="twitter:image" content="https://ranairwing.com/blog/img/s40-refuel.jpg">
+<meta name="theme-color" content="#0b1622">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Buddy refuelling: Skyhawks tanking Skyhawks", "description": "A tanker A-4G with a D-704 pod, a drogue to find with the probe, and a fuel state that makes you need it.", "datePublished": "2026-11-15T20:05+08:00", "dateModified": "2026-11-15T20:05+08:00", "image": "https://ranairwing.com/blog/img/s40-refuel.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/buddy-refuelling/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-15T20:05+08:00"><meta property="article:tag" content="Dev diary"><meta property="article:tag" content="How to fly"><meta property="article:tag" content="Aircraft">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H0ZE9XML6B"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H0ZE9XML6B');</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="/blog/">RAN Air Wing<small>HMAS Melbourne (R21) flight sim · dev blog</small></a>
+<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
+</div></header>
+<main><div class="wrap">
+<article class="post">
+<p class="chips"><a class="chip" href="/blog/category/dev-diary/">Dev diary</a><a class="chip" href="/blog/category/how-to-fly/">How to fly</a><a class="chip" href="/blog/category/aircraft/">Aircraft</a></p>
+<h1>Buddy refuelling: Skyhawks tanking Skyhawks</h1>
+<div class="meta"><time datetime="2026-11-15T20:05+08:00">15 November 2026</time> · 2 min read</div>
+<p class="lede">A tanker A-4G with a D-704 pod, a drogue to find with the probe, and a fuel state that makes you need it.</p>
+<figure class="hero"><img src="/blog/img/s40-refuel.jpg" width="1280" height="720" alt="Chase camera behind a Skyhawk, with the tanker ahead trailing its hose and drogue and the HUD showing the drogue 14 metres away."><figcaption>Screenshot from the sim. Chase camera, 15:30, sea state 3, ship at 20 kn.</figcaption></figure>
+<p>The RAN had no tanker aircraft. Its Skyhawks refuelled each other. One carried a D-704 buddy pod on the centreline, with a hose and a drogue, and the others plugged into it. At the time, the A-4G was the only Australian military aircraft that could refuel in flight, and the capability let the squadron reach out for coastal and shipping attacks. Records of A-4G 883 note that it buddy-refuelled US Navy A-4s during RIMPAC 80.</p>
+<h2>In the sim</h2>
+<p>Mission T8 starts you low on fuel (BINGO) behind a tanker. Mission S2 has a tanker holding 18 km along the route.</p>
+<ul>
+<li>The tanker flies straight legs of about 100 seconds at 135 m/s, then a slow 180 degree turn. Tank up on the straight.</li>
+<li>The drogue trails behind the pod and sways a little, more in turns and rougher seas.</li>
+<li>The HUD shows distance to the drogue and closing speed once you are within 150 m.</li>
+<li>Get the probe tip within about 1.5 m of the drogue with a closing speed under 10 m/s and you get CONTACT. Fuel flows at 20 kg/s.</li>
+<li>Closing faster hits the basket and you must wait a few seconds to try again. Drifting more than about 5 m away, or faster than 14 m/s, breaks the connection.</li>
+<li>The pod holds 1,000 kg. Fly into the tanker and you crash.</li>
+</ul>
+<p>The probe is the one already modelled on the Skyhawk's nose.</p>
+<h2>Try it</h2>
+<p>Press <kbd>Y</kbd> and pick T8. Match the tanker's speed from behind and below (use <kbd>=</kbd> and <kbd>-</kbd> in small steps), then creep up.</p>
+<h2>Still approximate</h2>
+<ul>
+<li>The fuel flow, the drogue's sway, the contact rules and the 1,000 kg pod are game values. They are not sourced figures.</li>
+<li>You can only fly as the receiver. Flying the tanker is not in yet.</li>
+<li>There is no sourced detail on how often the squadron refuelled at sea, so no mission claims a historical frequency.</li>
+<li>We could not confirm from our sources that the RAN's Skyhawks carried a probe on every airframe, so treat the probe as the sim's assumption.</li>
+</ul>
+<aside class="panel cta"><p>Launch from the catapult, fly the pattern and land on the angled deck, in your browser.</p><a class="btn" href="/">Fly the sim</a></aside>
+<section class="sources"><h3>Sources</h3><ul><li><a href="https://en.wikipedia.org/wiki/McDonnell_Douglas_A-4G_Skyhawk" rel="noopener">McDonnell Douglas A-4G Skyhawk, Wikipedia</a></li><li><a href="https://seapower.navy.gov.au/aircraft/douglas-a4g-skyhawk" rel="noopener">Douglas A4G Skyhawk, Sea Power Centre - Australia</a></li><li><a href="https://adf-serials.com.au/ran/n13" rel="noopener">N13 A-4G serial histories, adf-serials.com.au</a></li></ul></section>
+<div class="share" data-url="https://ranairwing.com/blog/buddy-refuelling/" data-title="Buddy refuelling: Skyhawks tanking Skyhawks" data-slug="buddy-refuelling"><span class="label">Share</span><a data-method="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Franairwing.com%2Fblog%2Fbuddy-refuelling%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a><a data-method="x" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Franairwing.com%2Fblog%2Fbuddy-refuelling%2F&text=Buddy%20refuelling%3A%20Skyhawks%20tanking%20Skyhawks" target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a><a data-method="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Franairwing.com%2Fblog%2Fbuddy-refuelling%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">LinkedIn</a><a data-method="reddit" href="https://www.reddit.com/submit?url=https%3A%2F%2Franairwing.com%2Fblog%2Fbuddy-refuelling%2F&title=Buddy%20refuelling%3A%20Skyhawks%20tanking%20Skyhawks" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">Reddit</a><a data-method="email" href="mailto:?subject=Buddy%20refuelling%3A%20Skyhawks%20tanking%20Skyhawks&body=https%3A%2F%2Franairwing.com%2Fblog%2Fbuddy-refuelling%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Email">Email</a><button type="button" data-copy>Copy link</button><button type="button" data-native hidden>Share…</button></div>
+<p class="meta">Filed under <a href="/blog/category/dev-diary/">Dev diary</a>, <a href="/blog/category/how-to-fly/">How to fly</a>, <a href="/blog/category/aircraft/">Aircraft</a></p>
+<nav class="adj" aria-label="More posts"><a class="prev" href="/blog/weapons-guns-rockets-bombs-sidewinders/"><span class="label">&larr; Previous</span><span>Firing the guns, rockets, bombs and Sidewinders</span></a><span></span></nav>
+<section class="related"><h3>More like this</h3><ul><li><a href="/blog/weapons-guns-rockets-bombs-sidewinders/">Firing the guns, rockets, bombs and Sidewinders</a> <span class="meta">· 15 November 2026</span></li><li><a href="/blog/weapons-and-loadouts/">Loadouts: what the Skyhawk carried, and what it did not</a> <span class="meta">· 15 November 2026</span></li><li><a href="/blog/missions-and-training/">Missions and training: the sim now has a structure</a> <span class="meta">· 15 November 2026</span></li></ul></section>
+</article>
+</div></main>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<script src="/blog/share.js" defer></script>
+</body></html>

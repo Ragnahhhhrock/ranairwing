@@ -20,6 +20,7 @@ CHROME = next((p for p in ("/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/
 SETUP = """(r) => {
   const S = window.__sim, $ = id => document.getElementById(id);
   const set = (id, v) => { const e = $(id); e.value = v; e.dispatchEvent(new Event('input')); };
+  if (r.mission) S.startMission(r.mission);
   if (r.sea !== undefined) set('sSea', r.sea);
   if (r.speed !== undefined) set('sSpd', r.speed);
   if (r.hour !== undefined) set('sTime', r.hour);
@@ -30,6 +31,7 @@ SETUP = """(r) => {
   if (r.view) Object.assign(S.view, r.view);
   if (r.ac) Object.assign(S.ac, r.ac);
   for (const k of (r.keys || [])) S.pressKey(k);
+  if (r.js) (new Function('S', 'THREE', r.js))(S, THREE);
   if (r.advance) S.advance(r.advance);
   if (r.hideHint) $('hint').style.visibility = 'hidden';
   if (r.uiOff) $('bMenu').click();
