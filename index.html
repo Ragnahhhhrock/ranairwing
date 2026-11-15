@@ -49,16 +49,6 @@ gtag('config','G-H0ZE9XML6B');
   #title .latest strong{display:block;margin-top:5px;color:#e8c547;font-size:12px;font-weight:600;line-height:1.35;border-bottom:1px solid rgba(232,197,71,.4);padding-bottom:1px}
   #title a.latest{border-bottom:none}
   #title a.latest:hover strong{border-bottom-color:#e8c547;color:#f3d86b}
-  #title .keystats{display:flex;margin-top:8px;border:1px solid rgba(200,220,235,.18);border-top:2px solid #5dff8f;border-radius:3px;background:rgba(8,18,28,.62);overflow:hidden}
-  #title .keystats div{flex:1;padding:7px 10px 6px;border-left:1px solid rgba(200,220,235,.18)}
-  #title .keystats div:first-child{border-left:none}
-  #title .keystats b{display:block;font-size:20px;font-weight:600;letter-spacing:.02em;color:#e8eef2;font-variant-numeric:tabular-nums}
-  #title .keystats small{display:block;margin-top:1px;color:#8fa6b5;font-size:9px;letter-spacing:.14em;text-transform:uppercase}
-  #title .keystats .ks-l b{color:#5dff8f}
-  #title .keystats .ks-c b{color:#ff9a8c}
-  #title .ks-live{margin:5px 0 0;color:#8fa6b5;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-  #title .ks-live i{display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:#5dff8f;vertical-align:1px}
-  #title .ks-live.off i{background:#8fa6b5}
   #title .more.menu{display:flex;gap:8px}
   #title .menu a{flex:1;text-align:center;padding:12px 10px;font-size:16px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:2px solid #e8c547;border-radius:3px;background:rgba(232,197,71,.12)}
   #title .menu a:hover{background:rgba(232,197,71,.3)}
@@ -69,13 +59,13 @@ gtag('config','G-H0ZE9XML6B');
   #title a.coffee:hover{background:#f3d86b}
   #proof{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(200,220,235,.18)}
   #proof .pl{margin:0 0 6px;color:#8fa6b5;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
-  #proof .pg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #proof .pg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
   #proof .pt{padding:8px 10px;border:1px solid rgba(200,220,235,.18);border-radius:3px;background:rgba(255,255,255,.04)}
-  #proof .pv{display:block;font-size:30px;line-height:1.05;font-weight:700;letter-spacing:.02em;color:#e8c547;font-variant-numeric:tabular-nums}
-  #proof .pk{display:block;margin-top:3px;color:#c5d5df;font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+  #proof .pv{display:block;font-size:24px;line-height:1.05;font-weight:700;letter-spacing:.02em;color:#e8c547;font-variant-numeric:tabular-nums}
+  #proof .pk{display:block;margin-top:3px;color:#c5d5df;font-size:9px;letter-spacing:.08em;text-transform:uppercase}
   #proof .pm{margin:8px 0 0;font-size:11px}
-  @media (max-height:820px) and (min-width:641px){#proof .pg{grid-template-columns:repeat(4,1fr);gap:5px}#proof .pt{padding:6px 5px}#proof .pv{font-size:21px}#proof .pk{font-size:8px;letter-spacing:.06em}#title .latest img{display:none}}
-  @media (max-width:640px){#proof .pg{grid-template-columns:repeat(4,1fr);gap:5px}#proof .pt{padding:6px 5px}#proof .pv{font-size:17px}#proof .pk{font-size:8px;letter-spacing:.06em}}
+  @media (max-height:820px) and (min-width:641px){#proof .pg{grid-template-columns:repeat(3,1fr);gap:5px}#proof .pt{padding:6px 5px}#proof .pv{font-size:21px}#proof .pk{font-size:8px;letter-spacing:.06em}#title .latest img{display:none}}
+  @media (max-width:640px){#proof .pg{grid-template-columns:repeat(3,1fr);gap:5px}#proof .pt{padding:6px 5px}#proof .pv{font-size:17px}#proof .pk{font-size:8px;letter-spacing:.06em}}
   #read{bottom:12px;left:12px;display:grid;grid-template-columns:auto auto;gap:3px 14px;min-width:150px}
   #read span:nth-child(odd){color:#8fa6b5}
   #read span:nth-child(even){text-align:right;font-variant-numeric:tabular-nums}
@@ -144,7 +134,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Arrested landings</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><div class="keystats" id="ksBox" aria-label="Key stats"><div><b id="ksF">-</b><small>Launches</small></div><div class="ks-l"><b id="ksL">-</b><small>Traps</small></div><div class="ks-c"><b id="ksC">-</b><small>Crashes</small></div></div><p class="ks-live off" id="ksLive"><i></i><span>Loading stats</span></p><p class="more"><button id="bMissions" type="button" aria-label="Choose a mission (Y)">Missions</button></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/weapon-sounds/"><small>Latest post</small><img src="blog/img/s43-stores-rocket.jpg" width="1280" height="720" alt=""><strong>Weapons now have sound: guns, rockets, bombs and torpedoes</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
+<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Traps</span></div><div class="pt"><span class="pv" id="pBo">0</span><span class="pk">Bolters</span></div><div class="pt"><span class="pv" id="pCr">0</span><span class="pk">Crashes</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><button id="bMissions" type="button" aria-label="Choose a mission (Y)">Missions</button></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/weapon-sounds/"><small>Latest post</small><img src="blog/img/s43-stores-rocket.jpg" width="1280" height="720" alt=""><strong>Weapons now have sound: guns, rockets, bombs and torpedoes</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="mis" class="panel"></div>
 <div id="msn" class="panel"></div>
@@ -1461,7 +1451,7 @@ function animateParts(dt,snap){ // move gear, flaps, speedbrakes and hook at abo
 function crash(why,fatal){ // fatal unless told otherwise: the aircraft is destroyed and, if still aboard, the pilot is killed
   if(fatal===undefined)fatal=true;
   sfx.crash();ac.crashed=why;
-  sess.crashes++;keyStats.hit('crashes');
+  sess.crashes++;
   track('aircraft_crash',{reason:clean(why),fatal:!!fatal,pilot_aboard:!!ac.pilot,crash_number:sess.crashes});
   if(fatal){ac.wrecked=true;spawnFx(ac.pos,ac.pos.y<6?'splash':'fire');if(!ac.lostCounted){stats.lost++;ac.lostCounted=true;track('aircraft_lost',{cause:'crash',reason:clean(why)});}}
   if(!ac.pilot){ac.crashT=Infinity;return;}                       // pilot already ejected: wait for the parachute
@@ -1519,7 +1509,7 @@ function touchdown(local){
   const dA=(ac.lx-ANG_A.x)*ANG_DIR.x+(ac.lz-ANG_A.y)*ANG_DIR.y,off=(ac.lx-ANG_A.x)*(-ANG_DIR.y)+(ac.lz-ANG_A.y)*ANG_DIR.x;
   const hookD=dA-4,wire=WIRES.findIndex(d=>d>=hookD);
   if(ac.hook&&ac.u>15&&Math.abs(off)<11&&wire>=0&&f.z<0){
-    ac.trapped=true;ms.wire=wire+1;stats.traps++;sfx.trap();sess.traps++;keyStats.hit('traps');track('successful_recovery',{wire:wire+1,sink_rate_fpm:Math.round(sink*196.85),recovery_number:sess.traps});say('Trapped: '+(wire+1)+' wire, '+Math.round(sink*196.85)+' fpm sink',6);
+    ac.trapped=true;ms.wire=wire+1;stats.traps++;sfx.trap();sess.traps++;track('successful_recovery',{wire:wire+1,sink_rate_fpm:Math.round(sink*196.85),recovery_number:sess.traps});say('Trapped: '+(wire+1)+' wire, '+Math.round(sink*196.85)+' fpm sink',6);
     if(LSOQ.wo>0||LSOQ.woGiven)LSOQ.woIgnored=true;lsoTrap(wire+1,sink);
   }else if(ac.u>20){ac.bolter=true;sess.bolters++;track('bolter',{hook_down:!!ac.hook,bolter_number:sess.bolters});say(ac.hook?'Bolter! Full power and go around.':'Hook up: touch and go.',4);
     if(LSOQ.woGiven)LSOQ.woIgnored=true;lsoBolter();}
@@ -1586,7 +1576,7 @@ function pressKey(k){
   else if(k==='b'&&!AC.hasBrakes){say('The Tracker has no speedbrakes',2);}
   else if(k==='b'){ac.brake=!ac.brake;sfx.brake(ac.brake);say('Speedbrakes '+(ac.brake?'out':'in'),2);}
   else if(k===' '&&ac.onCat&&!ac.launching){
-    if(AC.type==='a4'&&AC.m>FUEL.catMax)say('Overweight for the catapult ('+Math.round(AC.m)+' kg). Jettison stores (J).',4);else if(ac.rpm>.85){ac.launching=true;sfx.cat();say('Launch!',2);sess.launches++;keyStats.hit('launches');track('aircraft_launch',{launch_number:sess.launches});}else say('Run up to full power first ( = )',3);
+    if(AC.type==='a4'&&AC.m>FUEL.catMax)say('Overweight for the catapult ('+Math.round(AC.m)+' kg). Jettison stores (J).',4);else if(ac.rpm>.85){ac.launching=true;sfx.cat();say('Launch!',2);sess.launches++;track('aircraft_launch',{launch_number:sess.launches});}else say('Run up to full power first ( = )',3);
   }
   else if(k==='n'){nextAircraft();}
   else if(k==='l'){const L=life.lifts[1];             // aft aircraft lift (in the landing area): locked out while aircraft are recovering
@@ -1811,31 +1801,6 @@ function drawHud(){
 }
 
 /* ---------- mishaps: ejection, debris, crash effects, tally ---------- */
-/* ---------- key stats: worldwide totals (Cloudflare Worker in tools/counter) with a this-device fallback ---------- */
-const COUNTER_URL='https://ranairwing-counter.malgordonperth.workers.dev';   // Cloudflare Worker, see tools/counter; empty = this device only
-const keyStats=(function(){
-  const KEY='ranairwing.keystats.v1',fmt=n=>Number(n).toLocaleString('en-AU');
-  let local={launches:0,traps:0,crashes:0},world=null;
-  try{Object.assign(local,JSON.parse(localStorage.getItem(KEY)||'{}'));}catch(e){}
-  const el={l:document.getElementById('ksF'),t:document.getElementById('ksL'),c:document.getElementById('ksC'),live:document.getElementById('ksLive')};
-  function draw(){
-    const v=world||local;
-    if(el.l)el.l.textContent=fmt(v.launches);if(el.t)el.t.textContent=fmt(v.traps);if(el.c)el.c.textContent=fmt(v.crashes);
-    if(el.live){el.live.className='ks-live'+(world?'':' off');el.live.querySelector('span').textContent=world?'Live from pilots worldwide':'Your flying on this device';}
-  }
-  async function pull(){
-    if(!COUNTER_URL)return;
-    try{const r=await fetch(COUNTER_URL+'/stats',{cache:'no-store'});if(!r.ok)return;const j=await r.json();
-      if(j&&Number.isFinite(j.launches)){world={launches:j.launches,traps:j.traps,crashes:j.crashes};draw();}}catch(e){}
-  }
-  function hit(k){
-    local[k]++;try{localStorage.setItem(KEY,JSON.stringify(local));}catch(e){}
-    if(world)world[k]++;draw();
-    if(COUNTER_URL){try{fetch(COUNTER_URL+'/hit/'+k,{method:'POST',keepalive:true}).catch(()=>{});}catch(e){}}
-  }
-  draw();pull();setInterval(pull,60000);
-  return {hit};
-})();
 const stats={traps:0,lost:0,killed:0};
 /* ---------- analytics: GA4 events (safe if the tag is blocked or offline) ---------- */
 const sess={launches:0,traps:0,bolters:0,crashes:0,ejections:0};
@@ -1875,8 +1840,8 @@ addEventListener('pagehide',()=>flushAir(true));
     const t={},secs={};for(const r of d.kinds||[]){t[r.k]=r.n||0;secs[r.k]=r.secs||0;}
     if(!(t.flight_start>0))return;
     $('pHrs').textContent=hrs(secs.flight_secs||0);$('pMis').textContent=big(t.mission_start||0);
-    $('pFl').textContent=big(t.flight_start||0);$('pTr').textContent=big(t.trap||0);
-    $('proof').style.display='block';for(const id of ['ksBox','ksLive']){const e=$(id);if(e)e.style.display='none';}
+    $('pFl').textContent=big(t.flight_start||0);$('pTr').textContent=big(t.trap||0);$('pBo').textContent=big(t.bolter||0);$('pCr').textContent=big(t.crash||0);
+    $('proof').style.display='block';
   }).catch(()=>{});
 })();
 const clean=s=>String(s).replace(/,.*$/,'').toLowerCase();
@@ -3124,7 +3089,7 @@ function setType(k){
 function nextAircraft(){stopTut();setType(AC.type==='a4'?'s2':'a4');track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
 document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
-window.__sim={keyStats,crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,PRESETS2,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,LSOQ,updateLSO,
+window.__sim={crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,PRESETS2,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,LSOQ,updateLSO,
   advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);updateEscorts(1/60);life.update(1/60);stepAircraft(1/60);updateLSO(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
 requestAnimationFrame(frame);
 })();
