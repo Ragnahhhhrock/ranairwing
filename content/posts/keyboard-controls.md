@@ -17,7 +17,8 @@ hero_alt: "The cockpit view on the catapult, with the HUD showing throttle, engi
 | <kbd>F</kbd> | Flaps: cycles half, full, up |
 | <kbd>H</kbd> | Arrestor hook up and down |
 | <kbd>B</kbd> | Speedbrakes |
-| <kbd>Space</kbd> | Launch from the catapult, and wheel brakes on deck |
+| <kbd>Z</kbd> | Launch from the catapult |
+| <kbd>Space</kbd> | Fire the selected weapon in the air, and wheel brakes on deck |
 | <kbd>X</kbd> twice | Eject. The first press arms it for about a second and a half. |
 
 ## Starting and stopping
@@ -39,4 +40,4 @@ Keys <kbd>1</kbd> to <kbd>7</kbd> select Orbit, Deck, Island, Approach, Flyby, C
 ## Hints
 
 - <kbd>G</kbd> only moves the gear when you are airborne. It does nothing on the deck.
-- <kbd>Space</kbd> is both the launch key and the wheel brakes. On the catapult it launches once the engine is at full power; below that the sim reminds you to run up first.
+- <kbd>Z</kbd> launches from the catapult once the engine is at full power; below that the sim reminds you to run up first. <kbd>Space</kbd> is the wheel brakes on deck and fires the selected weapon in the air.

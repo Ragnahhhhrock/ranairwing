@@ -10,7 +10,7 @@ Until now most weapons were silent. Rockets and the Sidewinder shared one hiss, 
 
 ## What you hear
 
-- **Cannon:** a short crack with a low thump, repeating while you hold K.
+- **Cannon:** a short crack with a low thump, repeating while you hold Space.
 - **Rockets:** an ignition crack, then the motor whoosh, on every rocket.
 - **AIM-9B:** a thump as it leaves the rail, then a longer motor roar.
 - **Bombs, torpedoes and depth charges:** a clunk as the store leaves the rack.
@@ -19,7 +19,7 @@ Until now most weapons were silent. Rockets and the Sidewinder shared one hiss, 
 
 ## How to try it
 
-Press **I** to choose a weapon and **K** to fire or release. **J** jettisons everything. **M** turns sound off and on.
+Press **I** to choose a weapon and **Space** to fire or release. **J** jettisons everything. **M** turns sound off and on.
 
 ## What is approximate
 

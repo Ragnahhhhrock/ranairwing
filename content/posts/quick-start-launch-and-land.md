@@ -15,7 +15,7 @@ The tutorial panel appears at the top of the screen. It tells you which key to p
 
 ## Step 2: lesson 1, catapult launch
 
-Six steps. You run the engine up to 100%, press <kbd>Space</kbd> to launch, climb away, raise the gear, retract the flaps and level off at 1,000 ft.
+Six steps. You run the engine up to 100%, press <kbd>Z</kbd> to launch, climb away, raise the gear, retract the flaps and level off at 1,000 ft.
 
 ## Step 3: lesson 2, approach and arrested landing
 

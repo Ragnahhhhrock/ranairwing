@@ -12,7 +12,7 @@ HMAS Melbourne had one catapult, on the port bow. The reference photographs show
 - **Position.** Port bow, where the photographs show it.
 - **Start.** Press <kbd>R</kbd> and the aircraft appears on the catapult, in the launch configuration: gear down, flaps half, hook up.
 - **Run-up.** Hold <kbd>=</kbd> until the engine reaches full power. The launch is refused below about 85%.
-- **Launch.** Press <kbd>Space</kbd>. The stroke is under two seconds.
+- **Launch.** Press <kbd>Z</kbd>. The stroke is under two seconds.
 
 ## How the stroke is modelled
 

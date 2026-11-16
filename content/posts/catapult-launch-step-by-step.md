@@ -9,11 +9,11 @@ Press <kbd>R</kbd> to start on the catapult, or <kbd>U</kbd> for the guided vers
 
 ## 1. Run the engine to 100%
 
-Hold <kbd>=</kbd> until RPM reads 100%. If you press <kbd>Space</kbd> early, the sim tells you to run up to full power first. The launch is refused until the engine is above about 85%.
+Hold <kbd>=</kbd> until RPM reads 100%. If you press <kbd>Z</kbd> early, the sim tells you to run up to full power first. The launch is refused until the engine is above about 85%.
 
 ## 2. Launch
 
-Press <kbd>Space</kbd>. The catapult stroke is over in under two seconds. Leave the stick alone while it runs.
+Press <kbd>Z</kbd>. The catapult stroke is over in under two seconds. Leave the stick alone while it runs.
 
 ## 3. Climb away
 

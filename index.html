@@ -148,7 +148,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Traps</span></div><div class="pt"><span class="pv" id="pBo">0</span><span class="pk">Bolters</span></div><div class="pt"><span class="pv" id="pCr">0</span><span class="pk">Crashes</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><button id="bMissions" type="button" aria-label="Choose a mission (Y)">Missions</button></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/quick-start-launch-and-land/"><small>Latest post</small><img src="blog/img/s04-quickstart.jpg" width="1280" height="720" alt=""><strong>Quick start: launch and land in five minutes</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
+<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Traps</span></div><div class="pt"><span class="pv" id="pBo">0</span><span class="pk">Bolters</span></div><div class="pt"><span class="pv" id="pCr">0</span><span class="pk">Crashes</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><button id="bMissions" type="button" aria-label="Choose a mission (Y)">Missions</button></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/loadout-diagram/"><small>Latest post</small><img src="blog/img/s52-loadout-diagram.jpg" width="1280" height="720" alt=""><strong>The loadout screen now shows the aircraft</strong></a><!--/latest-post--><p class="more"><a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a></p><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="mis" class="panel"></div>
 <div id="msn" class="panel"></div>
@@ -1431,7 +1431,7 @@ function resetAircraft(kind){
   if(state.cam==='eject')setCam(ej.prevCam||'chase');
   if(kind==='cat'){
     Object.assign(ac,{mode:'ground',lx:-7,lz:-56,psi:0,u:0,onCat:true,thr:0,rpm:0,flap:.5,hook:false});
-    say('On the catapult. Run up to full power ( = ), then Space to launch.',9);
+    say('On the catapult. Run up to full power ( = ), then Z to launch.',9);
     syncGround();
   }else{
     const tutor=kind==='tutapp',d=tutor?6500:2200,V=tutor?113:AC.vApp,GS=Math.tan(3.5*Math.PI/180);
@@ -1589,7 +1589,7 @@ function pressKey(k){
   else if(k==='h'){ac.hook=!ac.hook;sfx.hook(ac.hook);say('Hook '+(ac.hook?'down':'up'),2);}
   else if(k==='b'&&!AC.hasBrakes){say('The Tracker has no speedbrakes',2);}
   else if(k==='b'){ac.brake=!ac.brake;sfx.brake(ac.brake);say('Speedbrakes '+(ac.brake?'out':'in'),2);}
-  else if(k===' '&&ac.onCat&&!ac.launching){
+  else if(k==='z'&&ac.onCat&&!ac.launching){
     if(AC.type==='a4'&&AC.m>FUEL.catMax)say('Overweight for the catapult ('+Math.round(AC.m)+' kg). Jettison stores (J).',4);else if(ac.rpm>.85){ac.launching=true;sfx.cat();say('Launch!',2);sess.launches++;track('aircraft_launch',{launch_number:sess.launches});}else say('Run up to full power first ( = )',3);
   }
   else if(k==='n'){nextAircraft();}
@@ -2137,7 +2137,7 @@ const K=k=>'<kbd>'+k+'</kbd>',knots=()=>ac.ias/KN,feet=()=>ac.pos.y*3.281;
 const LESSONS=[
  {name:'Lesson 1 · Catapult launch',start:'cat',next:'Enter: go on to the landing lesson',steps:[
   {t:`Hold ${K('=')} until RPM reads 100%.`,sub:'Gear down, flaps at half, hook up: that is the launch configuration, already set. The catapult holds you back until you launch.',done:()=>ac.rpm>.97},
-  {t:`Press ${K('Space')} to launch.`,sub:'Leave the stick alone during the catapult stroke. It is over in under two seconds.',done:()=>ac.mode==='air'},
+  {t:`Press ${K('Z')} to launch.`,sub:'Leave the stick alone during the catapult stroke. It is over in under two seconds.',done:()=>ac.mode==='air'},
   {t:`Hold ${K('↓')} to climb away.`,sub:'A second or two is enough. Let go and the aircraft holds that climb.',done:()=>feet()>250&&ac.vs>1},
   {t:`Press ${K('G')} to raise the gear.`,sub:'You are climbing and clear of the ship.',done:()=>!ac.gear},
   {t:`Press ${K('F')} until the HUD shows FLAP UP.`,sub:'Two presses from half: it cycles half, full, up.',done:()=>ac.flap===0},
@@ -2671,7 +2671,7 @@ function stepGame(dt){
     if(wp.shown&&wp.shown!==sel)say('Weapon: '+WNAME[sel],2); // auto-switch when the last round or store is gone
     wp.shown=sel;
     if(ac.mode==='air'){
-      if(keys['k']){
+      if(keys[' ']){
         if(sel==='gun'&&wp.ammo>0){wp.gunT-=dt;while(wp.gunT<=0&&wp.ammo>0){wp.gunT+=1/36;fireGun();wp.ammo--;}}
         else if(sel==='rkt'){wp.rktT-=dt;if(wp.rktT<=0){wp.rktT=.12;fireRocket();}}
       }
@@ -2687,7 +2687,7 @@ function stepGame(dt){
 /* ---- missions ---- */
 const MISSIONS=[
  {id:'T1',g:'Training',n:'Catapult launch and climb',req:[],env:{sea:3,speed:22,hour:15.5},start:'cat',pre:'clean',
-  brief:'Launch from the catapult, clean up the aircraft and climb away. Run up to full power ( = ), then Space. Gear and flaps up once safely airborne.',
+  brief:'Launch from the catapult, clean up the aircraft and climb away. Run up to full power ( = ), then Z. Gear and flaps up once safely airborne.',
   obj:[{t:'Launch from the catapult',p:10,f:()=>ms.launched},{t:'Gear and flaps up',p:15,f:()=>ac.mode==='air'&&!ac.gear&&ac.flap===0},
        {t:'Climb through 2,000 ft',p:15,f:()=>ac.pos.y>610},{t:'Accelerate to 250 kt',p:15,f:()=>ac.ias>250*KN}]},
  {id:'T2',g:'Training',n:'Day deck landing',req:['T1'],env:{sea:2,speed:22,hour:14},start:'approach',pre:'clean',land:1,
@@ -2697,19 +2697,19 @@ const MISSIONS=[
   brief:'Sea state 6: the deck is pitching and heaving. Same approach, much less forgiveness.',
   obj:[{t:'Trap aboard',p:80,f:()=>stats.traps>ms.traps0}]},
  {id:'T4',g:'Training',n:'Gunnery',req:['T1'],env:{sea:2,speed:20,hour:14},start:'air',pre:'clean',
-  brief:'A towed sleeve circles the task group. Hold K to fire the two 20 mm cannon (200 rounds). The gun cross shows where they point; the sleeve drops away at 1,000 m/s.',
+  brief:'A towed sleeve circles the task group. Hold Space to fire the two 20 mm cannon (200 rounds). The gun cross shows where they point; the sleeve drops away at 1,000 m/s.',
   setup(){const s=addSleeve(3000,1000,100,0,0,-5000);s.upd(s,0);placeBehind(s,2600,120,150,.5);},
   obj:[{t:'Score 15 cannon hits on the sleeve',p:60,f:()=>ms.hits>=15}]},
  {id:'T5',g:'Training',n:'Rocket attack',req:['T4'],env:{sea:2,speed:20,hour:14},start:'air',pre:'rocket',
-  brief:'Press I until ROCKET is selected, then hold K to ripple rockets at the barge. The pipper marks where they land.',
+  brief:'Press I until ROCKET is selected, then hold Space to ripple rockets at the barge. The pipper marks where they land.',
   setup(){const p=shipRel(-1500,-9000),r=addRaft(p.x,p.z,false,60);placeAir(r.pos.x,1000,r.pos.z+5500,0,170,.5);},
   obj:[{t:'Hit the barge with 3 rockets',p:60,f:()=>ms.rktHits>=3}]},
  {id:'T6',g:'Training',n:'Bombing',req:['T5'],env:{sea:2,speed:20,hour:14},start:'air',pre:'strike',
-  brief:'Press I until BOMB is selected, put the pipper on the barge and press K to release. 500 lb bombs kill within about 25 m, 250 lb within 18 m.',
+  brief:'Press I until BOMB is selected, put the pipper on the barge and press Space to release. 500 lb bombs kill within about 25 m, 250 lb within 18 m.',
   setup(){const p=shipRel(-1500,-9000),r=addRaft(p.x,p.z,false,90);placeAir(r.pos.x,1100,r.pos.z+7500,0,175,.5);},
   obj:[{t:'Destroy the barge with bombs',p:70,f:()=>tg.length>0&&!tg.find(t=>t.surface).alive}]},
  {id:'T7',g:'Training',n:'Sidewinder intercept',req:['T4'],env:{sea:2,speed:20,hour:14},start:'air',pre:'fad',
-  brief:'Select AIM-9B (I). Put the drone inside the seeker circle from behind: the AIM-9B only sees a hot tailpipe. A tone sounds at LOCK; press K to fire.',
+  brief:'Select AIM-9B (I). Put the drone inside the seeker circle from behind: the AIM-9B only sees a hot tailpipe. A tone sounds at LOCK; press Space to fire.',
   setup(){const d=addDrone(5000,1500,150,0,0,-5000);d.upd(d,0);placeBehind(d,3200,0,195,.6);},
   obj:[{t:'Splash the drone',p:70,f:()=>ms.kills>=1}]},
  {id:'T8',g:'Training',n:'Buddy refuelling',req:['T1'],env:{sea:2,speed:20,hour:14},start:'air',pre:'clean',fuel:480,
@@ -2721,7 +2721,7 @@ const MISSIONS=[
   tick(dt){if(ms.launched&&ac.mode==='air'){ms.airT+=dt;if(ms.airT>2&&!ac.flameout){ac.flameout=true;ac.thr=0;say('ENGINE FAILURE: EJECT (X X)',6);}}},
   obj:[{t:'Eject and survive',p:70,f:()=>ej.done&&!ej.dead}]},
  {id:'T10',g:'Training',n:'ASW: torpedo drop (Tracker)',req:['T1'],ac:'s2',env:{sea:2,speed:20,hour:14},start:'air',pre:'asw',
-  brief:'You are flying the S-2 Tracker. A submarine is snorkelling 9 km ahead. Press I until TORPEDO is selected, line up on the wake and press K to drop within about 150 m of it. Switch to a depth charge load in the loadout screen (V) outside the mission to try those: they kill within 20 to 25 m.',
+  brief:'You are flying the S-2 Tracker. A submarine is snorkelling 9 km ahead. Press I until TORPEDO is selected, line up on the wake and press Space to drop within about 150 m of it. Switch to a depth charge load in the loadout screen (V) outside the mission to try those: they kill within 20 to 25 m.',
   setup(){const p=shipRel(-1200,-9500),t=addSub(p.x,p.z,.4,5);placeAir(t.pos.x+300,330,t.pos.z+7500,0,95,.6);},
   obj:[{t:'Sink the submarine',p:70,f:()=>{const t=tg.find(x=>x.sub);return !!t&&!t.alive;}}]},
  {id:'S1',g:'Sorties',n:'Fleet air defence patrol',req:['T7','T2'],env:{sea:3,speed:22,hour:15.5},start:'cat',pre:'fad',land:1,
@@ -2800,7 +2800,7 @@ function renderMis(){
   const m=ms.m;let h='<div class="tl">'+m.id+' &middot; '+m.n+'</div>';
   if(ms.state==='fly'){
     for(const o of m.obj)h+='<div class="ob'+(o.ok?' ok':'')+'">'+(o.ok?'&#10004; ':'&#9723; ')+o.t+(o.opt?' (optional)':'')+'</div>';
-    h+='<div class="ts">R retry &middot; Esc leave mission &middot; K fire &middot; I weapon &middot; J jettison</div>';
+    h+='<div class="ts">R retry &middot; Esc leave mission &middot; Space fire &middot; I weapon &middot; J jettison</div>';
   }else{
     h+='<div class="tt">'+(ms.state==='done'?'Mission complete':'Mission failed')+'</div>';
     if(ms.state==='fail')h+='<div class="tn">'+(ms.why||'')+'</div>';
@@ -2913,7 +2913,7 @@ function wpnKey(k){
   if(AC.type!=='a4'&&AC.type!=='s2')return false;
   if(k==='i'){const l=wlist();wp.want=l[(l.indexOf(wsel())+1)%l.length];wp.shown=wp.want;say('Weapon: '+WNAME[wp.want],2);return true;}
   if(k==='j'){if(ac.pilot){let n=0;while(dropBomb(true))n++;say(n?'Stores jettisoned':'No stores',2.5);}return true;}
-  if(k==='k'&&ac.mode==='air'&&ac.pilot){const s=wsel();
+  if(k===' '&&ac.mode==='air'&&ac.pilot){const s=wsel();
     if(s==='bomb'||s==='torp'||s==='dc'){if(!dropBomb(false,s))say('Nothing to release',2);}
     else if(s==='aim'){if(!fireAim())say('No missiles',2);else if(!wp.lock)say('Fired without lock',2);}
     return true;}
@@ -2972,7 +2972,7 @@ function setCam(name){
   if(FLY[name])ac.snap=true;
   if(name==='chase')resetChase();
   $('hint').textContent=FLY[name]?
-    'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nSpace  launch / wheel brakes     C  cockpit / chase\nchase cam: drag orbit \u00b7 shift/right-drag pan \u00b7 scroll zoom \u00b7 double-click reset\nK fire   I weapon   J jettison   Y missions   V loadout\nN  switch aircraft (Skyhawk / Tracker)     R  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
+    'stick  arrows or W A S D   (down = pull back)\nrudder  Q E      throttle  = and -\ngear G   flaps F   hook H   speedbrakes B\nZ  catapult launch     Space  wheel brakes (on deck)     C  cockpit / chase\nchase cam: drag orbit \u00b7 shift/right-drag pan \u00b7 scroll zoom \u00b7 double-click reset\nSpace fire   I weapon   J jettison   Y missions   V loadout\nN  switch aircraft (Skyhawk / Tracker)     R  restart on catapult     T  restart on approach     U  tutorial     M  sound\nX twice  eject':
     'drag to look \u00b7 scroll to zoom \u00b7 keys 1\u20137 for cameras\nP menu on/off \u00b7 Y missions \u00b7 V loadout \u00b7 U tutorial \u00b7 L aft lift \u00b7 R fly from the catapult \u00b7 T fly an approach\nO orbit the escorts';
   if(FLY[name]&&AC.type==='s2')$('hint').textContent=$('hint').textContent.replace('\nX twice  eject','');   // no ejection seats in the Tracker
 }

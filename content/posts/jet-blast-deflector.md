@@ -13,6 +13,6 @@ A hinged blast shield now sits in the deck behind the port catapult. Before this
 - It stays up through the launch and lowers once the aircraft has left the catapult. Pulling the throttle back below 60% lowers it too.
 - The Tracker does not raise it: its propellers do not need a deflector.
 
-Try it: press R to start on the catapult (Skyhawk), hold = to run up to full power, then look back with the chase camera. Press Space to launch.
+Try it: press R to start on the catapult (Skyhawk), hold = to run up to full power, then look back with the chase camera. Press Z to launch.
 
 Still approximate: the size, angle and raise time are game values, not measured from Melbourne's real deflector. The sim does not yet model the exhaust hitting the plate, cooling water, or crew behaviour around it.
