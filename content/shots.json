@@ -648,5 +648,14 @@
   "hideHint": true,
   "hidePanels": true,
   "uiOff": true
+ },
+ "s40-aircraft-buttons": {
+  "cam": "chase",
+  "hour": 15.5,
+  "sea": 3,
+  "speed": 20,
+  "start": "cat",
+  "view": "menu",
+  "ac": "s2"
  }
 }

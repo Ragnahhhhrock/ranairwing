@@ -102,7 +102,9 @@ gtag('config','G-H0ZE9XML6B');
   #tut .tn{margin-top:8px;color:#ff9a8c}
   kbd{font:inherit;font-weight:600;color:#10202c;background:#e8c547;border-radius:3px;padding:1px 6px}
   #ctl #bTut{width:100%;margin-bottom:6px;border-color:#e8c547;color:#e8c547}
-  #ctl #bSnd,#ctl #bType{width:100%;margin-bottom:6px}
+  #ctl #bSnd{width:100%;margin-bottom:6px}
+  #acSel{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+  #acSel button.on{background:#e8c547;color:#10202c;border-color:#e8c547}
   #bMenu{position:fixed;top:12px;right:12px;z-index:5;flex:none;min-width:40px;min-height:40px;padding:6px 10px;
     background:rgba(8,18,28,.62);border-color:rgba(200,220,235,.18);touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   #bMenu.on{background:#e8c547;color:#10202c;border-color:#e8c547}
@@ -180,7 +182,8 @@ gtag('config','G-H0ZE9XML6B');
   <div class="grp">Flight</div>
   <button id="bTut">Tutorial: launch and land (U)</button>
   <div id="fly"><button id="bCat">Fly catapult (R)</button><button id="bApp">Fly approach (T)</button></div>
-  <button id="bType">Aircraft: A-4G Skyhawk (N)</button>
+  <div class="grp">Aircraft (N cycles)</div>
+  <div id="acSel"><button data-ac="a4" class="on">A-4G Skyhawk</button><button data-ac="s2">S-2 Tracker</button></div>
   <div class="grp">Missions</div>
   <button id="bMsn">Missions (Y)</button>
   <button id="bLo">Loadout (V)</button>
@@ -3071,7 +3074,7 @@ window.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='p'&&!e.ctrlKey&&
 $('bSnd').addEventListener('click',e=>{setMuted(!muted);e.target.blur();});
 window.addEventListener('pointerdown',initAudio);window.addEventListener('keydown',initAudio);
 $('bTut').addEventListener('click',e=>{startLesson(0);e.target.blur();});
-$('bType').addEventListener('click',e=>{nextAircraft();e.target.blur();});
+document.querySelectorAll('#acSel button').forEach(b=>b.addEventListener('click',()=>{selectAircraft(b.dataset.ac);b.blur();}));
 $('bCat').addEventListener('click',e=>{stopTut();track('flight_start',{start:'catapult',source:'button'});resetAircraft('cat');setCam('chase');e.target.blur();});
 $('bApp').addEventListener('click',e=>{stopTut();track('flight_start',{start:'approach',source:'button'});resetAircraft('approach');setCam('chase');e.target.blur();});
 document.querySelectorAll('#cams button').forEach(b=>b.addEventListener('click',()=>{setCam(b.dataset.cam);track('camera_change',{camera:b.dataset.cam,source:'button'});}));
@@ -3143,10 +3146,11 @@ for(const [x,z,psi] of [[8.2,-62,.62],[8.2,-74,.62],[8.2,-86,.62]]){            
 const s2F=life.makeS2(true),partsS2=s2F.userData.P;s2F.visible=false;plane.add(s2F);
 function setType(k){
   Object.assign(AC,TYPES[k]);AC.type=k;a4G.visible=k==='a4';life.setForwardParkClear(k==='s2');for(const p of parkedSky)p.visible=k!=='s2';s2F.visible=k==='s2';parts=k==='a4'?partsA4:partsS2;
-  $('bType').textContent='Aircraft: '+AC.name+' (N)';
+  document.querySelectorAll('#acSel button').forEach(b=>b.classList.toggle('on',b.dataset.ac===k));
   if(FLY[state.cam])setCam(state.cam);                                    // refresh the key hints for this aircraft
 }
-function nextAircraft(){stopTut();setType(AC.type==='a4'?'s2':'a4');track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
+function nextAircraft(){selectAircraft(AC.type==='a4'?'s2':'a4');}
+function selectAircraft(k){if(k===AC.type)return;stopTut();setType(k);track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');track('sim_ready');
 document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
 window.__sim={crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,PRESETS2,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,LSOQ,updateLSO,
