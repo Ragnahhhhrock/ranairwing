@@ -619,5 +619,19 @@
   "hideHint": true,
   "hidePanels": true,
   "js": "S.ac.thr=1;S.ac.rpm=1;S.advance(2.5);"
+ },
+ "s52-weapon-select": {
+  "cam": "cockpit",
+  "hour": 14,
+  "sea": 2,
+  "speed": 20,
+  "start": "approach",
+  "keys": [
+   "i"
+  ],
+  "advance": 0.2,
+  "hideHint": true,
+  "hidePanels": true,
+  "uiOff": true
  }
 }

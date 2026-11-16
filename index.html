@@ -2344,7 +2344,7 @@ const storeKg=()=>{let m=0;for(let i=0;i<8;i++)if(wp.s[i])m+=stKg(wp.s[i],wp.rk[
 const engineFuel=()=>{let f=ac.fuel||0;for(let i=0;i<8;i++){const k=wp.s[i];if(k&&STORE[k].feed)f+=wp.ext[i];}return f;};
 function loadStores(arr,fuel){
   for(let i=0;i<8;i++){const k=arr[i]||null;wp.s[i]=k;wp.ext[i]=k&&STORE[k].fuel||0;wp.rk[i]=k&&(STORE[k].multi||STORE[k].rounds)||0;}
-  ac.fuel=fuel===undefined?FUEL.full:fuel;ac.flameout=false;wp.ammo=200;wp.sel=0;wp.lock=null;wp.rktI=wp.bombI=0;
+  ac.fuel=fuel===undefined?FUEL.full:fuel;ac.flameout=false;wp.ammo=200;wp.want=null;wp.shown=null;wp.lock=null;wp.rktI=wp.bombI=0;
   if(AC.type==='a4')AC.m=AC.m0+ac.fuel+storeKg();else if(AC.type==='s2')AC.m=TYPES.s2.m+storeKg();
   syncStores();
 }
@@ -2362,9 +2362,9 @@ function updateMass(dt){
 }
 const cnt=i=>{const k=wp.s[i];if(!k)return 0;const t=STORE[k];return t.multi||t.w==='rkt'?wp.rk[i]:1;};
 const WCLS=['aim','rkt','bomb','torp','dc'];
-const wlist=()=>{const l=AC.type==='a4'?['gun']:[];for(const c of WCLS){let n=0;for(let i=0;i<8;i++){const k=wp.s[i];if(k&&STORE[k].w===c)n+=cnt(i);}if(n)l.push(c);}
+const wlist=()=>{const l=AC.type==='a4'&&wp.ammo>0?['gun']:[];for(const c of WCLS){let n=0;for(let i=0;i<8;i++){const k=wp.s[i];if(k&&STORE[k].w===c)n+=cnt(i);}if(n)l.push(c);}
   if(!l.length)l.push('none');return l;};
-const wsel=()=>{const l=wlist();return l[wp.sel%l.length];};
+const wsel=()=>{const l=wlist();if(!l.includes(wp.want))wp.want=l[0];return wp.want;}; // remembers the weapon by name; a spent weapon falls through to the next one
 const WNAME={gun:'GUN',aim:'AIM-9B',rkt:'ROCKET',bomb:'BOMB',torp:'TORPEDO',dc:'DEPTH CHG',none:'NO STORES'};
 function wcount(k){if(k==='gun')return wp.ammo;let n=0;for(let i=0;i<8;i++){const s=wp.s[i];if(s&&STORE[s].w===k)n+=cnt(i);}return n;}
 
@@ -2654,6 +2654,8 @@ function stepGame(dt){
   updateMass(dt);
   if((AC.type==='a4'||AC.type==='s2')&&ac.pilot&&!ac.crashed){
     const sel=wsel();
+    if(wp.shown&&wp.shown!==sel)say('Weapon: '+WNAME[sel],2); // auto-switch when the last round or store is gone
+    wp.shown=sel;
     if(ac.mode==='air'){
       if(keys['k']){
         if(sel==='gun'&&wp.ammo>0){wp.gunT-=dt;while(wp.gunT<=0&&wp.ammo>0){wp.gunT+=1/36;fireGun();wp.ammo--;}}
@@ -2851,7 +2853,7 @@ function wpnKey(k){
     if(k==='escape'){endMissionFree();return true;}
   }
   if(AC.type!=='a4'&&AC.type!=='s2')return false;
-  if(k==='i'){wp.sel=(wp.sel+1)%wlist().length;say('Weapon: '+WNAME[wsel()],2);return true;}
+  if(k==='i'){const l=wlist();wp.want=l[(l.indexOf(wsel())+1)%l.length];wp.shown=wp.want;say('Weapon: '+WNAME[wp.want],2);return true;}
   if(k==='j'){if(ac.pilot){let n=0;while(dropBomb(true))n++;say(n?'Stores jettisoned':'No stores',2.5);}return true;}
   if(k==='k'&&ac.mode==='air'&&ac.pilot){const s=wsel();
     if(s==='bomb'||s==='torp'||s==='dc'){if(!dropBomb(false,s))say('Nothing to release',2);}
