@@ -8,7 +8,7 @@ hero_alt: "Sim screenshot: the raised jet blast deflector behind a Skyhawk on th
 ---
 A hinged blast shield now sits in the deck behind the port catapult. Before this it was only a dark patch painted on the flight deck.
 
-- It lies flush in the deck, hinged on the edge nearest the aircraft, with a yellow-and-black hazard edge around the recess.
+- It lies flush in the deck, hinged on the edge nearest the aircraft, 3.7 m wide and set just port of the forward lift, with a yellow-and-black hazard edge.
 - When a Skyhawk on the catapult reaches launch power (RPM above 85%), the panel rises to about 52 degrees leaning aft, on two hydraulic rams, in roughly a second.
 - It stays up through the launch and lowers once the aircraft has left the catapult. Pulling the throttle back below 60% lowers it too.
 - The Tracker does not raise it: its propellers do not need a deflector.
