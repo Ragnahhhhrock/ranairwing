@@ -620,18 +620,6 @@
   "hidePanels": true,
   "js": "S.ac.thr=1;S.ac.rpm=1;S.advance(2.5);"
  },
- "s52-weapon-select": {
-  "cam": "cockpit",
-  "hour": 14,
-  "sea": 2,
-  "speed": 20,
-  "start": "approach",
-  "keys": [
-   "i"
-  ],
-  "advance": 0.2,
-  "hideHint": true,
-  "hidePanels": true,
-  "uiOff": true
- }
+  "s52-loadout-diagram": {"cam": "orbit", "hour": 14, "sea": 2, "speed": 20, "js": "S.wp.plan=S.PRESETS.rocket.s.slice();S.openLo();"},
+  "s52-loadout-tracker": {"cam": "orbit", "hour": 14, "sea": 2, "speed": 20, "type": "s2", "js": "S.wp.plan2=S.PRESETS2.asw4.s.slice();S.openLo();"}
 }

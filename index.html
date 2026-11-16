@@ -127,6 +127,20 @@ gtag('config','G-H0ZE9XML6B');
   #msn button:disabled,#lo button:disabled{opacity:.4;cursor:default}
   #msn .chk{display:block;grid-template-columns:none;margin-top:8px;font-size:12px}
   #lo .stn{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}#lo .stn button{display:flex;flex-direction:column;gap:4px;min-height:64px}#lo .stn span{color:#8fa6b5;font-size:10px;letter-spacing:.12em}
+  #lo svg.acd{display:block;width:100%;max-height:300px;margin:4px 0 10px}
+  #lo .acd .ao{fill:rgba(200,220,235,.07);stroke:#8fa6b5;stroke-width:1.2;stroke-linejoin:round}
+  #lo .acd .an{fill:rgba(200,220,235,.04);stroke:#8fa6b5;stroke-width:1}
+  #lo .acd .bay{fill:none;stroke:#8fa6b5;stroke-width:1;stroke-dasharray:3 3}
+  #lo .acd .sg{cursor:pointer}#lo .acd .sg.off{cursor:default}
+  #lo .acd .py{fill:none;stroke:#8fa6b5;stroke-width:1.2;stroke-dasharray:2 2}
+  #lo .acd .sg.on .py{fill:#e8c547;stroke:#e8c547;stroke-dasharray:none}
+  #lo .acd .st{fill:rgba(232,197,71,.22);stroke:#e8c547;stroke-width:1.2}
+  #lo .acd .sg:not(.off):hover .py{stroke:#f3d86b}#lo .acd .sg:not(.off):hover .st{fill:rgba(243,216,107,.4)}
+  #lo .acd text{font:9px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;text-anchor:middle;fill:#8fa6b5;paint-order:stroke;stroke:#08121c;stroke-width:3px}
+  #lo .acd text.sn{fill:#e8c547}
+  #lo .acd .ld{stroke:#4d6272;stroke-width:1}
+  #lo .acd text.ae{text-anchor:end}#lo .acd text.as{text-anchor:start}
+  #lo .acd .hd{font-size:8px;fill:#6f8696;text-anchor:start}
   #ctl #bMsn,#ctl #bLo{width:100%;margin-bottom:6px}
 
 </style>
@@ -2822,10 +2836,54 @@ msnEl.addEventListener('click',e=>{const d=e.target.dataset||{};
 function openLo(){closeUi();ui.lo=true;renderLo();loEl.style.display='block';}
 const LOC=()=>AC.type==='s2'?{n:8,stn:STN2,plan:wp.plan2,pre:PRESETS2,key:'plan2',base:TYPES.s2.m}:{n:5,stn:STN,plan:wp.plan,pre:PRESETS,key:'plan',base:AC.m0+FUEL.full};
 function loadoutMass(){const c=LOC();let m=c.base;for(let i=0;i<c.n;i++){const k=c.plan[i];if(k)m+=stKg(k,STORE[k].multi||0,STORE[k].fuel);}return m;}
+/* plan-view aircraft diagram for the loadout screen: outline, pylons and what hangs on each; click a pylon to cycle its store */
+const LOSHORT={aim9:'AIM-9B',lau3:'2.75" pod',lau10:'5" pod',mk81:'250 lb',mk82:'500 lb',t300:'300 gal',t150:'150 gal',pod:'D-704',pmbr:'Prac. rack',torp:'Torpedo',dbomb:'Depth bomb',dcpair:'Depth chg x2',mk81s:'250 lb',lau10s:'5" Zuni'};
+function loDiagram(c,s2){
+  const cx=280,mir=a=>a.concat(a.slice().reverse().map(q=>[-q[0],q[1]])),path=a=>'M'+mir(a).map(q=>(cx+q[0])+','+q[1]).join('L')+'Z';
+  let o='<svg class="acd" viewBox="0 0 560 250" role="img" aria-label="Plan view of the '+AC.name+' showing its pylons">';
+  o+='<text class="hd" x="6" y="12">PLAN VIEW · NOSE UP</text>';
+  let py;
+  if(s2){
+    o+='<rect class="an" x="'+(cx-66-7)+'" y="66" width="14" height="72" rx="6"/><rect class="an" x="'+(cx+66-7)+'" y="66" width="14" height="72" rx="6"/>';
+    o+='<path class="ao" d="'+path([[0,18],[7,24],[9,45],[9,82],[165,86],[165,124],[9,130],[7,175],[60,184],[60,198],[6,202],[4,225],[0,228]])+'"/>';
+    o+='<rect class="bay" x="'+(cx-12)+'" y="92" width="24" height="32" rx="2"/><line class="bay" x1="'+cx+'" y1="92" x2="'+cx+'" y2="124"/>';
+    py=i=>i>5?108:104;
+  }else{
+    o+='<path class="ao" d="'+path([[0,15],[6,22],[10,45],[12,70],[13,105],[75,170],[75,190],[13,196],[12,215],[36,216],[36,228],[10,232],[3,238],[0,238]])+'"/>';
+    py=i=>{const ax=Math.abs(STX[i])*18;return ax<1?126:105+(ax-13)/62*65+14;};
+  }
+  const X=i=>cx+(s2?STX2[i]*15:STX[i]*18);
+  // label placement per station: [text x, name y, anchor, leader end x, leader end y]
+  const LB=(i,x,y)=>{
+    if(s2){
+      if(i>5){const sd=i===6?-1:1;return [x+sd*30,y-8,'m',x+sd*14,y-3];}
+      const ty=y+44+(i===1||i===4?24:0);return [x,ty,'m',x,ty-12];
+    }
+    return [[cx-110,170,'e'],[cx-110,125,'e'],[cx+40,80,'s'],[cx+110,125,'s'],[cx+110,170,'s']][i].reduce((a,v,n)=>(a[n]=v,a),[]).concat([0,0]);
+  };
+  for(let i=0;i<c.n;i++){
+    const k=c.plan[i],x=X(i),y=py(i),bay=s2&&i>5,st=k?STORE[k]:null;
+    let len=bay?22:30,wd=7;
+    if(st){if(st.fuel){len=46;wd=12;}else if(st.w==='aim'){len=34;wd=5;}else if(st.w==='rkt'){len=34;wd=10;}else if(st.w==='torp'){len=bay?24:36;wd=8;}else if(st.w==='dc'){len=24;wd=8;}else if(st.item==='prac'){len=30;wd=10;}}
+    let [tx,ty,an,lx,ly]=LB(i,x,y);
+    if(!s2){lx=an==='e'?tx+4:tx-4;ly=ty-3;}
+    const cl=an==='e'?'ae':an==='s'?'as':'';
+    o+='<g class="sg'+(k?' on':'')+(ms.on?' off':'')+'"'+(ms.on?'':' data-s="'+i+'"')+'>';
+    o+='<rect x="'+(x-14)+'" y="'+(y-26)+'" width="28" height="52" fill="transparent"/>';
+    o+='<rect x="'+(an==='e'?tx-70:an==='s'?tx-2:tx-34)+'" y="'+(ty-11)+'" width="72" height="26" fill="transparent"/>';
+    o+='<line class="ld" x1="'+x+'" y1="'+(s2&&!bay?y+4:y)+'" x2="'+lx+'" y2="'+ly+'"/>';
+    if(k)o+='<rect class="st" x="'+(x-wd/2)+'" y="'+(y-len/2)+'" width="'+wd+'" height="'+len+'" rx="'+(wd/2)+'"/>';
+    o+='<circle class="py" cx="'+x+'" cy="'+y+'" r="3.5"/>';
+    o+='<text class="'+cl+'" x="'+tx+'" y="'+ty+'">'+c.stn[i]+'</text>';
+    o+='<text class="sn '+cl+'" x="'+tx+'" y="'+(ty+10)+'">'+(k?(LOSHORT[k]||STORE[k].n):'—')+'</text></g>';
+  }
+  return o+'</svg>';
+}
 function renderLo(){
   const c=LOC(),s2=AC.type==='s2',mass=loadoutMass(),over=!s2&&mass>FUEL.catMax;
   let h='<div class="mh">LOADOUT &middot; '+AC.name.toUpperCase()+'<span class="x" data-a="close">&#10005;</span></div>';
   if(ms.on)h+='<div class="tn">This mission fixes the loadout. Leave it (Esc) to change stores.</div>';
+  h+=loDiagram(c,s2)+(ms.on?'':'<div class="ts">Click a pylon on the diagram, or its button below, to cycle the store.</div>');
   h+='<div class="stn">';
   for(let i=0;i<c.n;i++){const k=c.plan[i];h+='<button data-s="'+i+'"'+(ms.on?' disabled':'')+'><span>'+c.stn[i]+'</span>'+(k?STORE[k].n:'empty')+'</button>';}
   h+='</div><div class="bt">';
@@ -2836,7 +2894,7 @@ function renderLo(){
     +'<div class="bt"><button data-a="apply"'+(ms.on||over?' disabled':'')+'>Apply and restart on the catapult</button></div>';
   loEl.innerHTML=h;
 }
-loEl.addEventListener('click',e=>{const d=e.target.closest('button');if(!d&&!e.target.dataset.a)return;const x=(d||e.target).dataset;
+loEl.addEventListener('click',e=>{const d=e.target.closest('button,g[data-s]');if(!d&&!e.target.dataset.a)return;const x=(d||e.target).dataset;
   if(x.s!==undefined){const L=LOC(),i=+x.s,opts=[null,...Object.keys(STORE).filter(k=>!!STORE[k].s2===(AC.type==='s2')&&STORE[k].ok.includes(i))],c=opts.indexOf(L.plan[i]);L.plan[i]=opts[(c+1)%opts.length];renderLo();}
   else if(x.p){const L=LOC();wp[L.key]=L.pre[x.p].s.slice();renderLo();}
   else if(x.a==='close')closeUi();
