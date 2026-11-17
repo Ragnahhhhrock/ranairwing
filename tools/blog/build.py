@@ -108,7 +108,7 @@ def page(title, desc, path, body, og_img=None, og_type="website", extra_head="")
 <main><div class="wrap">
 {body}
 </div></main>
-<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/stats/">Stats</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="mailto:contact@ranairwing.com">contact@ranairwing.com</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/stats/">Stats</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
 <script src="/blog/share.js" defer></script>
 </body></html>"""
 
