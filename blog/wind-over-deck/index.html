@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wind over deck: why the ship turns into the wind · RAN Air Wing</title>
+<meta name="description" content="A carrier steams into the wind to give aircraft airflow over the deck. Here is the sum the sim does, and the numbers at each sea state.">
+<link rel="canonical" href="https://ranairwing.com/blog/wind-over-deck/">
+<link rel="alternate" type="application/rss+xml" title="RAN Air Wing dev blog" href="/blog/feed.xml">
+<link rel="stylesheet" href="/blog/style.css">
+<meta property="og:site_name" content="RAN Air Wing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Wind over deck: why the ship turns into the wind">
+<meta property="og:description" content="A carrier steams into the wind to give aircraft airflow over the deck. Here is the sum the sim does, and the numbers at each sea state.">
+<meta property="og:url" content="https://ranairwing.com/blog/wind-over-deck/">
+<meta property="og:image" content="https://ranairwing.com/blog/img/s06-wod.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Wind over deck: why the ship turns into the wind">
+<meta name="twitter:description" content="A carrier steams into the wind to give aircraft airflow over the deck. Here is the sum the sim does, and the numbers at each sea state.">
+<meta name="twitter:image" content="https://ranairwing.com/blog/img/s06-wod.jpg">
+<meta name="theme-color" content="#0b1622">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "Wind over deck: why the ship turns into the wind", "description": "A carrier steams into the wind to give aircraft airflow over the deck. Here is the sum the sim does, and the numbers at each sea state.", "datePublished": "2026-11-18T17:02+08:00", "dateModified": "2026-11-18T17:02+08:00", "image": "https://ranairwing.com/blog/img/s06-wod.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/wind-over-deck/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-18T17:02+08:00"><meta property="article:tag" content="Carrier operations"><meta property="article:tag" content="How to fly">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H0ZE9XML6B"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H0ZE9XML6B');</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="/blog/">RAN Air Wing<small>HMAS Melbourne (R21) flight sim · dev blog</small></a>
+<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/stats/">Stats</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
+</div></header>
+<main><div class="wrap">
+<article class="post">
+<p class="chips"><a class="chip" href="/blog/category/carrier-ops/">Carrier operations</a><a class="chip" href="/blog/category/how-to-fly/">How to fly</a></p>
+<h1>Wind over deck: why the ship turns into the wind</h1>
+<div class="meta"><time datetime="2026-11-18T17:02+08:00">18 November 2026</time> · 2 min read</div>
+<p class="lede">A carrier steams into the wind to give aircraft airflow over the deck. Here is the sum the sim does, and the numbers at each sea state.</p>
+<figure class="hero"><img src="/blog/img/s06-wod.jpg" width="1280" height="720" alt="HMAS Melbourne at speed on the orbit camera at sea state 4, with the wind over deck readout visible at bottom left."><figcaption>Screenshot from the sim. Orbit camera, 11:00, sea state 4, ship at 24 kn.</figcaption></figure>
+<p>Wind over deck is the speed of the air moving along the flight deck. It is the ship's own speed plus the true wind, when the ship steams straight into that wind.</p>
+<p>More wind over deck helps both ends of a flight. A launching aircraft has less speed to gain from the catapult. A landing aircraft arrives with less speed relative to the deck, so the wire has less to absorb.</p>
+<h2>What the sim does</h2>
+<p>The sim holds the ship on heading 250 degrees and puts the true wind on 250 degrees, so the wind always blows along the ship's track. The readout is simply wind plus ship speed.</p>
+<table>
+<thead>
+<tr>
+<th>Sea state</th>
+<th>True wind</th>
+<th>Wind over deck at 20 kn</th>
+<th>At 24 kn</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>2 kn</td>
+<td>22 kn</td>
+<td>26 kn</td>
+</tr>
+<tr>
+<td>1</td>
+<td>5 kn</td>
+<td>25 kn</td>
+<td>29 kn</td>
+</tr>
+<tr>
+<td>2</td>
+<td>9 kn</td>
+<td>29 kn</td>
+<td>33 kn</td>
+</tr>
+<tr>
+<td>3</td>
+<td>14 kn</td>
+<td>34 kn</td>
+<td>38 kn</td>
+</tr>
+<tr>
+<td>4</td>
+<td>19 kn</td>
+<td>39 kn</td>
+<td>43 kn</td>
+</tr>
+<tr>
+<td>5</td>
+<td>25 kn</td>
+<td>45 kn</td>
+<td>49 kn</td>
+</tr>
+<tr>
+<td>6</td>
+<td>32 kn</td>
+<td>52 kn</td>
+<td>56 kn</td>
+</tr>
+</tbody>
+</table>
+<p>The default is sea state 3 at 20 kn, which gives 34 kn over the deck.</p>
+<h2>Why it matters when you fly</h2>
+<p>The wind is part of the flight physics. Your airspeed is measured against moving air, not against the sea. If you slow the ship, the wind over deck drops, and your approach speed relative to the deck changes with it.</p>
+<p>Try it: fly the same approach with the ship at 0 kn, then at 24 kn, and notice how differently the deck comes at you.</p>
+<h2>What the sim leaves out</h2>
+<p>In practice a carrier chooses a heading to give the best wind over deck while also staying on its operating track, and the wind rarely lines up exactly. The sim fixes the wind direction to keep the first versions simple.</p>
+<aside class="panel cta"><p>Launch from the catapult, fly the pattern and land on the angled deck, in your browser.</p><a class="btn" href="/">Fly the sim</a></aside>
+
+<div class="share" data-url="https://ranairwing.com/blog/wind-over-deck/" data-title="Wind over deck: why the ship turns into the wind" data-slug="wind-over-deck"><span class="label">Share</span><a data-method="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Franairwing.com%2Fblog%2Fwind-over-deck%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a><a data-method="x" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Franairwing.com%2Fblog%2Fwind-over-deck%2F&text=Wind%20over%20deck%3A%20why%20the%20ship%20turns%20into%20the%20wind" target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a><a data-method="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Franairwing.com%2Fblog%2Fwind-over-deck%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">LinkedIn</a><a data-method="reddit" href="https://www.reddit.com/submit?url=https%3A%2F%2Franairwing.com%2Fblog%2Fwind-over-deck%2F&title=Wind%20over%20deck%3A%20why%20the%20ship%20turns%20into%20the%20wind" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">Reddit</a><a data-method="email" href="mailto:?subject=Wind%20over%20deck%3A%20why%20the%20ship%20turns%20into%20the%20wind&body=https%3A%2F%2Franairwing.com%2Fblog%2Fwind-over-deck%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Email">Email</a><button type="button" data-copy>Copy link</button><button type="button" data-native hidden>Share…</button></div>
+<p class="meta">Filed under <a href="/blog/category/carrier-ops/">Carrier operations</a>, <a href="/blog/category/how-to-fly/">How to fly</a></p>
+<nav class="adj" aria-label="More posts"><a class="prev" href="/blog/15-april-1943-the-keel-is-laid-at-barrow/"><span class="label">&larr; Previous</span><span>15 April 1943: the keel is laid at Barrow</span></a><a class="next" href="/blog/28-february-1945-launched-then-shelved/"><span class="label">Next &rarr;</span><span>28 February 1945: launched, then shelved</span></a></nav>
+<section class="related"><h3>More like this</h3><ul><li><a href="/blog/quick-start-launch-and-land/">Quick start: launch and land in five minutes</a> <span class="meta">· 16 November 2026</span></li><li><a href="/blog/campaign-missions-1977-80/">Campaign missions: two Tracker sorties from the 1977 and 1980 cruises</a> <span class="meta">· 15 November 2026</span></li><li><a href="/blog/lso-calls-and-the-meatball/">The LSO talks you down, and the meatball is on the mirror</a> <span class="meta">· 15 November 2026</span></li></ul></section>
+</article>
+</div></main>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/stats/">Stats</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<script src="/blog/share.js" defer></script>
+</body></html>
