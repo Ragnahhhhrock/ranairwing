@@ -942,9 +942,9 @@ const life=(function(){
   const lfree=(n,A)=>lock[n]===null||lock[n]===A,ltake=(n,A)=>{lock[n]=A;},ldrop=(n,A)=>{if(lock[n]===A)lock[n]=null;};
   let homeOn=false;
   function resetAmb(){
-    actors[0].cfg=CFG.trk;Object.assign(actors[0],mkA('trk',CFG.trk),{ph:'cat',fold:0,spin:0,x:CATX,z:CATZ,psi:0});
-    Object.assign(actors[1],mkA('sky',CFG.sky),{t:CFG.sky.wait-24});
-    lock.fwd=actors[0];lock.land=null;}
+    actors[0].cfg=CFG.trk;Object.assign(actors[0],mkA('trk',CFG.trk),{t:CFG.trk.wait-24});              // the Skyhawk goes first, the Tracker follows
+    Object.assign(actors[1],mkA('sky',CFG.sky),{ph:'cat',x:CATX,z:CATZ,psi:0,t:-7});                     // held on the catapult while the opening orbit shot plays
+    lock.fwd=actors[1];lock.land=null;}
   const remaining=A=>{let r=0,x=A.x,z=A.z;for(let i=A.ri;i<A.route.length;i++){r+=Math.hypot(A.route[i][0]-x,A.route[i][1]-z);x=A.route[i][0];z=A.route[i][1];}return r;};
   function beginRoute(A,pts){A.route=pts;A.ri=0;A.rTot=Math.max(1,remaining(A));}
   const prog=A=>1-clamp(remaining(A)/A.rTot,0,1);
@@ -3086,7 +3086,7 @@ const director=(function(){
       if(A.ph==='final'&&A.d<=700)out.push({id:'land-chase',prio:6,A});
       else if(A.ph==='arrest')out.push({id:'land-deck',prio:6,A});
       else if(A.ph==='final'&&A.d<=1500)out.push({id:'land-lso',prio:5,A});
-      if(A.ph==='cat'&&A.t>3)out.push({id:'launch-front',prio:6,A});
+      if(A.ph==='cat'&&A.t>2)out.push({id:'launch-front',prio:6,A});
       if(A.ph==='launch')out.push({id:'launch-side',prio:6,A});
       if(A.ph==='patrol'&&A.t<9.5)out.push({id:'launch-orbit',prio:6,A});
       if(A.ph==='taxi'&&A.cfg.fold&&A.fold>.02&&A.fold<.98)out.push({id:'fold-close',prio:5,A});
@@ -3099,7 +3099,8 @@ const director=(function(){
     const age=cur?state.t-cur.t0:0,cs=cands(),best=cs[0];
     if(cur&&cur.hold)return;
     let next=null;
-    if(!cur)next=best||reel();
+    if(!cur)next={id:'carrier-orbit',prio:1,arg:0,dur:10,first:true};                  // open on the carrier
+    else if(cur.first&&age<cur.dur)return;
     else if(cur.prio>=5){const same=cs.find(c=>c.id===cur.id&&c.A===cur.A);if(!same||(best&&best.prio>cur.prio&&age>2))next=best||reel();}
     else if(cur.prio===3){const same=cs.find(c=>c.id===cur.id&&c.A===cur.A);
       if(best&&best.prio>=5)next=best;else if(!same||age>10){patrolBlock=state.t+12;patrolFlip^=1;next=reel();}}

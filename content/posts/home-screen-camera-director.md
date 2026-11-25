@@ -10,6 +10,8 @@ The home screen camera used to circle the ship on a fixed orbit. It now picks sh
 
 ## What it shows
 
+The home screen opens on a ten-second orbit of the carrier, then cuts to the Skyhawk on the catapult. The Tracker follows it later in the cycle.
+
 - **Landings.** A chase view behind the aircraft on final, a long lens from the LSO platform, and a low view along the deck as it catches a wire.
 - **Launches.** A front view of the aircraft on the catapult, a view from the side, and a slow orbit around it as it goes off the bow.
 - **Fold and park.** A close view of the Tracker folding its wings.

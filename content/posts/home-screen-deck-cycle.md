@@ -6,11 +6,11 @@ summary: "A Tracker and a Skyhawk now take turns launching, circling the carrier
 shot: s53-home-fold
 hero_alt: "Island camera view of an S-2 Tracker on the flight deck with one outer wing panel folded up and the other part-way."
 ---
-One S-2 Tracker and one A-4G Skyhawk now work the deck on the home screen, so the ship looks busy while you choose what to fly. The old routine of towing a Tracker up and down the lift is gone, and so is the Sea King on the forward spot.
+One A-4G Skyhawk and one S-2 Tracker now work the deck on the home screen, so the ship looks busy while you choose what to fly. The old routine of towing a Tracker up and down the lift is gone, and so is the Sea King on the forward spot.
 
 ## The cycle
 
-- **Launch.** Each aircraft sits on the catapult, then goes down the track and off the bow. The Tracker has its wings out and propellers turning. The catapult crew give the turn-up, crouch and launch signals.
+- **Launch.** The Skyhawk goes first when the home screen opens, and the Tracker follows. Each aircraft sits on the catapult, then goes down the track and off the bow. The Tracker has its wings out and propellers turning. The catapult crew give the turn-up, crouch and launch signals.
 - **Patrol.** The aircraft climbs out and circles the carrier counter-clockwise at about 750 m radius and 130 m altitude.
 - **Recovery.** It turns onto a base leg, lines up on the angled deck, comes down the 3.5 degree glidepath and catches a wire.
 - **Fold and park.** The Tracker taxis clear, folds its outer wings up and back as it goes, and parks forward of the island with the propellers stopped. The Skyhawk parks on the forward deck. It does not fold anything.
