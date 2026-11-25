@@ -4,22 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The home screen now has a working flight deck · RAN Air Wing</title>
-<meta name="description" content="A Tracker now launches, recovers, folds its wings and parks on the home screen, then is spotted for the catapult again. The lift routine is gone.">
+<meta name="description" content="A Tracker and a Skyhawk now take turns launching, circling the carrier, recovering and parking on the home screen. The Tracker folds its wings. The lift routine and the helicopter are gone.">
 <link rel="canonical" href="https://ranairwing.com/blog/home-screen-deck-cycle/">
 <link rel="alternate" type="application/rss+xml" title="RAN Air Wing dev blog" href="/blog/feed.xml">
 <link rel="stylesheet" href="/blog/style.css">
 <meta property="og:site_name" content="RAN Air Wing">
 <meta property="og:type" content="article">
 <meta property="og:title" content="The home screen now has a working flight deck">
-<meta property="og:description" content="A Tracker now launches, recovers, folds its wings and parks on the home screen, then is spotted for the catapult again. The lift routine is gone.">
+<meta property="og:description" content="A Tracker and a Skyhawk now take turns launching, circling the carrier, recovering and parking on the home screen. The Tracker folds its wings. The lift routine and the helicopter are gone.">
 <meta property="og:url" content="https://ranairwing.com/blog/home-screen-deck-cycle/">
 <meta property="og:image" content="https://ranairwing.com/blog/img/s53-home-fold.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The home screen now has a working flight deck">
-<meta name="twitter:description" content="A Tracker now launches, recovers, folds its wings and parks on the home screen, then is spotted for the catapult again. The lift routine is gone.">
+<meta name="twitter:description" content="A Tracker and a Skyhawk now take turns launching, circling the carrier, recovering and parking on the home screen. The Tracker folds its wings. The lift routine and the helicopter are gone.">
 <meta name="twitter:image" content="https://ranairwing.com/blog/img/s53-home-fold.jpg">
 <meta name="theme-color" content="#0b1622">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "The home screen now has a working flight deck", "description": "A Tracker now launches, recovers, folds its wings and parks on the home screen, then is spotted for the catapult again. The lift routine is gone.", "datePublished": "2026-11-25T15:28+08:00", "dateModified": "2026-11-25T15:28+08:00", "image": "https://ranairwing.com/blog/img/s53-home-fold.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/home-screen-deck-cycle/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-25T15:28+08:00"><meta property="article:tag" content="Dev diary"><meta property="article:tag" content="Aircraft">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "The home screen now has a working flight deck", "description": "A Tracker and a Skyhawk now take turns launching, circling the carrier, recovering and parking on the home screen. The Tracker folds its wings. The lift routine and the helicopter are gone.", "datePublished": "2026-11-25T15:28+08:00", "dateModified": "2026-11-25T15:28+08:00", "image": "https://ranairwing.com/blog/img/s53-home-fold.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/home-screen-deck-cycle/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-25T15:28+08:00"><meta property="article:tag" content="Dev diary"><meta property="article:tag" content="Aircraft">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-H0ZE9XML6B"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H0ZE9XML6B');</script>
 </head>
@@ -32,25 +32,26 @@
 <article class="post">
 <p class="chips"><a class="chip" href="/blog/category/dev-diary/">Dev diary</a><a class="chip" href="/blog/category/aircraft/">Aircraft</a></p>
 <h1>The home screen now has a working flight deck</h1>
-<div class="meta"><time datetime="2026-11-25T15:28+08:00">25 November 2026</time> · 1 min read</div>
-<p class="lede">A Tracker now launches, recovers, folds its wings and parks on the home screen, then is spotted for the catapult again. The lift routine is gone.</p>
-<figure class="hero"><img src="/blog/img/s53-home-fold.jpg" width="1280" height="720" alt="Island camera view of an S-2 Tracker taxiing on the flight deck with one outer wing panel folded up and the other still extending."><figcaption>Screenshot from the sim. Island camera, 15:30, sea state 3, ship at 20 kn.</figcaption></figure>
-<p>The home screen used to show a Tracker being towed onto the forward lift, lowered and brought back. That routine is gone. One S-2 now runs a full deck cycle, so the ship looks busy while you choose what to fly.</p>
+<div class="meta"><time datetime="2026-11-25T15:28+08:00">25 November 2026</time> · 2 min read</div>
+<p class="lede">A Tracker and a Skyhawk now take turns launching, circling the carrier, recovering and parking on the home screen. The Tracker folds its wings. The lift routine and the helicopter are gone.</p>
+<figure class="hero"><img src="/blog/img/s53-home-fold.jpg" width="1280" height="720" alt="Island camera view of an S-2 Tracker on the flight deck with one outer wing panel folded up and the other part-way."><figcaption>Screenshot from the sim. Island camera, 15:30, sea state 3, ship at 20 kn.</figcaption></figure>
+<p>One S-2 Tracker and one A-4G Skyhawk now work the deck on the home screen, so the ship looks busy while you choose what to fly. The old routine of towing a Tracker up and down the lift is gone, and so is the Sea King on the forward spot.</p>
 <h2>The cycle</h2>
 <ul>
-<li><strong>Launch.</strong> The Tracker sits on the catapult with its wings out and propellers turning, then goes down the track and off the bow. The catapult crew give the turn-up, crouch and launch signals.</li>
-<li><strong>Recovery.</strong> After a few minutes it comes back down the glidepath onto the angled deck, catches a wire and stops.</li>
-<li><strong>Fold and park.</strong> It taxis clear and folds its outer wings up and back as it goes, then parks forward of the island with the propellers stopped.</li>
-<li><strong>Respot.</strong> After 90 seconds parked it taxis to the catapult, spreading its wings on the way, and launches again.</li>
+<li><strong>Launch.</strong> Each aircraft sits on the catapult, then goes down the track and off the bow. The Tracker has its wings out and propellers turning. The catapult crew give the turn-up, crouch and launch signals.</li>
+<li><strong>Patrol.</strong> The aircraft climbs out and circles the carrier counter-clockwise at about 750 m radius and 130 m altitude.</li>
+<li><strong>Recovery.</strong> It turns onto a base leg, lines up on the angled deck, comes down the 3.5 degree glidepath and catches a wire.</li>
+<li><strong>Fold and park.</strong> The Tracker taxis clear, folds its outer wings up and back as it goes, and parks forward of the island with the propellers stopped. The Skyhawk parks on the forward deck. It does not fold anything.</li>
+<li><strong>Respot.</strong> After a wait (90 seconds for the Tracker, 45 for the Skyhawk) it taxis to the catapult and goes again. Only one aircraft uses the catapult or the landing area at a time, so the other waits its turn.</li>
 </ul>
 <h2>Try it</h2>
-<p>Open the home screen with the orbit, deck or island camera and watch. The cycle stops as soon as you start a flight (catapult, approach, tutorial or mission), and the catapult is yours.</p>
+<p>Open the home screen with the orbit camera (key 1) and watch. The cycle stops as soon as you start a flight (catapult, approach, tutorial or mission), and the deck is yours. The camera work is covered in a separate post.</p>
 <h2>Still approximate</h2>
 <ul>
-<li>The speeds, timings and the flight path out of sight are game values, not RAN procedure.</li>
-<li>The Tracker taxis under its own power. The tractor and tow crew from the old routine have been removed.</li>
-<li>The Sea King and its handlers on the forward helicopter spot are cleared from the deck while the Tracker is respotted and launched, because its wing would pass through the helicopter. They come back once it is airborne. The sim does the same when you launch a Tracker yourself.</li>
-<li>The Skyhawk that used to sit on the catapult on the home screen is hidden while the cycle runs. It reappears when you start a flight.</li>
+<li>The speeds, timings and the circuit are game values, not RAN procedure.</li>
+<li>Both aircraft taxi under their own power. The tractor and tow crew from the old routine have been removed.</li>
+<li>The Sea King is no longer on the deck at all. The PEDRO plane guard helicopter still flies off the quarter.</li>
+<li>Of the three Skyhawks parked forward, the first one is the home-screen aircraft. The Skyhawk that used to sit on the catapult is hidden while the cycle runs, and everything returns to normal when you start a flight.</li>
 <li>There is no engine sound for the home-screen aircraft yet.</li>
 </ul>
 <aside class="panel cta"><p>Launch from the catapult, fly the pattern and land on the angled deck, in your browser.</p><a class="btn" href="/">Fly the sim</a></aside>
