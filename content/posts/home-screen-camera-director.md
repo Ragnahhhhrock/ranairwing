@@ -1,6 +1,6 @@
 ---
 title: "The home screen now cuts between launches, landings and the escorts"
-date: 2026-11-25T16:10+08:00
+date: 2026-11-25T15:50+08:00
 categories: [dev-diary, carrier-ops]
 summary: "On the home screen the orbit camera now cuts between a chase view of each landing, a front view and orbit of each launch, patrol shots, and close-ups of the escort ships."
 shot: s54-home-chase
