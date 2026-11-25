@@ -2,27 +2,28 @@
 title: "The home screen now has a working flight deck"
 date: 2026-11-25T15:28+08:00
 categories: [dev-diary, aircraft]
-summary: "A Tracker now launches, recovers, folds its wings and parks on the home screen, then is spotted for the catapult again. The lift routine is gone."
+summary: "A Tracker and a Skyhawk now take turns launching, circling the carrier, recovering and parking on the home screen. The Tracker folds its wings. The lift routine and the helicopter are gone."
 shot: s53-home-fold
-hero_alt: "Island camera view of an S-2 Tracker taxiing on the flight deck with one outer wing panel folded up and the other still extending."
+hero_alt: "Island camera view of an S-2 Tracker on the flight deck with one outer wing panel folded up and the other part-way."
 ---
-The home screen used to show a Tracker being towed onto the forward lift, lowered and brought back. That routine is gone. One S-2 now runs a full deck cycle, so the ship looks busy while you choose what to fly.
+One S-2 Tracker and one A-4G Skyhawk now work the deck on the home screen, so the ship looks busy while you choose what to fly. The old routine of towing a Tracker up and down the lift is gone, and so is the Sea King on the forward spot.
 
 ## The cycle
 
-- **Launch.** The Tracker sits on the catapult with its wings out and propellers turning, then goes down the track and off the bow. The catapult crew give the turn-up, crouch and launch signals.
-- **Recovery.** After a few minutes it comes back down the glidepath onto the angled deck, catches a wire and stops.
-- **Fold and park.** It taxis clear and folds its outer wings up and back as it goes, then parks forward of the island with the propellers stopped.
-- **Respot.** After 90 seconds parked it taxis to the catapult, spreading its wings on the way, and launches again.
+- **Launch.** Each aircraft sits on the catapult, then goes down the track and off the bow. The Tracker has its wings out and propellers turning. The catapult crew give the turn-up, crouch and launch signals.
+- **Patrol.** The aircraft climbs out and circles the carrier counter-clockwise at about 750 m radius and 130 m altitude.
+- **Recovery.** It turns onto a base leg, lines up on the angled deck, comes down the 3.5 degree glidepath and catches a wire.
+- **Fold and park.** The Tracker taxis clear, folds its outer wings up and back as it goes, and parks forward of the island with the propellers stopped. The Skyhawk parks on the forward deck. It does not fold anything.
+- **Respot.** After a wait (90 seconds for the Tracker, 45 for the Skyhawk) it taxis to the catapult and goes again. Only one aircraft uses the catapult or the landing area at a time, so the other waits its turn.
 
 ## Try it
 
-Open the home screen with the orbit, deck or island camera and watch. The cycle stops as soon as you start a flight (catapult, approach, tutorial or mission), and the catapult is yours.
+Open the home screen with the orbit camera (key 1) and watch. The cycle stops as soon as you start a flight (catapult, approach, tutorial or mission), and the deck is yours. The camera work is covered in a separate post.
 
 ## Still approximate
 
-- The speeds, timings and the flight path out of sight are game values, not RAN procedure.
-- The Tracker taxis under its own power. The tractor and tow crew from the old routine have been removed.
-- The Sea King and its handlers on the forward helicopter spot are cleared from the deck while the Tracker is respotted and launched, because its wing would pass through the helicopter. They come back once it is airborne. The sim does the same when you launch a Tracker yourself.
-- The Skyhawk that used to sit on the catapult on the home screen is hidden while the cycle runs. It reappears when you start a flight.
+- The speeds, timings and the circuit are game values, not RAN procedure.
+- Both aircraft taxi under their own power. The tractor and tow crew from the old routine have been removed.
+- The Sea King is no longer on the deck at all. The PEDRO plane guard helicopter still flies off the quarter.
+- Of the three Skyhawks parked forward, the first one is the home-screen aircraft. The Skyhawk that used to sit on the catapult is hidden while the cycle runs, and everything returns to normal when you start a flight.
 - There is no engine sound for the home-screen aircraft yet.

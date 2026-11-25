@@ -687,7 +687,16 @@
   "hour": 15.5,
   "sea": 3,
   "speed": 20,
-  "js": "const a=S.life.amb;while(a.ph!=='taxi')S.advance(.5);while(a.t<8)S.advance(.25);Object.assign(S.view,{yaw:2.45,pitch:-.25});S.advance(.05);",
+  "js": "const a=S.life.actors[0];let n=0;while(a.ph!=='taxi'&&n++<4000)S.advance(.5);n=0;while(!(a.fold>.4)&&n++<2000)S.advance(.25);Object.assign(S.view,{yaw:2.45,pitch:-.25});S.advance(.05);",
+  "hidePanels": true,
+  "hideHint": true
+ },
+ "s54-home-chase": {
+  "cam": "orbit",
+  "hour": 15.5,
+  "sea": 3,
+  "speed": 20,
+  "js": "const a=S.life.actors[1];let n=0;while(!(a.ph==='final'&&a.d<350)&&n++<4000)S.advance(.25);S.director.force('land-chase',0,a);S.advance(.05);",
   "hidePanels": true,
   "hideHint": true
  }

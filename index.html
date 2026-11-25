@@ -911,10 +911,7 @@ const life=(function(){
   put('red',11,-22,Math.PI/2,'stand');put('red',11,-8,Math.PI/2,'stand');                         // crash crew by the island
   put('blue',12.2,-41,Math.PI/2,'stand');put('blue',9.4,14.6,Math.PI/2,'stand');                 // tractor drivers
   put('white',-13.4,73.5,Math.PI,'stand',DECK_Y-.37);put('white',-14.2,74.8,Math.PI,'stand',DECK_Y-.37);   // LSO platform, facing aft
-  const heloCrew=[put('blue',3.2,-79,PI/2,'stand'),put('yellow',3.2,-88.5,PI/2,'stop')];                 // handlers at helicopter spot 1
 
-  // parked Sea King on spot 1, blades folded
-  const parked=makeSeaKing(true);parked.g.position.set(0,DECK_Y+1.95,-83);ship.add(parked.g);
   // plane guard Sea King, hovering off the port quarter
   const guard=makeSeaKing(false);scene.add(guard.g);
   // name tags over the plane guard ("PEDRO", traditional name for the rescue helicopter on station) and the ships; they fade out with distance
@@ -922,57 +919,114 @@ const life=(function(){
   const melTag=makeTag('HMAS MELBOURNE',ship,48,9);
 
   const sm=x=>x*x*(3-2*x),clamp=(x,lo,hi)=>Math.max(lo,Math.min(hi,x));
-  /* Home screen: one S-2 runs the cycle catapult launch > climb out > away > approach down the angled deck > wire > taxi, wings folding >
-     parked 90 s > taxi to the catapult, wings spreading > launch. Everything is in ship coordinates; the numbers are game values. */
-  const amb={ph:'cat',t:0,x:CATX,z:CATZ,y:0,psi:0,pitch:0,roll:0,v:0,d:0,fold:0,spin:0,gear:1,vis:true},IDQ=new THREE.Quaternion();
-  let homeOn=false,ambClear=false;
-  const resetAmb=()=>Object.assign(amb,{ph:'cat',t:0,x:CATX,z:CATZ,y:0,psi:0,pitch:0,roll:0,v:0,d:0,fold:0,spin:0,gear:1,vis:true});
-  function path(x0,z0,psi0,x1,z1,p){                                          // taxi in an S-curve that ends straight, nose along the deck
-    const dx=(x1-x0)*6*p*(1-p),dz=z1-z0,th=Math.atan2(-dx,-dz);
-    amb.x=x0+(x1-x0)*sm(p);amb.z=z0+dz*p;amb.psi=th+(psi0-th)*(1-sm(clamp(p*4,0,1)));}
-  function stepAmb(dt){
-    const A=amb,t0=A.ph;A.t+=dt;ambClear=false;A.pitch=A.roll=0;
+  /* Home screen: an S-2 Tracker and an A-4G Skyhawk take turns on the catapult and the landing area.
+     Each one: taxi to the catapult (Tracker spreading its wings) > hold > launch > climb out > circle the carrier > base leg >
+     final down the angled deck > wire > taxi clear (Tracker folding its wings) > park > wait > again.
+     Two locks keep them apart: 'fwd' (anything moving on the forward deck or on the catapult) and 'land' (the approach and landing roll).
+     Everything is in ship coordinates; speeds, timings and the circuit are game values. */
+  const wrap=a=>{while(a>PI)a-=2*PI;while(a<-PI)a+=2*PI;return a;};
+  const IDQ=new THREE.Quaternion();
+  const TAN_GS2=TAN_GS,CIRC_R=750,CIRC_CZ=-10,ALT=130,BASE_D=2300,BASE_OFF=300;
+  const RV=[-ANG_DIR.y,ANG_DIR.x];                                              // starboard of the landing line
+  const WAX=-700,WAZ=AZ-ANG_DIR.y*BASE_D+40;                                   // downwind leg runs south to here, then turns left
+  const WBX=AX-ANG_DIR.x*1900-RV[0]*350,WBZ=AZ-ANG_DIR.y*1900-RV[1]*350;       // base leg runs east-north-east to here, 350 m port of the line, then final
+  const CFG={
+    trk:{gh:1.78,gp:0,vCruise:62,vApp:36,vTaxi:4.5,omega:.17,park:[PX,PZ,0],wait:90,fold:true,prop:true,appPitch:.04,climbPitch:.03,
+      toCat:[[0,-34],[-6,-46],[-7,-56]],toPark:[[-3,10],[2,-8],[PX,PZ]]},
+    sky:{gh:1.9,gp:.09,vCruise:80,vApp:46,vTaxi:5.5,omega:.22,park:[8.2,-62,.62],wait:45,fold:false,prop:false,appPitch:.15,climbPitch:.08,
+      toCat:[[0,-58],[-7,-56]],toPark:[[-5,8],[-6,-40],[4,-48],[8.2,-58],[8.2,-62]]}};
+  const mkA=(id,cfg)=>({id,cfg,ph:'park',t:0,x:cfg.park[0],z:cfg.park[1],y:0,psi:cfg.park[2],pitch:cfg.gp,roll:0,v:0,d:0,e:0,fold:cfg.fold?1:0,spin:0,gear:1,vis:true,
+    route:[],ri:0,rTot:1,glide:false,laps:0});
+  const actors=[mkA('trk',CFG.trk),mkA('sky',CFG.sky)];
+  const lock={fwd:null,land:null};
+  const lfree=(n,A)=>lock[n]===null||lock[n]===A,ltake=(n,A)=>{lock[n]=A;},ldrop=(n,A)=>{if(lock[n]===A)lock[n]=null;};
+  let homeOn=false;
+  function resetAmb(){
+    actors[0].cfg=CFG.trk;Object.assign(actors[0],mkA('trk',CFG.trk),{ph:'cat',fold:0,spin:0,x:CATX,z:CATZ,psi:0});
+    Object.assign(actors[1],mkA('sky',CFG.sky),{t:CFG.sky.wait-24});
+    lock.fwd=actors[0];lock.land=null;}
+  const remaining=A=>{let r=0,x=A.x,z=A.z;for(let i=A.ri;i<A.route.length;i++){r+=Math.hypot(A.route[i][0]-x,A.route[i][1]-z);x=A.route[i][0];z=A.route[i][1];}return r;};
+  function beginRoute(A,pts){A.route=pts;A.ri=0;A.rTot=Math.max(1,remaining(A));}
+  const prog=A=>1-clamp(remaining(A)/A.rTot,0,1);
+  function drive(A,dt,spd,fpsi){                                                // follow the route at taxi speed, turning on the spot when the next leg is off the nose
+    if(A.ri<A.route.length){const [tx,tz]=A.route[A.ri],dx=tx-A.x,dz=tz-A.z,dist=Math.hypot(dx,dz);
+      if(dist<.8){A.ri++;return false;}
+      const err=wrap(Math.atan2(-dx,-dz)-A.psi);A.psi+=clamp(err,-1.1*dt,1.1*dt);
+      if(Math.abs(err)<.5){const m=Math.min(spd*dt,dist);A.x+=dx/dist*m;A.z+=dz/dist*m;}
+      return false;}
+    const err=wrap(fpsi-A.psi);A.psi+=clamp(err,-1.1*dt,1.1*dt);return Math.abs(err)<.02;}
+  function fly(A,dt,des,vT,yT,vyMax){                                           // airborne: turn toward a heading, hold a speed, climb or descend
+    const c=A.cfg,om=c.omega,d0=A.psi;
+    A.psi+=clamp(wrap(des-A.psi),-om*dt,om*dt);const dpsi=wrap(A.psi-d0)/Math.max(dt,1e-4);
+    A.roll+=(clamp(Math.atan(dpsi*A.v/9.81),-.7,.7)-A.roll)*Math.min(1,dt*2.5);
+    A.v+=clamp(vT-A.v,-3*dt,6*dt);
+    const vy=clamp((yT-A.y)*.5+(A.ff||0),-Math.max(vyMax*.6,A.sink||0),vyMax);
+    A.x+=-Math.sin(A.psi)*A.v*dt;A.z+=-Math.cos(A.psi)*A.v*dt;A.y+=vy*dt;
+    A.pitch=Math.atan2(vy,A.v)+c.climbPitch;return vy;}
+  function stepActor(A,dt){
+    const c=A.cfg;A.t+=dt;
     switch(A.ph){
-      case 'cat':A.x=CATX;A.z=CATZ;A.y=0;A.psi=0;A.fold=0;A.gear=1;A.spin=Math.max(A.spin,clamp(A.t/3,0,1));
+      case 'park':A.x=c.park[0];A.z=c.park[1];A.psi=c.park[2];A.y=0;A.pitch=c.gp;A.roll=0;A.spin=0;A.fold=c.fold?1:0;A.gear=1;
+        if(A.t>=c.wait&&lfree('fwd',A)){ltake('fwd',A);A.ph='respot';A.t=0;beginRoute(A,c.toCat);}break;
+      case 'respot':{const done=drive(A,dt,c.vTaxi,0),p=prog(A);
+        if(c.prop)A.spin=sm(clamp(p*5,0,1));if(c.fold)A.fold=1-clamp((p-.1)/.6,0,1);
+        if(done){A.ph='cat';A.t=0;}break;}
+      case 'cat':A.x=CATX;A.z=CATZ;A.psi=0;A.y=0;A.pitch=c.gp;A.gear=1;if(c.prop)A.spin=Math.max(A.spin,clamp(A.t/3,0,1));
         if(A.t>7){A.ph='launch';A.t=0;A.v=0;}break;
-      case 'launch':A.v+=25.5*dt;A.z-=A.v*dt;A.spin=1;                 // about 2 s over the 50 m track, 51 m/s at the bow
-        if(A.z<=BOWZ){A.ph='climb';A.t=0;}break;
-      case 'climb':{A.v=Math.min(66,A.v+6*dt);const vy=clamp(A.t/2,0,1)*6.5,tr=clamp((A.t-5)/3,0,1);
-        A.psi+=tr*.085*dt;A.x+=-Math.sin(A.psi)*A.v*dt;A.z+=-Math.cos(A.psi)*A.v*dt;A.y+=vy*dt;
-        A.pitch=Math.atan2(vy,A.v)+.03;A.roll=tr*.32;A.gear=A.t<2.5?1:0;
-        if(A.t>26){A.ph='away';A.t=0;A.vis=false;}break;}
-      case 'away':if(A.t>34){A.ph='appr';A.t=0;A.d=APP_D;A.vis=true;A.gear=1;A.fold=0;A.spin=1;}break;
-      case 'appr':{A.d-=APP_V*dt;const k=clamp(A.d/400,0,1);A.psi=APSI;
-        A.x=AX-ANG_DIR.x*A.d+Math.sin(A.t*.7)*3*k;A.z=AZ-ANG_DIR.y*A.d;A.y=Math.max(0,A.d)*TAN_GS;
-        A.pitch=.04;A.roll=Math.sin(A.t*.7+1)*.05*k;if(A.d<=0){A.ph='arrest';A.t=0;A.y=0;}break;}
-      case 'arrest':{const u=Math.min(A.t,ARR_T),s=APP_V*(u-u*u/(2*ARR_T));A.x=AX+ANG_DIR.x*s;A.z=AZ+ANG_DIR.y*s;A.y=0;A.psi=APSI;
-        A.pitch=Math.max(0,.04*(1-A.t/.6));if(A.t>=ARR_T+2.5){A.ph='taxi';A.t=0;}break;}   // sits for 2.5 s after the wire, then taxis clear
-      case 'taxi':{const p=clamp(A.t/20,0,1);path(SX,SZ,APSI,PX,PZ,p);A.y=0;
-        A.fold=clamp((A.t-5)/10,0,1);A.spin=1-sm(clamp((p-.8)/.2,0,1));
-        if(p>=1){A.ph='park';A.t=0;}break;}
-      case 'park':A.x=PX;A.z=PZ;A.y=0;A.psi=0;A.fold=1;A.spin=0;
-        if(A.t>=PARK_WAIT){A.ph='respot';A.t=0;}break;
-      case 'respot':{const p=clamp(A.t/18,0,1);path(PX,PZ,0,CATX,CATZ,p);A.y=0;
-        A.fold=1-clamp((p-.1)/.6,0,1);A.spin=sm(clamp(p*5,0,1));
-        if(p>=1){A.ph='cat';A.t=0;}break;}
+      case 'launch':A.v+=25.5*dt;A.z-=A.v*dt;if(c.prop)A.spin=1;
+        if(A.z<=BOWZ){A.ph='patrol';A.t=0;A.y=0;A.pitch=c.gp;A.fold=0;}break;
+      case 'patrol':{                                                           // climb out, then circle the carrier counter-clockwise (the ship is on the left)
+        const px=A.x,pz=A.z-CIRC_CZ,r=Math.hypot(px,pz)||1;
+        const des=Math.atan2(-pz/r,px/r)+clamp((r-CIRC_R)/250,-1,1)*.9;
+        fly(A,dt,des,c.vCruise,ALT,6.5*clamp(A.t/2,0,1));A.gear=A.t<2.5?1:0;
+        if(lock.fwd===A&&A.z<-100)ldrop('fwd',A);
+        if(A.t>40&&lfree('land',A)&&px<-300&&pz>-100&&pz<400&&Math.abs(wrap(A.psi-PI))<.9){ltake('land',A);A.ph='base';A.t=0;A.glide=false;A.leg=0;A.laps++;}
+        break;}
+      case 'base':{A.gear=1;const tx=A.leg?WBX:WAX,tz=A.leg?WBZ:WAZ,dx=tx-A.x,dz=tz-A.z;
+        fly(A,dt,Math.atan2(-dx,-dz),c.vCruise,ALT,6);
+        if(Math.hypot(dx,dz)<220){if(A.leg){A.ph='final';A.t=0;}else A.leg=1;}break;}
+      case 'final':{
+        const ex=A.x-AX,ez=A.z-AZ;A.e=ex*RV[0]+ez*RV[1];A.d=-(ex*ANG_DIR.x+ez*ANG_DIR.y);
+        const lt=A.d-600,des=Math.atan2(-(AZ-ANG_DIR.y*lt-A.z)*0-(AX-ANG_DIR.x*lt-A.x),-(AZ-ANG_DIR.y*lt-A.z)),gs=Math.max(0,A.d)*TAN_GS2;   // pure pursuit: steer at the line 600 m ahead
+        
+        if(!A.glide&&A.d<1700&&Math.abs(A.y-gs)<1.5)A.glide=true;
+        const vT=A.d<1500?c.vApp:c.vCruise;
+        A.sink=8;A.ff=A.d<1800?-A.v*TAN_GS2:0;fly(A,dt,des,vT,A.glide?gs:(A.d<1800?gs:ALT),6);A.sink=0;A.ff=0;
+        if(A.glide)A.y=gs;
+        if(A.d<900){const k=1-Math.exp(-dt/4);A.x-=RV[0]*A.e*k;A.z-=RV[1]*A.e*k;}   // ease the last of the line-up error out
+        A.pitch=c.appPitch;A.roll+=(Math.sin(A.t*.7+1)*.04*clamp(A.d/500,0,1)-A.roll)*Math.min(1,dt*2);
+        if(A.d<=0){A.ph='arrest';A.t=0;A.x=AX;A.z=AZ;A.y=0;A.v0=Math.max(25,A.v);A.psi=APSI;A.roll=0;}
+        break;}
+      case 'arrest':{const u=Math.min(A.t,ARR_T),sd=A.v0*(u-u*u/(2*ARR_T));A.x=AX+ANG_DIR.x*sd;A.z=AZ+ANG_DIR.y*sd;A.y=0;A.psi=APSI;
+        A.pitch=Math.max(c.gp,c.appPitch*(1-A.t/.6));A.v=A.v0*Math.max(0,1-u/ARR_T);
+        if(A.t>=ARR_T+2.5&&lfree('fwd',A)){ltake('fwd',A);A.ph='taxi';A.t=0;A.pitch=c.gp;beginRoute(A,c.toPark);}break;}
+      case 'taxi':{const done=drive(A,dt,c.vTaxi,c.park[2]),p=prog(A);A.pitch=c.gp;
+        if(A.z<8)ldrop('land',A);
+        if(c.fold)A.fold=clamp((p-.1)/.35,0,1);if(c.prop)A.spin=1-sm(clamp((p-.8)/.2,0,1));
+        if(done){ldrop('fwd',A);ldrop('land',A);A.ph='park';A.t=0;}break;}
     }
-    ambClear=A.ph==='respot'||A.ph==='cat'||A.ph==='launch';                    // Sea King and handlers are off the deck from the moment the Tracker leaves its parking spot until it has launched
   }
+  let skyGear=null,skyHook=null,sky=null;
+  function attachSky(obj,gear,hook){sky=obj;skyGear=gear;skyHook=hook;}
+  function skyRest(on){if(!sky)return;const c=CFG.sky;sky.position.set(c.park[0],DECK_Y+c.gh,c.park[1]);sky.rotation.set(c.gp,c.park[2],0);
+    if(skyGear)skyGear.visible=true;if(skyHook)skyHook.visible=true;sky.visible=on;}
   function update(dt){
     const t=state.t;lifts[0].target=1;lifts[0].l=1;lifts[0].pf.position.y=liftTop(1);   // forward lift stays flush with the deck
     if(homeOn){
-      stepAmb(dt);const A=amb;
-      s2.visible=A.vis;s2.position.set(A.x,DECK_Y+1.78+A.y,A.z);s2.rotation.set(A.pitch,A.psi,A.roll);
-      for(const l of s2P.legs)l.visible=A.gear>.5;
-      for(const {h,fq} of s2P.hinges)h.quaternion.copy(IDQ).slerp(fq,sm(A.fold));
-      s2P.props.forEach((hub,i)=>{hub.rotation.z+=(i?-1:1)*A.spin*40*dt;});
-      if(s2P.discMat)s2P.discMat.opacity=.3*clamp(A.spin*1.4,0,1);
-      applyHelo();
-    }else s2.visible=false;
+      for(const A of actors)stepActor(A,dt);
+      const T=actors[0],K=actors[1];
+      s2.visible=T.vis;s2.position.set(T.x,DECK_Y+CFG.trk.gh+T.y,T.z);s2.rotation.set(T.pitch,T.psi,T.roll);
+      for(const l of s2P.legs)l.visible=T.gear>.5;
+      for(const {h,fq} of s2P.hinges)h.quaternion.copy(IDQ).slerp(fq,sm(T.fold));
+      s2P.props.forEach((hub,i)=>{hub.rotation.z+=(i?-1:1)*T.spin*40*dt;});
+      if(s2P.discMat)s2P.discMat.opacity=.3*clamp(T.spin*1.4,0,1);
+      if(sky){sky.visible=K.vis;sky.position.set(K.x,DECK_Y+CFG.sky.gh+K.y,K.z);sky.rotation.set(K.pitch,K.psi,K.roll);
+        if(skyGear)skyGear.visible=K.gear>.5;}
+    }else{s2.visible=false;}
     if(typeof ac!=='undefined'&&ac.mode==='air'&&!ac.wrecked)lifts[1].target=1;
     moveLift(lifts[1],dt);
     // catapult signals: circle the arm to turn up, crouch and touch the deck at full power, point on launch
-    if(homeOn){const A=amb,go=A.ph==='cat'&&A.t>5.5;                                                // the home-screen Tracker is on the catapult
+    if(homeOn){const A=actors.find(q=>q.ph==='cat'||q.ph==='launch')||actors[0],go=A.ph==='cat'&&A.t>5.5;   // an aircraft is on the catapult
       shooter.userData.mode=A.ph==='launch'?'point':go?'crouch':A.ph==='cat'?'turnup':'stand';
       holdback.userData.mode=go||A.ph==='launch'?'thumb':'stand';}
     else{const onCat=typeof ac!=='undefined'&&ac.onCat;
@@ -1021,11 +1075,10 @@ const life=(function(){
       r.visible=jbdA>.02;
     }
   }
-  let heloOut=false,playerClear=false;
-  function applyHelo(){heloOut=homeOn?ambClear:playerClear;parked.g.visible=!heloOut;for(const c of heloCrew)c.visible=!heloOut;}   // Tracker launches: helicopter and handlers move off the catapult line
-  function setForwardParkClear(clear){playerClear=clear;applyHelo();}
-  function setHome(on){if(on===homeOn)return;homeOn=on;if(on)resetAmb();s2.visible=on;if(!on)ambClear=false;applyHelo();}   // home screen: the ambient Tracker cycle runs until the player starts a flight
-  return {makeS2,update,lifts,liftDown,setForwardParkClear,setHome,get homeOn(){return homeOn;},get amb(){return amb;},get heloOut(){return heloOut;},guard:guard.g};
+  let playerClear=false;
+  function setForwardParkClear(clear){playerClear=clear;}   // kept for the collision checks: a Tracker or catapult start disables the parked-Skyhawk collision test
+  function setHome(on){if(on===homeOn)return;homeOn=on;if(on)resetAmb();else{lock.fwd=lock.land=null;}s2.visible=on;if(sky)skyRest(!on?(typeof AC==='undefined'||AC.type!=='s2'):true);}   // home screen: the ambient cycle runs until the player starts a flight
+  return {makeS2,update,lifts,liftDown,setForwardParkClear,setHome,attachSky,CFG,actors,get homeOn(){return homeOn;},get heloOut(){return playerClear;},guard:guard.g};
 })();
 
 // name tags over ships and the plane guard: canvas sprite that fades out with distance
@@ -1646,7 +1699,7 @@ function pressKey(k){
   else if(k==='r'){stopTut();track('flight_start',{start:'catapult',source:'key'});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');}
   else if(k==='t'){stopTut();track('flight_start',{start:'approach',source:'key'});resetAircraft('approach');if(!FLY[state.cam])setCam('chase');}
   else if(k==='c')setCam(state.cam==='cockpit'?'chase':'cockpit');
-  else if(k==='o'){view.focus=(view.focus+1)%(escorts.length+1);if(state.cam!=='orbit')setCam('orbit');
+  else if(k==='o'){director.touch();view.focus=(view.focus+1)%(escorts.length+1);if(state.cam!=='orbit')setCam('orbit');
     track('camera_change',{camera:'orbit_'+(view.focus?escorts[view.focus-1].num:'21'),source:'key'});}
 }
 function stepAircraft(dt){
@@ -2055,7 +2108,6 @@ function groundCollide(){ // obstacles on the flight deck
   if(!life.heloOut&&PARKED.some(([x,z])=>Math.hypot(ac.lx-x,ac.lz-z)<8.5)){crash('Collided with a parked aircraft',fast);return true;}
   if(TRACTORS.some(([x,z])=>Math.hypot(ac.lx-x,ac.lz-z)<4.5)){crash('Hit a deck tractor',fast);return true;}
   if(ac.lx>9.3&&ac.lz>-29&&ac.lz<19.5){crash('Hit the island',fast);return true;}
-  if(!life.heloOut&&Math.hypot(ac.lx,ac.lz+83)<5.5){crash('Hit the parked helicopter',fast);return true;}
   for(let i=0;i<LIFT.length;i++){const [lx,lz]=LIFT[i];if(life.liftDown(life.lifts[i])&&Math.abs(ac.lx-lx)<LW/2&&Math.abs(ac.lz-lz)<LD/2){crash('Rolled into an open lift well',fast);return true;}}
   return false;
 }
@@ -3008,7 +3060,7 @@ const view={az:-0.62,el:0.2,dist:340,yaw:0,pitch:0,fly:null,appr:900,cAz:0,cEl:.
 function resetChase(){view.cAz=0;view.cEl=.264;view.cD=25;view.cPx=0;view.cPy=0;}
 const LOOK={deck:{pos:[2.8,DECK_Y+1.8,99],yaw:.096,pitch:-.03,fov:60},island:{pos:[11.7,DECK_Y+9.8,-2],yaw:2.8,pitch:-.28,fov:65}};
 function setCam(name){
-  state.cam=name;view.fly=null;view.appr=900;
+  state.cam=name;view.fly=null;view.appr=900;if(name==='orbit')director.resume();
   if(LOOK[name]){view.yaw=LOOK[name].yaw;view.pitch=LOOK[name].pitch;}
   document.querySelectorAll('#cams button').forEach(b=>b.classList.toggle('on',b.dataset.cam===name));
   if(FLY[name])ac.snap=true;
@@ -3019,9 +3071,81 @@ function setCam(name){
   if(FLY[name]&&AC.type==='s2')$('hint').textContent=$('hint').textContent.replace('\nX twice  eject','');   // no ejection seats in the Tracker
 }
 const tmp=new THREE.Vector3(),tmpQ=new THREE.Quaternion(),tmpE=new THREE.Euler(0,0,0,'YXZ');
+/* ---------- home-screen camera director ---------- */
+const director=(function(){
+  const V=THREE.Vector3,P=new V(),L=new V();
+  let cur=null,patrolBlock=0,patrolFlip=0,reelI=0,lastUser=-1e9;
+  const REEL=[['esc-orbit',0],['carrier-orbit',0],['esc-close',1],['esc-orbit',2],['carrier-bow',0],['esc-bow',0],['esc-close',2],['carrier-orbit',0],['esc-bow',1]];
+  const clampN=(x,a,b)=>Math.max(a,Math.min(b,x));
+  const loc=(x,y,z)=>ship.localToWorld(new V(x,y,z));
+  const wPos=(A,dy)=>loc(A.x,DECK_Y+A.cfg.gh+A.y+(dy||0),A.z);
+  const frame=A=>({f:[-Math.sin(A.psi),-Math.cos(A.psi)],r:[Math.cos(A.psi),-Math.sin(A.psi)]});
+  function cands(){
+    const out=[],patrolOK=state.t>patrolBlock;
+    for(const A of life.actors){
+      if(A.ph==='final'&&A.d<=700)out.push({id:'land-chase',prio:6,A});
+      else if(A.ph==='arrest')out.push({id:'land-deck',prio:6,A});
+      else if(A.ph==='final'&&A.d<=1500)out.push({id:'land-lso',prio:5,A});
+      if(A.ph==='cat'&&A.t>3)out.push({id:'launch-front',prio:6,A});
+      if(A.ph==='launch')out.push({id:'launch-side',prio:6,A});
+      if(A.ph==='patrol'&&A.t<9.5)out.push({id:'launch-orbit',prio:6,A});
+      if(A.ph==='taxi'&&A.cfg.fold&&A.fold>.02&&A.fold<.98)out.push({id:'fold-close',prio:5,A});
+      if(patrolOK&&((A.ph==='patrol'&&A.t>=9.5)||A.ph==='base'||(A.ph==='final'&&A.d>1500)))out.push({id:patrolFlip?'patrol-island':'patrol-side',prio:3,A});
+    }
+    return out.sort((a,b)=>b.prio-a.prio);
+  }
+  function reel(){const [id,arg]=REEL[reelI++%REEL.length];return {id,prio:1,arg,dur:10};}
+  function choose(){
+    const age=cur?state.t-cur.t0:0,cs=cands(),best=cs[0];
+    if(cur&&cur.hold)return;
+    let next=null;
+    if(!cur)next=best||reel();
+    else if(cur.prio>=5){const same=cs.find(c=>c.id===cur.id&&c.A===cur.A);if(!same||(best&&best.prio>cur.prio&&age>2))next=best||reel();}
+    else if(cur.prio===3){const same=cs.find(c=>c.id===cur.id&&c.A===cur.A);
+      if(best&&best.prio>=5)next=best;else if(!same||age>10){patrolBlock=state.t+12;patrolFlip^=1;next=reel();}}
+    else{if(best&&best.prio>=5)next=best;else if(best&&best.prio===3&&age>5)next=best;else if(age>cur.dur)next=reel();}
+    if(next){cur=Object.assign({t0:state.t},next);}
+  }
+  function pose(){
+    const c=cur,A=c.A,age=state.t-c.t0,e=escorts[(c.arg||0)%escorts.length];let fov=45;
+    switch(c.id){
+      case 'land-chase':{const {f,r}=frame(A);P.copy(loc(A.x-f[0]*42+r[0]*7,DECK_Y+A.cfg.gh+A.y+9,A.z-f[1]*42+r[1]*7));L.copy(wPos(A,1)).add(new V(0,0,0));fov=52;break;}
+      case 'land-lso':{P.copy(loc(-13.4,DECK_Y+2.2,73.5));L.copy(wPos(A));const dd=P.distanceTo(L);fov=Math.max(5,Math.min(30,2*Math.atan(22/Math.max(dd,1))*57.3));break;}
+      case 'land-deck':P.copy(loc(-15.5,DECK_Y+2.4,58));L.copy(wPos(A,1));fov=38;break;
+      case 'launch-front':P.copy(loc(CATXY[0]+3,DECK_Y+2.2,-92+(A.t-3)*1.5));L.copy(wPos(A,.8));fov=34;break;
+      case 'launch-side':P.copy(loc(-17,DECK_Y+3.2,-76));L.copy(wPos(A));fov=42;break;
+      case 'launch-orbit':{const {f,r}=frame(A),ph=-.35+age*.5,R=58;
+        P.copy(loc(A.x+(f[0]*Math.cos(ph)+r[0]*Math.sin(ph))*R,DECK_Y+A.cfg.gh+A.y+14,A.z+(f[1]*Math.cos(ph)+r[1]*Math.sin(ph))*R));L.copy(wPos(A));fov=48;break;}
+      case 'fold-close':{const ph=.9+age*.35,R=24;
+        P.copy(loc(A.x+Math.sin(ph)*R,DECK_Y+4.5,A.z+Math.cos(ph)*R));L.copy(wPos(A,1.5));fov=45;break;}
+      case 'patrol-side':{const {f,r}=frame(A);                                   // alongside on the outside of the circle, the carrier behind
+        P.copy(loc(A.x+r[0]*55-f[0]*10,DECK_Y+A.cfg.gh+A.y+8,A.z+r[1]*55-f[1]*10));L.copy(wPos(A));fov=40;break;}
+      case 'patrol-island':P.copy(loc(11.5,DECK_Y+22,-6));L.copy(wPos(A));fov=15;break;
+      case 'esc-orbit':{const C=e.g.position,R=e.L*1.2,az=(c.arg||0)*2+age*.15,el=.14;
+        P.set(C.x+R*Math.cos(el)*Math.sin(az),C.y+9+R*Math.sin(el),C.z+R*Math.cos(el)*Math.cos(az));L.set(C.x,C.y+9,C.z);fov=42;break;}
+      case 'esc-close':{const lz=-e.L*.3+age*5,sd=(c.arg||0)%2?1:-1;
+        P.copy(e.g.localToWorld(new V(sd*(e.B/2+45),14,lz)));L.copy(e.g.localToWorld(new V(0,9,lz+2)));fov=44;break;}
+      case 'esc-bow':P.copy(e.g.localToWorld(new V(e.B*.8,5,-e.L/2-30+age*.8)));L.copy(e.g.localToWorld(new V(0,7,-e.L/2+10)));fov=48;break;
+      case 'carrier-bow':P.copy(loc(-28,6,-128+age*1.2));L.copy(loc(0,14,-62));fov=55;break;
+      default:{const sp=ship.position,R=320,az=1+age*.12,el=.2;                    // carrier-orbit
+        P.set(sp.x+R*Math.cos(el)*Math.sin(az),12+R*Math.sin(el),sp.z+R*Math.cos(el)*Math.cos(az));L.set(sp.x,12,sp.z);fov=50;}
+    }
+    return fov;
+  }
+  const CATXY=[-7];
+  return {
+    active(){return life.homeOn&&state.cam==='orbit'&&!view.focus&&performance.now()-lastUser>9000;},
+    touch(){lastUser=performance.now();},resume(){lastUser=-1e9;},
+    force(id,arg,A){cur={id,arg:arg||0,A:A||life.actors[0],prio:9,t0:state.t,hold:true};},
+    get id(){return cur&&cur.id;},
+    apply(){choose();const fov=pose();
+      camera.position.copy(P);camera.position.y=Math.max(camera.position.y,waveHeight(P.x,P.z,state.t)+2);camera.lookAt(L);return fov;}
+  };
+})();
 function updateCamera(dt){
   const sp=ship.position;let fov=50;
-  if(state.cam==='orbit'){
+  if(state.cam==='orbit'&&director.active()){fov=director.apply();}
+  else if(state.cam==='orbit'){
     const ce=Math.cos(view.el);
     camera.position.set(sp.x+view.dist*ce*Math.sin(view.az),10+view.dist*Math.sin(view.el),sp.z+view.dist*ce*Math.cos(view.az));
     camera.position.y=Math.max(camera.position.y,waveHeight(camera.position.x,camera.position.z,state.t)+2);
@@ -3078,14 +3202,14 @@ canvas.addEventListener('pointermove',e=>{
     const [a,b]=[...ptrs.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);
     if(pinch)zoom(pinch/d);pinch=d;return;
   }
-  if(state.cam==='orbit'){view.az-=dx*.005;view.el=Math.min(1.45,Math.max(-.02,view.el+dy*.004));}
+  if(state.cam==='orbit'){director.touch();view.az-=dx*.005;view.el=Math.min(1.45,Math.max(-.02,view.el+dy*.004));}
   else if(state.cam==='chase'){
     if(p[2]){const k=view.cD*.0015;view.cPx=Math.max(-40,Math.min(40,view.cPx-dx*k));view.cPy=Math.max(-25,Math.min(25,view.cPy+dy*k));}
     else{view.cAz-=dx*.006;view.cEl=Math.min(1.4,Math.max(-.3,view.cEl+dy*.005));}
   }
   else if(LOOK[state.cam]){view.yaw+=dx*.003;view.pitch=Math.min(1.2,Math.max(-1.2,view.pitch+dy*.003));}
 });
-function zoom(f){if(state.cam==='chase'){view.cD=Math.min(120,Math.max(8,view.cD*f));return;}view.dist=Math.min(2500,Math.max(70,view.dist*f));}
+function zoom(f){director.touch();if(state.cam==='chase'){view.cD=Math.min(120,Math.max(8,view.cD*f));return;}view.dist=Math.min(2500,Math.max(70,view.dist*f));}
 canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(e.deltaY*.001));},{passive:false});
 const CAMS=['orbit','deck','island','approach','flyby','cockpit','chase'];
 const FLIGHT_KEYS=new Set(['arrowup','arrowdown','arrowleft','arrowright',' ','pageup','pagedown']);
@@ -3197,6 +3321,8 @@ ac.gear=true;ac.flap=0;ac.hook=ac.brake=false;animateParts(0,true);
 const parkedSky=[];
 for(const [x,z,psi] of [[8.2,-62,.62],[8.2,-74,.62],[8.2,-86,.62]]){              // spare Skyhawks parked forward of the island
   for(const m of parts.crew)m.visible=false;const p=plane.clone(true);for(const m of parts.crew)m.visible=true;p.rotation.order='YXZ';p.position.set(x,DECK_Y+AC.gearH,z);p.rotation.set(AC.sit,psi,0);ship.add(p);parkedSky.push(p);}
+{const src=[],dst=[];plane.traverse(o=>src.push(o));parkedSky[0].traverse(o=>dst.push(o));   // the first parked Skyhawk is the home-screen aircraft: find its gear and hook in the clone
+  const pick=o=>dst[src.indexOf(o)];life.attachSky(parkedSky[0],pick(gearG),pick(hookG));}
 const s2F=life.makeS2(true),partsS2=s2F.userData.P;s2F.visible=false;plane.add(s2F);
 function setType(k){
   Object.assign(AC,TYPES[k]);AC.type=k;a4G.visible=k==='a4';life.setForwardParkClear(k==='s2');for(const p of parkedSky)p.visible=k!=='s2';s2F.visible=k==='s2';parts=k==='a4'?partsA4:partsS2;
@@ -3207,7 +3333,7 @@ function nextAircraft(){selectAircraft(AC.type==='a4'?'s2':'a4');}
 function selectAircraft(k){if(k===AC.type)return;stopTut();setType(k);track('aircraft_select',{aircraft:AC.type});resetAircraft('cat');if(!FLY[state.cam])setCam('chase');say('Now flying the '+AC.name+'. On the catapult.',5);}
 ship.updateMatrixWorld(true);resetAircraft('cat');setCam('orbit');life.setHome(true);track('sim_ready');
 document.querySelectorAll('#title a').forEach(a=>a.addEventListener('click',()=>track('outbound_click',{link:a.classList.contains('coffee')?'coffee':a.href.startsWith('mailto:')?'contact':'malgordon',link_url:a.href})));
-window.__sim={crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,PRESETS2,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,LSOQ,updateLSO,
+window.__sim={director,crash,ms,wp,tg,tank,prj,wcount,startMission,MISSIONS,loadStores,FUEL,STORE,PRESETS,PRESETS2,wlist,wsel,prog,openMsn,openLo,closeUi,engineFuel,dropBomb,fireAim,fireGun,fireRocket,placeAir,endMissionFree,crewRig,ejRig,POSES,setPose,escorts,escortHit,life,setType,AC,state,setCam,view,ship,mot,ac,keys,resetAircraft,pressKey,lso,LSOQ,updateLSO,
   advance(sec){for(let i=0;i<sec*60;i++){state.t+=1/60;updateShip(1/60);ship.updateMatrixWorld(true);updateEscorts(1/60);life.update(1/60);stepAircraft(1/60);updateLSO(1/60);updateEject(1/60);updateFx(1/60);updateTut(1/60);}},tut,startLesson,ej,stats,eject,audio:()=>({state:actx&&actx.state,roar:actx&&au.roar.g.gain.value,whine:actx&&au.whineG.gain.value,muted})};
 requestAnimationFrame(frame);
 })();
