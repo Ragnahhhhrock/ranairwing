@@ -670,5 +670,16 @@
    "el": 0.1,
    "dist": 260
   }
+ },
+ "crash-orbit-cam": {
+  "cam": "cockpit",
+  "hour": 15,
+  "sea": 3,
+  "speed": 20,
+  "start": "approach",
+  "advance": 0.3,
+  "uiOff": true,
+  "hideHint": true,
+  "js": "S.crash('Hit the water',true);S.ac.msgT=0;"
  }
 }
