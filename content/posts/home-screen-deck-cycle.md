@@ -23,6 +23,6 @@ Open the home screen with the orbit, deck or island camera and watch. The cycle 
 
 - The speeds, timings and the flight path out of sight are game values, not RAN procedure.
 - The Tracker taxis under its own power. The tractor and tow crew from the old routine have been removed.
-- The Sea King on the forward helicopter spot disappears for the length of each launch, because the Tracker's wing would pass through it. This is the same trick the sim uses when you launch a Tracker yourself.
+- The Sea King and its handlers on the forward helicopter spot are cleared from the deck while the Tracker is respotted and launched, because its wing would pass through the helicopter. They come back once it is airborne. The sim does the same when you launch a Tracker yourself.
 - The Skyhawk that used to sit on the catapult on the home screen is hidden while the cycle runs. It reappears when you start a flight.
 - There is no engine sound for the home-screen aircraft yet.

@@ -935,7 +935,7 @@ const life=(function(){
     switch(A.ph){
       case 'cat':A.x=CATX;A.z=CATZ;A.y=0;A.psi=0;A.fold=0;A.gear=1;A.spin=Math.max(A.spin,clamp(A.t/3,0,1));
         if(A.t>7){A.ph='launch';A.t=0;A.v=0;}break;
-      case 'launch':A.v+=25.5*dt;A.z-=A.v*dt;A.spin=1;ambClear=A.z<-64;                 // about 2 s over the 50 m track, 51 m/s at the bow
+      case 'launch':A.v+=25.5*dt;A.z-=A.v*dt;A.spin=1;                 // about 2 s over the 50 m track, 51 m/s at the bow
         if(A.z<=BOWZ){A.ph='climb';A.t=0;}break;
       case 'climb':{A.v=Math.min(66,A.v+6*dt);const vy=clamp(A.t/2,0,1)*6.5,tr=clamp((A.t-5)/3,0,1);
         A.psi+=tr*.085*dt;A.x+=-Math.sin(A.psi)*A.v*dt;A.z+=-Math.cos(A.psi)*A.v*dt;A.y+=vy*dt;
@@ -956,6 +956,7 @@ const life=(function(){
         A.fold=1-clamp((p-.1)/.6,0,1);A.spin=sm(clamp(p*5,0,1));
         if(p>=1){A.ph='cat';A.t=0;}break;}
     }
+    ambClear=A.ph==='respot'||A.ph==='cat'||A.ph==='launch';                    // Sea King and handlers are off the deck from the moment the Tracker leaves its parking spot until it has launched
   }
   function update(dt){
     const t=state.t;lifts[0].target=1;lifts[0].l=1;lifts[0].pf.position.y=liftTop(1);   // forward lift stays flush with the deck
