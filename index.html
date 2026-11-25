@@ -152,7 +152,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Traps</span></div><div class="pt"><span class="pv" id="pBo">0</span><span class="pk">Bolters</span></div><div class="pt"><span class="pv" id="pCr">0</span><span class="pk">Crashes</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><button id="bMissions" type="button" aria-label="Choose a mission (Y)">Missions</button></p><p class="more"><button id="bMusic" type="button" aria-pressed="false">&#9835; Music: off</button></p><audio id="music" src="assets/theme.mp3" loop preload="none"></audio><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/catapult-launch-step-by-step/"><small>Latest post</small><img src="blog/img/s13-cat.jpg" width="1280" height="720" alt=""><strong>Catapult launch, step by step</strong></a><!--/latest-post--><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
+<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Traps</span></div><div class="pt"><span class="pv" id="pBo">0</span><span class="pk">Bolters</span></div><div class="pt"><span class="pv" id="pCr">0</span><span class="pk">Crashes</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><button id="bMissions" type="button" aria-label="Choose a mission (Y)">Missions</button></p><p class="more"><button id="bMusic" type="button" aria-pressed="false">&#9835; Music: off</button></p><audio id="music" src="assets/theme.mp3" loop preload="none"></audio><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/ship-name-tags/"><small>Latest post</small><img src="blog/img/ship-name-tags.jpg" width="1280" height="720" alt=""><strong>Name tags over the ships</strong></a><!--/latest-post--><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="mis" class="panel"></div>
 <div id="msn" class="panel"></div>
@@ -917,12 +917,9 @@ const life=(function(){
   const parked=makeSeaKing(true);parked.g.position.set(0,DECK_Y+1.95,-83);ship.add(parked.g);
   // plane guard Sea King, hovering off the port quarter
   const guard=makeSeaKing(false);scene.add(guard.g);
-  // "PEDRO" callsign tag over the plane guard (traditional name for the rescue helicopter on station); fades out with distance
-  const pedro=(()=>{const cv=document.createElement('canvas');cv.width=256;cv.height=64;const c=cv.getContext('2d');
-    c.font='bold 34px ui-monospace,Menlo,Consolas,monospace';c.textAlign='center';c.textBaseline='middle';c.fillStyle='rgba(8,18,28,.55)';c.fillRect(40,8,176,48);
-    c.fillStyle='#e8c547';c.fillText('PEDRO',128,33);
-    const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
-    const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthWrite:false,fog:false}));sp.scale.set(16,4,1);sp.position.y=6;guard.g.add(sp);return sp;})();
+  // name tags over the plane guard ("PEDRO", traditional name for the rescue helicopter on station) and the ships; they fade out with distance
+  const pedro=makeTag('PEDRO',guard.g,6,4);
+  const melTag=makeTag('HMAS MELBOURNE',ship,48,9);
 
   const sm=x=>x*x*(3-2*x),seg=(u)=>{let a=0;for(let i=0;i<SCHED.length;i++){if(u<a+SCHED[i])return [i,(u-a)/SCHED[i]];a+=SCHED[i];}return [0,0];};
   function update(dt){
@@ -964,6 +961,7 @@ const life=(function(){
     guard.g.rotation.set(-.05+.02*Math.sin(t*.5),.15*Math.sin(t*.09),.04*Math.sin(t*.31));
     guard.rotor.rotation.y-=18*dt;guard.tail.rotation.x+=40*dt;
     {const d=camera.position.distanceTo(guard.g.position);pedro.material.opacity=Math.max(0,Math.min(1,(900-d)/500));pedro.visible=pedro.material.opacity>.02;}
+    tagFade(melTag,camera.position.distanceTo(ship.position),150,350,2500,5000);
   }
   /* jet blast deflector: lies flush in the deck behind the port catapult, rises behind a Skyhawk at launch power, lowers once it has gone */
   const JBD_Z=-45,JBD_X=-7.9,JBD_L=3.3,JBD_MAX=.9;                          // hinge on the forward edge, panel 3.7 m wide, clear of the forward lift's port edge at x -5.8, rises to about 52 degrees leaning aft
@@ -1003,6 +1001,15 @@ const life=(function(){
   return {makeS2,update,lifts,liftDown,setForwardParkClear,get heloOut(){return heloOut;},get towZ(){return towZ;},get towX(){return towX;},guard:guard.g};
 })();
 
+// name tags over ships and the plane guard: canvas sprite that fades out with distance
+function makeTag(txt,parent,y,h,col){const w=Math.max(256,txt.length*22+56),cv=document.createElement('canvas');cv.width=w;cv.height=64;const c=cv.getContext('2d');
+  c.font='bold 34px ui-monospace,Menlo,Consolas,monospace';c.textAlign='center';c.textBaseline='middle';c.fillStyle='rgba(8,18,28,.55)';c.fillRect(8,8,w-16,48);
+  c.fillStyle=col||'#e8c547';c.fillText(txt,w/2,33);
+  const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:tx,transparent:true,depthWrite:false,fog:false}));sp.scale.set(h*w/64,h,1);sp.position.y=y;parent.add(sp);return sp;}
+function tagFade(sp,d,nearIn,nearOut,farIn,farOut){ // opacity ramps up from nearIn to nearOut and back down from farIn to farOut
+  const a=Math.min(Math.max(0,Math.min(1,(d-nearIn)/(nearOut-nearIn))),Math.max(0,Math.min(1,(farOut-d)/(farOut-farIn))));
+  sp.material.opacity=a;sp.visible=a>.02;}
 /* ---------- task group escorts (as sailed with Melbourne in 1980) ---------- */
 const escorts=[];
 const _eL=new THREE.Vector3();
@@ -1061,6 +1068,7 @@ function makeEscort(o){
   g.updateMatrixWorld(true);
   g.children.forEach((c,i)=>{if(i&&c.isMesh&&c.geometry.type==='BoxGeometry')e.boxes.push(new THREE.Box3().setFromObject(c).expandByScalar(.5));});
   e.boxes.push(...(o.extra||[]).map(([x0,y0,z0,x1,y1,z1])=>new THREE.Box3(new THREE.Vector3(x0,y0,z0),new THREE.Vector3(x1,y1,z1))));
+  e.tag=makeTag(o.name.toUpperCase(),g,o.L*.28,7);
   escorts.push(e);return e;
 }
 const mEsc=M(0x7d868c),mEscD=M(0x5e666c);
@@ -1136,6 +1144,7 @@ function updateEscorts(dt){
     [m.roll,m.vr]=spring(m.roll,m.vr,tRoll,e.rp,.3,dt);
     e.g.position.set(x,m.heave,z);e.g.rotation.set(m.pitch,Math.sin(t*.05+e.ph)*.006,m.roll);
     for(const [r,w] of e.spin)r.rotation.y+=dt*w;
+    tagFade(e.tag,camera.position.distanceTo(e.g.position),80,250,2500,5000);
     e.g.updateMatrixWorld(true);
     oceanU.uEsc.value[i].set(x,z,e.L/2,e.B/2);
   });

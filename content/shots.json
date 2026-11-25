@@ -657,5 +657,18 @@
   "start": "cat",
   "view": "menu",
   "ac": "s2"
+ },
+ "ship-name-tags": {
+  "cam": "orbit",
+  "hour": 16,
+  "sea": 3,
+  "speed": 20,
+  "advance": 3,
+  "view": {
+   "focus": 1,
+   "az": -0.5,
+   "el": 0.1,
+   "dist": 260
+  }
  }
 }
