@@ -681,5 +681,14 @@
   "uiOff": true,
   "hideHint": true,
   "js": "S.crash('Hit the water',true);S.ac.msgT=0;"
+ },
+ "s53-home-fold": {
+  "cam": "island",
+  "hour": 15.5,
+  "sea": 3,
+  "speed": 20,
+  "js": "const a=S.life.amb;while(a.ph!=='taxi')S.advance(.5);while(a.t<8)S.advance(.25);Object.assign(S.view,{yaw:2.45,pitch:-.25});S.advance(.05);",
+  "hidePanels": true,
+  "hideHint": true
  }
 }
