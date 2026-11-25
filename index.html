@@ -55,6 +55,8 @@ gtag('config','G-H0ZE9XML6B');
   #title #bMissions{display:block;width:100%;box-sizing:border-box;text-align:center;padding:12px 10px;font:inherit;font-size:16px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#10202c;border:2px solid #e8c547;border-radius:3px;background:#e8c547;cursor:pointer}
   #title #bMissions:hover{background:#f3d86b}
   #title #bMissions kbd{margin-left:6px;font-size:11px;opacity:.7}
+  #title #bMusic{display:block;width:100%;box-sizing:border-box;text-align:center;padding:8px 10px;font:inherit;font-size:13px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#e8c547;border:2px solid #e8c547;border-radius:3px;background:rgba(232,197,71,.12);cursor:pointer}
+  #title #bMusic:hover,#title #bMusic[aria-pressed=true]{background:rgba(232,197,71,.3)}
   #title a.coffee{display:block;text-align:center;margin-top:2px;padding:12px 10px;font-size:16px;border:2px solid #e8c547;border-radius:3px;background:#e8c547;color:#10202c;font-weight:600}
   #title a.coffee:hover{background:#f3d86b}
   #proof{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(200,220,235,.18)}
@@ -150,7 +152,7 @@ gtag('config','G-H0ZE9XML6B');
 <body>
 <canvas id="c"></canvas>
 <canvas id="hud"></canvas>
-<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Traps</span></div><div class="pt"><span class="pv" id="pBo">0</span><span class="pk">Bolters</span></div><div class="pt"><span class="pv" id="pCr">0</span><span class="pk">Crashes</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><button id="bMissions" type="button" aria-label="Choose a mission (Y)">Missions</button></p><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/flagship-of-the-fleet-and-the-olympics/"><small>Latest post</small><img src="blog/img/s34-escorts.jpg" width="1280" height="720" alt=""><strong>Flagship of the fleet, and the Olympics</strong></a><!--/latest-post--><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
+<div id="title" class="panel"><div class="id"><img class="ensign" src="assets/ensign.svg" width="48" height="24" alt="Australian White Ensign, the ensign of the Royal Australian Navy"><div><h1>HMAS MELBOURNE &middot; R21</h1><p class="motto" title="She gathers strength as she goes">Vires acquirit eundo</p></div></div><p>Phase 3 &middot; missions, weapons and refuelling &middot; c. 1980</p><div id="proof" aria-label="Flights logged by all pilots"><p class="pl">Logged by all pilots</p><div class="pg"><div class="pt"><span class="pv" id="pHrs">0</span><span class="pk">Flight hours</span></div><div class="pt"><span class="pv" id="pMis">0</span><span class="pk">Missions flown</span></div><div class="pt"><span class="pv" id="pFl">0</span><span class="pk">Flights</span></div><div class="pt"><span class="pv" id="pTr">0</span><span class="pk">Traps</span></div><div class="pt"><span class="pv" id="pBo">0</span><span class="pk">Bolters</span></div><div class="pt"><span class="pv" id="pCr">0</span><span class="pk">Crashes</span></div></div><p class="pm"><a href="stats/">All stats &rarr;</a></p></div><p class="more"><a href="https://malgordon.com" target="_blank" rel="noopener">Another Mal Gordon creation</a></p><p class="more"><button id="bMissions" type="button" aria-label="Choose a mission (Y)">Missions</button></p><p class="more"><button id="bMusic" type="button" aria-pressed="false">&#9835; Music: off</button></p><audio id="music" src="assets/theme.mp3" loop preload="none"></audio><p class="more menu"><a href="about.html">About</a><a href="blog/">Blog</a><a href="stats/">Stats</a></p><!--latest-post--><a class="latest" href="blog/flagship-of-the-fleet-and-the-olympics/"><small>Latest post</small><img src="blog/img/s34-escorts.jpg" width="1280" height="720" alt=""><strong>Flagship of the fleet, and the Olympics</strong></a><!--/latest-post--><p class="more"><a class="coffee" href="https://buy.stripe.com/9B6cMX2TT3tPaFi0UcaAw00" target="_blank" rel="noopener">&#9749; Buy me a coffee - $5</a></p></div>
 <div id="tut" class="panel"></div>
 <div id="mis" class="panel"></div>
 <div id="msn" class="panel"></div>
@@ -3072,6 +3074,16 @@ $('bMenu').addEventListener('click',e=>{setUi(!document.body.classList.contains(
 window.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='p'&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!e.repeat)setUi(!document.body.classList.contains('ui-off'),'key');});
 {let off=false;try{off=localStorage.getItem('ranUiOff')==='1';}catch(e){}setUi(off,null);}
 $('bSnd').addEventListener('click',e=>{setMuted(!muted);e.target.blur();});
+/* title-screen music: off by default (browsers block autoplay), choice remembered, separate from the synthesised sim sounds (M) */
+(function(){const a=$('music'),b=$('bMusic');if(!a||!b)return;a.volume=.5;
+  const key='ranairwing.music';let want=false;try{want=localStorage.getItem(key)==='1';}catch(e){}
+  function show(on){b.setAttribute('aria-pressed',on?'true':'false');b.innerHTML='&#9835; Music: '+(on?'on':'off');}
+  function play(){const p=a.play();if(p&&p.catch)p.catch(()=>{show(false);});}
+  function set(on,save){want=on;show(on);if(on)play();else a.pause();if(save){try{localStorage.setItem(key,on?'1':'0');}catch(e){}track('music_toggle',{on:on});}}
+  b.addEventListener('click',e=>{set(!want,true);e.target.blur();});
+  show(false);
+  if(want){const go=()=>{removeEventListener('pointerdown',go);removeEventListener('keydown',go);set(true,false);};addEventListener('pointerdown',go);addEventListener('keydown',go);}
+})();
 window.addEventListener('pointerdown',initAudio);window.addEventListener('keydown',initAudio);
 $('bTut').addEventListener('click',e=>{startLesson(0);e.target.blur();});
 document.querySelectorAll('#acSel button').forEach(b=>b.addEventListener('click',()=>{selectAircraft(b.dataset.ac);b.blur();}));
