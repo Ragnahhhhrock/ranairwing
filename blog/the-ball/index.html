@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The ball: how the landing aid works in the sim · RAN Air Wing</title>
+<meta name="description" content="The ball shows whether you are high or low on the glidepath. Here is what it means, and what the sim does with it.">
+<link rel="canonical" href="https://ranairwing.com/blog/the-ball/">
+<link rel="alternate" type="application/rss+xml" title="RAN Air Wing dev blog" href="/blog/feed.xml">
+<link rel="stylesheet" href="/blog/style.css">
+<meta property="og:site_name" content="RAN Air Wing">
+<meta property="og:type" content="article">
+<meta property="og:title" content="The ball: how the landing aid works in the sim">
+<meta property="og:description" content="The ball shows whether you are high or low on the glidepath. Here is what it means, and what the sim does with it.">
+<meta property="og:url" content="https://ranairwing.com/blog/the-ball/">
+<meta property="og:image" content="https://ranairwing.com/blog/img/s15-ball.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The ball: how the landing aid works in the sim">
+<meta name="twitter:description" content="The ball shows whether you are high or low on the glidepath. Here is what it means, and what the sim does with it.">
+<meta name="twitter:image" content="https://ranairwing.com/blog/img/s15-ball.jpg">
+<meta name="theme-color" content="#0b1622">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BlogPosting", "headline": "The ball: how the landing aid works in the sim", "description": "The ball shows whether you are high or low on the glidepath. Here is what it means, and what the sim does with it.", "datePublished": "2026-11-27T11:16+08:00", "dateModified": "2026-11-27T11:16+08:00", "image": "https://ranairwing.com/blog/img/s15-ball.jpg", "mainEntityOfPage": "https://ranairwing.com/blog/the-ball/", "author": {"@type": "Person", "name": "Mal Gordon"}, "publisher": {"@type": "Organization", "name": "RAN Air Wing"}}</script><meta property="article:published_time" content="2026-11-27T11:16+08:00"><meta property="article:tag" content="Carrier operations"><meta property="article:tag" content="How to fly">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-H0ZE9XML6B"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-H0ZE9XML6B');</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="/blog/">RAN Air Wing<small>HMAS Melbourne (R21) flight sim · dev blog</small></a>
+<nav class="nav" aria-label="Site"><a href="/blog/">Blog</a><a href="/stats/">Stats</a><a href="/about.html">About</a><a href="/blog/feed.xml">RSS</a><a class="btn" href="/">Fly the sim</a></nav>
+</div></header>
+<main><div class="wrap">
+<article class="post">
+<p class="chips"><a class="chip" href="/blog/category/carrier-ops/">Carrier operations</a><a class="chip" href="/blog/category/how-to-fly/">How to fly</a></p>
+<h1>The ball: how the landing aid works in the sim</h1>
+<div class="meta"><time datetime="2026-11-27T11:16+08:00">27 November 2026</time> · 2 min read</div>
+<p class="lede">The ball shows whether you are high or low on the glidepath. Here is what it means, and what the sim does with it.</p>
+<figure class="hero"><img src="/blog/img/s15-ball.jpg" width="1280" height="720" alt="The cockpit view on final approach, with the HUD showing the ball and angle-of-attack indicator and the ship ahead on the horizon."><figcaption>Screenshot from the sim. Cockpit camera, 15:30, sea state 3, ship at 22 kn.</figcaption></figure>
+<p>A carrier pilot on approach needs to know one thing above all: am I on the glidepath? A visual landing aid answers that. On HMAS Melbourne it was a mirror landing aid on a port-side sponson about amidships, and the sim models the sponson.</p>
+<h2>The idea</h2>
+<p>The pilot looks at a light, called the ball. The ball sits against a row of fixed reference lights. If the ball is level with them, the aircraft is on the glidepath. If it rises above them, the aircraft is high. If it sinks below, the aircraft is low.</p>
+<h2>What the sim shows</h2>
+<p>The sim draws the ball on the HUD, on the right of the display, instead of rendering the mirror itself.</p>
+<ul>
+<li><strong>When it appears.</strong> Within about 2.7 nm (5,000 m) of the deck and roughly lined up with it.</li>
+<li><strong>The glidepath.</strong> 3.5 degrees.</li>
+<li><strong>The ball.</strong> An amber dot against two green datum bars. It moves up the display as you go high and down as you go low.</li>
+<li><strong>Red ball.</strong> The dot turns red when you are more than 0.9 degrees below the glidepath. Add power and pull up.</li>
+<li><strong>Line-up.</strong> "LINED UP", "COME LEFT" or "COME RIGHT" below the ball, measured against the angled deck's centreline.</li>
+<li><strong>Range.</strong> In nautical miles, under the line-up cue.</li>
+</ul>
+<p>The ball takes the ship's heave into account, so in a heavy sea it moves with the deck.</p>
+<h2>The second instrument: angle of attack</h2>
+<p>On the left of the HUD is an indexer that tells you whether you are at the right speed, using angle of attack instead of airspeed:</p>
+<ul>
+<li><strong>Amber doughnut.</strong> On speed, between about 9.2 and 11.8 degrees.</li>
+<li><strong>Red chevron, pointing up.</strong> Fast. Ease the power.</li>
+<li><strong>Green chevron, pointing down.</strong> Slow. Add power.</li>
+</ul>
+<p>The sim also shows STALL above 16.5 degrees.</p>
+<h2>How to use them together</h2>
+<p>Watch both. If the ball is high, tap <kbd>↑</kbd> to push the nose down, or reduce power. If it is low, tap <kbd>↓</kbd> or add power. If the indexer shows fast, ease the power with <kbd>-</kbd>. If it shows slow, add power with <kbd>=</kbd>. Small, early corrections beat large, late ones.</p>
+<p>The full sequence is in <a href="/blog/approach-and-trap-step-by-step/">approach and arrested landing, step by step</a>.</p>
+<aside class="panel cta"><p>Launch from the catapult, fly the pattern and land on the angled deck, in your browser.</p><a class="btn" href="/">Fly the sim</a></aside>
+
+<div class="share" data-url="https://ranairwing.com/blog/the-ball/" data-title="The ball: how the landing aid works in the sim" data-slug="the-ball"><span class="label">Share</span><a data-method="facebook" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Franairwing.com%2Fblog%2Fthe-ball%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Facebook">Facebook</a><a data-method="x" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Franairwing.com%2Fblog%2Fthe-ball%2F&text=The%20ball%3A%20how%20the%20landing%20aid%20works%20in%20the%20sim" target="_blank" rel="noopener noreferrer" aria-label="Share on X">X</a><a data-method="linkedin" href="https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Franairwing.com%2Fblog%2Fthe-ball%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on LinkedIn">LinkedIn</a><a data-method="reddit" href="https://www.reddit.com/submit?url=https%3A%2F%2Franairwing.com%2Fblog%2Fthe-ball%2F&title=The%20ball%3A%20how%20the%20landing%20aid%20works%20in%20the%20sim" target="_blank" rel="noopener noreferrer" aria-label="Share on Reddit">Reddit</a><a data-method="email" href="mailto:?subject=The%20ball%3A%20how%20the%20landing%20aid%20works%20in%20the%20sim&body=https%3A%2F%2Franairwing.com%2Fblog%2Fthe-ball%2F" target="_blank" rel="noopener noreferrer" aria-label="Share on Email">Email</a><button type="button" data-copy>Copy link</button><button type="button" data-native hidden>Share…</button></div>
+<p class="meta">Filed under <a href="/blog/category/carrier-ops/">Carrier operations</a>, <a href="/blog/category/how-to-fly/">How to fly</a></p>
+<nav class="adj" aria-label="More posts"><a class="prev" href="/blog/26-november-1959-fixed-wing-flying-to-end-then-a-reprieve/"><span class="label">&larr; Previous</span><span>26 November 1959: fixed-wing flying to end, then a reprieve</span></a><a class="next" href="/blog/10-february-1964-melbourne-and-voyager/"><span class="label">Next &rarr;</span><span>10 February 1964: Melbourne and Voyager</span></a></nav>
+<section class="related"><h3>More like this</h3><ul><li><a href="/blog/home-screen-camera-director/">The home screen now cuts between launches, landings and the escorts</a> <span class="meta">· 25 November 2026</span></li><li><a href="/blog/catapult-launch-step-by-step/">Catapult launch, step by step</a> <span class="meta">· 25 November 2026</span></li><li><a href="/blog/the-angled-deck/">The angled deck, as drawn in the sim</a> <span class="meta">· 24 November 2026</span></li></ul></section>
+</article>
+</div></main>
+<footer><div class="wrap">RAN Air Wing is an independent fan project. Screenshots are from the sim. <a href="/">Fly the sim</a> · <a href="/stats/">Stats</a> · <a href="/about.html">About</a> · <a href="/blog/feed.xml">RSS</a> · <a href="https://malgordon.com" rel="noopener">Another Mal Gordon creation</a></div></footer>
+<script src="/blog/share.js" defer></script>
+</body></html>
